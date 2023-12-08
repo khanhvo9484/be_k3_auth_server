@@ -34,13 +34,18 @@ export class CourseController {
 		return await this.courseService.createCourse(body)
 	}
 
-	@Put('update')
+	@Put('update-course')
 	async updateCourse(@Body() body: UpdateCourseRequest) {
 		return await this.courseService.updateCourse(body)
 	}
 	@Put('update-invite-code')
 	async updateInviteCode(@Body() body: { courseId: string }) {
 		return await this.courseService.updateInviteCode(body.courseId)
+	}
+
+	@Put('update-role')
+	async updateRole(@Body() body: { courseId: string }) {
+		// return await this.courseService.updateRole(body.courseId)
 	}
 
 	@Post('join-by-token')
@@ -61,5 +66,20 @@ export class CourseController {
 	@Delete('delete/:id')
 	async deleteCourse(@Param('id') id: string) {
 		return await this.courseService.deleteCourse(id)
+	}
+
+	@Delete('leave/:id')
+	async leaveCourse(
+		@Param('id') id: string,
+		@Req() request: { userId: string }
+	) {
+		// return await this.courseService.leaveCourse(id, request.userId)
+	}
+	@Delete('remove/:id')
+	async removeUserFromCourse(
+		@Param('id') id: string,
+		@Req() request: { userId: string }
+	) {
+		// return await this.courseService.removeUserFromCourse(id, request.userId)
 	}
 }
