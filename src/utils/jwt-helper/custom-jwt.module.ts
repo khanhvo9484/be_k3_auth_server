@@ -15,7 +15,8 @@ export class CustomJWTModule {
 				},
 				TokenFactoryService
 			],
-			exports: [TokenFactoryService]
+			exports: [TokenFactoryService],
+			global: options.isGlobal || false
 		}
 	}
 }

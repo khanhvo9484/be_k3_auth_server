@@ -19,4 +19,6 @@ export interface IJwtModuleOptions {
 	accessTokenExpiresIn?: number
 	refreshTokenExpiresIn?: number
 	otherTokenExpiresIn?: number
+
+	isGlobal?: boolean
 }

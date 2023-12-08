@@ -6,6 +6,7 @@ import { RefreshToken } from './resources/refresh-token'
 import { TokenType } from './resources/token-type.enum'
 import { VerifyEmailToken } from './resources/verify-email-token'
 import { ResetPasswordToken } from './resources/reset-password-token'
+import { InviteToCourseToken } from './resources/invite-to-course-token'
 
 @Injectable()
 export class TokenFactoryService {
@@ -52,6 +53,14 @@ export class TokenFactoryService {
 				)
 				this.token.setExpiresIn(this.options.otherTokenExpiresIn)
 				break
+			case TokenType.INVITE_TO_COURSE:
+				this.token = new InviteToCourseToken(this.jwtService)
+				this.token.setKeys(
+					this.options.othersTokenPrivateKey,
+					this.options.othersTokenPublicKey
+				)
+				this.token.setExpiresIn(this.options.otherTokenExpiresIn)
+				break
 			default:
 				throw new Error('Invalid token type')
 		}
@@ -61,7 +70,7 @@ export class TokenFactoryService {
 	async verify(
 		token: string,
 		type: TokenType
-	): Promise<Object | CustomJwtPayload> {
+	): Promise<Object | CustomJwtPayload | InviteToCoursePayload> {
 		this.createTokenInstance(type)
 		return this.token.verify(token)
 	}
@@ -72,7 +81,7 @@ export class TokenFactoryService {
 	async decode(
 		token: string,
 		type: TokenType
-	): Promise<Object | CustomJwtPayload> {
+	): Promise<Object | CustomJwtPayload | InviteToCoursePayload> {
 		this.createTokenInstance(type)
 		return this.token.decode(token)
 	}

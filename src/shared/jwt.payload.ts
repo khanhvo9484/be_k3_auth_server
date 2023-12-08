@@ -2,7 +2,7 @@ export class JwtPayloadDto {
 	private sub: string = 'K3 Learning'
 	private iss: string = ''
 	private aud: string = ''
-	private id: number
+	private id: string
 	private email: string
 	private name: string
 	private role: string

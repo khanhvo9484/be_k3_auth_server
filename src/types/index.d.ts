@@ -9,9 +9,17 @@ interface ExceptionOptions {
 }
 
 // JWT Payload
-type CustomJwtPayload = {
-	id: number
+class CustomJwtPayload{
+	id: string
 	email: string
 	name: string
 	role: string
+}
+
+class InviteToCoursePayload {
+	id: string
+	inviterId: string
+	inviteeEmail: string
+	roleInCourse: string
+	courseId: string
 }

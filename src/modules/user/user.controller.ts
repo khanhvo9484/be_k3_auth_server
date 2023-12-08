@@ -20,9 +20,8 @@ export class UsersController {
 	constructor(private userService: UsersService) {}
 	@Get('/user/:id')
 	async getUserById(@Param('id') id: string) {
-		const numberId = parseInt(id)
 		const result = await this.userService.findUser({
-			id: numberId
+			id: id
 		})
 		if (!result) {
 			throw new DatabaseExecutionException('User not found', 'E1276')

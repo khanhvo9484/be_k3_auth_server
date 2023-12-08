@@ -1,8 +1,12 @@
 import { Exclude, Expose, Type } from 'class-transformer'
 
 import { IsEmail, IsNotEmpty, IsString, IsOptional } from 'class-validator'
+import { generateId } from '@utils/id-helper'
 
 class CreateUserRequest {
+	@IsString()
+	id: string = generateId('US')
+
 	@IsString()
 	@IsNotEmpty({ message: 'Name is required' })
 	name: string
@@ -70,7 +74,7 @@ class UpdateUserRequest {
 @Exclude()
 class UserResponse {
 	@Expose()
-	id: number
+	id: string
 	@Expose()
 	name: string
 	@Expose()

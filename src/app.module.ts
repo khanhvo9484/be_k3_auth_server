@@ -38,6 +38,8 @@ import { CustomJWTModule } from '@utils/jwt-helper/custom-jwt.module'
 			}
 		}),
 		CustomJWTModule.register({
+			isGlobal: true,
+
 			accessTokenPrivateKey: JWT_ACCESS_TOKEN_PRIVATE_KEY,
 			accessTokenPublicKey: JWT_ACCESS_TOKEN_PUBLIC_KEY,
 			refreshTokenPrivateKey: JWT_REFRESH_TOKEN_PRIVATE_KEY,
