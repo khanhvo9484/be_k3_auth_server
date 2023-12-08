@@ -3,7 +3,7 @@ import { IToken } from './token.interface'
 import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
-export class AccessToken implements IToken {
+export class VerifyEmailToken implements IToken {
 	private privateKey: string | Buffer
 	private publicKey: string | Buffer
 	private expiresIn: number

@@ -1,9 +1,10 @@
 import { JwtModule } from '@nestjs/jwt'
 import { DynamicModule, Module } from '@nestjs/common'
 import { TokenFactoryService } from './token-factory.service'
+import { IJwtModuleOptions } from './resources/token.interface'
 @Module({})
 export class CustomJWTModule {
-	static register(options: Record<string, any>): DynamicModule {
+	static register(options: IJwtModuleOptions): DynamicModule {
 		return {
 			module: CustomJWTModule,
 			imports: [JwtModule.register({})],

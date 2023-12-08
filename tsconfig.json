@@ -25,7 +25,7 @@
       "@config/*": ["config/*"],
       "@my-prisma/*": ["prisma/*"],
       "@common/*":["common/*"],
-      "@environments/*": ["environments/*"],
+      "@enviroment/*": ["enviroment/*"],
       "@models": ["models"],
       "@shared/*": ["shared/*"],
       "@utils/*": ["utils/*"],

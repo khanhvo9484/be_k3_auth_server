@@ -3,8 +3,9 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
 import { ConflictException, NotFoundException } from '@nestjs/common'
 import { DatabaseExecutionException } from 'common/exceptions'
+import { IUsersService } from './user.interface'
 @Injectable()
-export class UsersService {
+export class UsersService implements IUsersService {
 	constructor(private userRepository: UserRepository) {}
 
 	async findUser(

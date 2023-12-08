@@ -6,9 +6,18 @@ import * as fs from 'fs'
 export class RefreshToken implements IToken {
 	private privateKey: string | Buffer
 	private publicKey: string | Buffer
-	constructor(private jwtService: JwtService) {
-		this.privateKey = fs.readFileSync('./jwt-key/refresh.token.privatekey.pem')
-		this.publicKey = fs.readFileSync('./jwt-key/refresh.token.publickey.pem')
+	private expiresIn: number
+	constructor(private jwtService: JwtService) {}
+
+	setKeys(privateKey: string | Buffer, publicKey: string | Buffer): void {
+		this.privateKey = privateKey
+		this.publicKey = publicKey
+	}
+	setExpiresIn(expiresIn: number): void {
+		this.expiresIn = expiresIn
+	}
+	setJwtService(jwtService: any): void {
+		this.jwtService = jwtService
 	}
 	async verify(token: string): Promise<Object | CustomJwtPayload> {
 		try {
@@ -29,7 +38,8 @@ export class RefreshToken implements IToken {
 		if ((payload as CustomJwtPayload).id !== undefined) {
 			return this.jwtService.sign(payload as CustomJwtPayload, {
 				secret: this.privateKey,
-				algorithm: 'RS256'
+				algorithm: 'RS256',
+				expiresIn: this.expiresIn || 3600
 			})
 		} else {
 			throw new Error('Invalid payload type')
@@ -37,10 +47,10 @@ export class RefreshToken implements IToken {
 	}
 	async decode(token: string): Promise<Object | CustomJwtPayload> {
 		try {
-			return (await this.jwtService.decode(token, {
+			return await this.jwtService.decode(token, {
 				json: true,
 				complete: true
-			})) as CustomJwtPayload
+			})
 		} catch (error) {
 			return null
 		}

@@ -1,73 +1,61 @@
-import * as dotenv from 'dotenv';
-const ENVIROMENT = process.env.NODE_ENV || 'development';
+import * as dotenv from 'dotenv'
+export const ENVIROMENT = process.env.NODE_ENV || 'development'
 // Get enviroment path
-const enviromentPath = `.env.${ENVIROMENT}`;
+export const enviromentPath = `.env.${ENVIROMENT}`
 dotenv.config({
-  path: enviromentPath,
-});
+	path: enviromentPath
+})
 
-const PORT = process.env.PORT || 3000;
-const DATABASE_URL = process.env.DATABASE_URL;
+export const PORT = process.env.PORT || 3000
+export const DATABASE_URL = process.env.DATABASE_URL
 // Redis
 
-const REDIS_HOST = process.env.REDIS_HOST;
-const REDIS_PORT = process.env.REDIS_PORT;
-const REDIS_USERNAME = process.env.REDIS_USERNAME;
-const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
-const REDIS_URL = process.env.REDIS_URL;
+export const REDIS_HOST = process.env.REDIS_HOST
+export const REDIS_PORT = process.env.REDIS_PORT
+export const REDIS_USERNAME = process.env.REDIS_USERNAME
+export const REDIS_PASSWORD = process.env.REDIS_PASSWORD
+export const REDIS_URL = process.env.REDIS_URL
 
 // JWT
-const JWT_ACCESS_EXPIRATION_TIME = process.env.JWT_ACCESS_EXPIRATION_TIME;
-const JWT_REFRESH_EXPIRATION_TIME = process.env.JWT_REFRESH_EXPIRATION_TIME;
+export const JWT_ACCESS_TOKEN_EXPIRATION_TIME =
+	process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME
+export const JWT_REFRESH_TOKEN_EXPIRATION_TIME =
+	process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME
+export const JWT_OTHERS_TOKEN_EXPIRATION_TIME =
+	process.env.JWT_OTHERS_TOKEN_EXPIRATION_TIME
 
-const JWT_VERIFY_EMAIL_TOKEN_SECRET = process.env.JWT_VERIFY_EMAIL_TOKEN_SECRET;
-const JWT_RESET_PASSWORD_TOKEN_EXPIRATION_TIME =
-  process.env.JWT_RESET_PASSWORD_TOKEN_EXPIRATION_TIME;
+export const JWT_OTHERS_TOKEN_PRIVATE_KEY =
+	process.env.JWT_OTHERS_TOKEN_PRIVATE_KEY
 
-const PROTOCOL = process.env.PROTOCOL;
-const FRONT_END_DOMAIN = process.env.FRONT_END_HOST || 'localhost:4000';
-const BACK_END_DOMAIN = process.env.BACK_END_HOST || 'localhost:3000';
-const FRONT_END_URL = process.env.PROTOCOL + '://' + process.env.FRONT_END_HOST;
-const BACK_END_URL = process.env.PROTOCOL + '://' + process.env.BACK_END_HOST;
+export const JWT_ACCESS_TOKEN_PRIVATE_KEY =
+	process.env.JWT_ACCESS_TOKEN_PRIVATE_KEY
+export const JWT_ACCESS_TOKEN_PUBLIC_KEY =
+	process.env.JWT_ACCESS_TOKEN_PUBLIC_KEY
+export const JWT_REFRESH_TOKEN_PRIVATE_KEY =
+	process.env.JWT_REFRESH_TOKEN_PRIVATE_KEY
+export const JWT_REFRESH_TOKEN_PUBLIC_KEY =
+	process.env.JWT_REFRESH_TOKEN_PUBLIC_KEY
+
+export const PROTOCOL = process.env.PROTOCOL
+export const FRONT_END_DOMAIN = process.env.FRONT_END_HOST || 'localhost:4000'
+export const BACK_END_DOMAIN = process.env.BACK_END_HOST || 'localhost:3000'
+export const FRONT_END_URL =
+	process.env.PROTOCOL + '://' + process.env.FRONT_END_HOST
+export const BACK_END_URL =
+	process.env.PROTOCOL + '://' + process.env.BACK_END_HOST
 
 // Email
 
-const SPARKPOST_API_KEY = process.env.SPARKPOST_API_KEY;
+export const SPARKPOST_API_KEY = process.env.SPARKPOST_API_KEY
 // OAuth
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_CALLBACK_URL = BACK_END_URL + process.env.GOOGLE_CALLBACK_URL;
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
+export const GOOGLE_CALLBACK_URL =
+	BACK_END_URL + process.env.GOOGLE_CALLBACK_URL
 
-const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID;
-const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET;
-const FACEBOOK_CALLBACK_URL = BACK_END_URL + process.env.FACEBOOK_CALLBACK_URL;
+export const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID
+export const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET
+export const FACEBOOK_CALLBACK_URL =
+	BACK_END_URL + process.env.FACEBOOK_CALLBACK_URL
 
-const APP_LOGO = process.env.APP_LOGO;
-
-export {
-  ENVIROMENT,
-  PORT,
-  DATABASE_URL,
-  REDIS_HOST,
-  REDIS_PORT,
-  REDIS_USERNAME,
-  REDIS_PASSWORD,
-  REDIS_URL,
-  JWT_ACCESS_EXPIRATION_TIME,
-  JWT_REFRESH_EXPIRATION_TIME,
-  JWT_VERIFY_EMAIL_TOKEN_SECRET,
-  JWT_RESET_PASSWORD_TOKEN_EXPIRATION_TIME,
-  PROTOCOL,
-  FRONT_END_DOMAIN,
-  BACK_END_DOMAIN,
-  FRONT_END_URL,
-  BACK_END_URL,
-  SPARKPOST_API_KEY,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  GOOGLE_CALLBACK_URL,
-  FACEBOOK_CLIENT_ID,
-  FACEBOOK_CLIENT_SECRET,
-  FACEBOOK_CALLBACK_URL,
-  APP_LOGO,
-};
+export const APP_LOGO = process.env.APP_LOGO

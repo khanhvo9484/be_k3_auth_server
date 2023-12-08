@@ -1,70 +1,85 @@
-import { Controller, Get } from '@nestjs/common'
-import { ApiBody } from '@nestjs/swagger'
-import { TokenType } from '@utils/jwt-helper/resources/token-type.enum'
-import { TokenFactoryService } from '@utils/jwt-helper/token-factory.service'
+import { plainToClass } from 'class-transformer'
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	Inject,
+	Param,
+	Post,
+	Req,
+	Res,
+	UseGuards
+} from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { BadRequestException } from '@nestjs/common'
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import { Cache } from 'cache-manager'
+import { Request, Response } from 'express'
+import CreateUserRequest, {
+	SignInRequest,
+	UserResponse
+} from '@user/dto/user.dto'
+import { Public } from '@common/decorator'
 
 @Controller('auth')
 export class AuthController {
-	constructor(private tokenFactory: TokenFactoryService) {}
-	@ApiBody({ type: String })
-	@Get('test')
-	getTest() {
-		const token = this.tokenFactory
-			.getTokenInstance(TokenType.ACCESS_TOKEN)
-			.sign({
-				id: 12,
-				name: 'Khanh Vo',
-				email: 'khanh@',
-				role: 'admin'
-			})
+	constructor(private authService: AuthService) {}
+	@Public()
+	@Post('/sign-up')
+	async signUp(@Body() request: CreateUserRequest, @Res() res: Response) {
+		const result = await this.authService.signUp(request)
+		return res.status(201).json({
+			message: 'Sign up successfully',
+			data: plainToClass(UserResponse, result)
+		})
+	}
+	@Public()
+	@Post('/sign-in')
+	async signIn(@Body() request: SignInRequest, @Res() res: Response) {
+		const result = await this.authService.signIn(request)
+		return res.status(200).json({
+			message: 'Sign in successfully',
+			data: result
+		})
+	}
 
-		return { message: 'hehe', data: token }
+	@Public()
+	@Post('/refresh-token/sign-out')
+	async signOut(@Req() req: Request, @Res() res: Response, @Body() body: any) {
+		const refreshToken = body.refresh_token
+		await this.authService.signOut(refreshToken)
+		return res.status(200).json({
+			message: 'Sign out successfully',
+			data: {}
+		})
+	}
+
+	@Public()
+	@Post('/refresh-token/refresh')
+	async refreshToken(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Body() body: RefreshTokenRequest
+	) {
+		const refreshToken = body.refresh_token
+		if (!refreshToken) {
+			throw new BadRequestException('Invalid refresh token')
+		}
+		const result = await this.authService.refreshToken(refreshToken)
+		return res
+			.status(200)
+			.json({ message: 'Refresh token successfully', data: result })
+	}
+
+	@Get('/protected')
+	async protected() {
+		return {
+			message: 'Protected route',
+			data: {}
+		}
 	}
 }
-// import { AuthGuard } from './auth.guard';
-// import {
-//   Body,
-//   Controller,
-//   Get,
-//   HttpCode,
-//   Inject,
-//   Param,
-//   Post,
-//   Req,
-//   Res,
-//   UseGuards,
-// } from '@nestjs/common';
-// import { AuthService } from './auth.service';
-// import { BadRequestException } from '@nestjs/common';
-// import CreateUserRequest, { SignInRequest } from '@users/users.dto';
-// import { CACHE_MANAGER } from '@nestjs/cache-manager';
-// import { Cache } from 'cache-manager';
-// import { Request, Response } from 'express';
-// import { Public } from '@auth/public-route.decorator';
-// import { ConfigService } from '@nestjs/config';
-// import { AuthGuard as AuthGuardPassport } from '@nestjs/passport/dist';
-// import { SendEmailService } from './send-email.service';
-// import { SUCCESS_PAGE_URL } from 'constant/common.constant';
-
-// @Public()
-// @Controller('auth')
-// export class AuthController {
-//   constructor(
-//     private authService: AuthService,
-//     private emailSender: SendEmailService,
-//     @Inject(CACHE_MANAGER) private cache: Cache,
-//     private auth: AuthGuard,
-//     private config: ConfigService,
-//   ) {}
-
-//   @Post('/sign-up')
-//   async signUp(@Body() request: CreateUserRequest, @Res() res: Response) {
-//     const result = await this.authService.signUp(request);
-//     return res
-//       .status(201)
-//       .json({ message: 'Sign up successfully', data: result });
-//   }
-
 //   @Post('/verify-email')
 //   async verifyEmail(
 //     @Body() request: { token: string; email: string },
