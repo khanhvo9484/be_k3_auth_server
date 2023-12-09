@@ -16,15 +16,17 @@ import {
 	UpdateCourseRequest
 } from './dto/course.dto'
 import { Request, Response } from 'express'
-import { plainToClass } from 'class-transformer'
 
 @Controller('courses')
 export class CourseController {
 	constructor(private courseService: CourseService) {}
 
 	@Get('all')
-	async getAllCourse(@Req() request: { userId: string }) {
-		return await this.courseService.getAllCourse(request.userId)
+	@HttpCode(200)
+	async getAllCourse(@Req() request: Request) {
+		const user = request.user
+		const result = await this.courseService.getAllCourse(user.id)
+		return { message: 'get all course successfully', data: result }
 	}
 
 	@Get('course/:id')

@@ -14,7 +14,7 @@ export class DatabaseExecutionException extends HttpException {
 	constructor(message: string, error?: string) {
 		const options: ExceptionOptions = {
 			message: message.toString(),
-			error: error.toString() || '',
+			error: (error && error.toString()) || '',
 			statusCode: DATABASE_EXECUTION_ERROR_CODE
 		}
 		super(options, DATABASE_EXECUTION_ERROR_CODE)

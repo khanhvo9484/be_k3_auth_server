@@ -37,15 +37,11 @@ export class CourseRepository {
 			where?: Prisma.UserWhereInput
 			orderBy?: Prisma.UserOrderByWithRelationInput
 		}
-	): Promise<Course[]> {
+	) {
 		const result = await this.prisma.user_Course.findMany({
 			where: {
 				userId: userId
 			},
-			skip: params.skip,
-			take: params.take,
-			orderBy: params.orderBy,
-
 			select: {
 				course: true
 			}

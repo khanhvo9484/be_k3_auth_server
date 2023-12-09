@@ -62,6 +62,21 @@ export class CourseService {
 					}
 				}
 			})
+
+			const enrollment = await this.courseRepository.joinCourse({
+				roleInCourse: 'teacher',
+				course: {
+					connect: {
+						id: result.id
+					}
+				},
+				user: {
+					connect: {
+						id: createCourseRequest.courseOwnerId
+					}
+				}
+			})
+
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException('Create course failed')
