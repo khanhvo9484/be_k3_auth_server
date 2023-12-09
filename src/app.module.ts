@@ -23,6 +23,7 @@ import {
 import { redisStore } from 'cache-manager-redis-store'
 import { AuthGuard } from '@common/guard/auth.guard'
 import { CustomJWTModule } from '@utils/jwt-helper/custom-jwt.module'
+import { CourseModule } from 'modules/course/course.module'
 
 @Module({
 	imports: [
@@ -53,6 +54,7 @@ import { CustomJWTModule } from '@utils/jwt-helper/custom-jwt.module'
 
 		AuthModule,
 		UsersModule,
+		CourseModule,
 		PrismaModule
 	],
 	controllers: [AppController],

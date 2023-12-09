@@ -1,21 +1,22 @@
 import { generateCode, generateId } from '@utils/id-helper'
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class CreateCourseRequest {
-	@IsNotEmpty()
 	@IsString()
 	id: string = generateId('CS')
 
-	@IsNotEmpty()
 	@IsString()
 	name: string
 
-	@IsNotEmpty()
+	@IsOptional()
+	description: string
+
+	@IsString()
+	inviteCode: string = generateCode(6)
+
+	@IsOptional()
 	@IsString()
 	courseOwnerId: string
-
-	description?: string
-	inviteCode: string = generateCode(6)
 }
 
 export class UpdateCourseRequest {

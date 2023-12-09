@@ -3,6 +3,7 @@ import {
 	Controller,
 	Delete,
 	Get,
+	HttpCode,
 	Param,
 	Post,
 	Put,
@@ -15,6 +16,7 @@ import {
 	UpdateCourseRequest
 } from './dto/course.dto'
 import { Request, Response } from 'express'
+import { plainToClass } from 'class-transformer'
 
 @Controller('courses')
 export class CourseController {
@@ -31,8 +33,15 @@ export class CourseController {
 	}
 
 	@Post('create')
-	async createCourse(@Body() body: CreateCourseRequest) {
-		return await this.courseService.createCourse(body)
+	@HttpCode(201)
+	async createCourse(
+		@Req() request: Request,
+		@Body() body: CreateCourseRequest
+	) {
+		const user = request.user
+		body.courseOwnerId = user.id
+		const result = await this.courseService.createCourse(body)
+		return { message: 'create course successfully', data: result }
 	}
 
 	@Put('update-course')
