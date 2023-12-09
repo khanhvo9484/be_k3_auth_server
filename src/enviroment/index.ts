@@ -44,6 +44,8 @@ export const FRONT_END_URL =
 export const BACK_END_URL =
 	process.env.PROTOCOL + '://' + process.env.BACK_END_HOST
 
+export const SUCCESS_OAUTH_LOGIN_PAGE_URL =
+	FRONT_END_URL + process.env.SUCCESS_OAUTH_LOGIN_PATH
 // Email
 
 export const SPARKPOST_API_KEY = process.env.SPARKPOST_API_KEY

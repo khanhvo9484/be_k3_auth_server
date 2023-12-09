@@ -24,6 +24,7 @@ model User {
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
   isVerified  Boolean       @default(false)
+  accountType String        @default("local")
   ownCourses  Course[]
   joinCourses User_Course[]
   invitions   Invitation[]

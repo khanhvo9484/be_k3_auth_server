@@ -1,3 +1,4 @@
+import { OauthLoginService } from 'auth/oauth-login.service'
 import { plainToClass } from 'class-transformer'
 import {
 	Body,
@@ -13,18 +14,22 @@ import {
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { BadRequestException } from '@nestjs/common'
-import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { Cache } from 'cache-manager'
 import { Request, Response } from 'express'
 import CreateUserRequest, {
 	SignInRequest,
 	UserResponse
 } from '@user/dto/user.dto'
+import { AuthGuard as AuthGuardPassport } from '@nestjs/passport/dist'
 import { Public } from '@common/decorator'
+import { RefreshTokenRequest } from './resources/dto'
+import { SUCCESS_OAUTH_LOGIN_PAGE_URL } from '@enviroment/index'
 
 @Controller('auth')
 export class AuthController {
-	constructor(private authService: AuthService) {}
+	constructor(
+		private authService: AuthService,
+		private oauthLoginService: OauthLoginService
+	) {}
 	@Public()
 	@Post('/sign-up')
 	async signUp(@Body() request: CreateUserRequest, @Res() res: Response) {
@@ -46,7 +51,11 @@ export class AuthController {
 
 	@Public()
 	@Post('/refresh-token/sign-out')
-	async signOut(@Req() req: Request, @Res() res: Response, @Body() body: any) {
+	async signOut(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Body() body: { refresh_token: string }
+	) {
 		const refreshToken = body.refresh_token
 		await this.authService.signOut(refreshToken)
 		return res.status(200).json({
@@ -72,6 +81,33 @@ export class AuthController {
 			.json({ message: 'Refresh token successfully', data: result })
 	}
 
+	@Get('google')
+	@UseGuards(AuthGuardPassport('google'))
+	async googleLogin() {}
+
+	@Get('google/callback')
+	@UseGuards(AuthGuardPassport('google'))
+	async googleAuthCallback(@Req() request, @Res() response: Response) {
+		const user = request.user
+		const data = await this.oauthLoginService.authLogin(user)
+		const userId = data.user.id
+		const url_redirect =
+			SUCCESS_OAUTH_LOGIN_PAGE_URL + `?iduser=${data.user.id}`
+		response.redirect(url_redirect)
+	}
+
+	@Get('/verify-login/:idUser')
+	async verifyLoginByUserID(
+		@Res() response: Response,
+		@Param('idUser') idUser: string
+	) {
+		const dataCache = await this.oauthLoginService.verifyLoginByUserID(idUser)
+
+		return response.status(200).json({
+			message: '',
+			data: dataCache
+		})
+	}
 	@Get('/protected')
 	async protected() {
 		return {

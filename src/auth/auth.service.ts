@@ -1,3 +1,4 @@
+import { ManageTokenInCacheService } from './resources/utils/manage-token-in-cache'
 import { plainToClass } from 'class-transformer'
 
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
@@ -21,7 +22,8 @@ export class AuthService {
 	constructor(
 		private usersService: UsersService,
 		@Inject(CACHE_MANAGER) private cache: Cache,
-		private tokenFactory: TokenFactoryService
+		private tokenFactory: TokenFactoryService,
+		private manageTokenInCacheService: ManageTokenInCacheService
 	) {}
 	async signUp(request: CreateUserRequest) {
 		const password = request.password
@@ -76,7 +78,7 @@ export class AuthService {
 		}
 	}
 	async signOut(refreshToken: string): Promise<boolean> {
-		const payload = this.tokenFactory.verify(
+		const payload: CustomJwtPayload | Object = await this.tokenFactory.verify(
 			refreshToken,
 			TokenType.REFRESH_TOKEN
 		)

@@ -14,6 +14,7 @@ import {
 	JoinCourseRequest,
 	UpdateCourseRequest
 } from './dto/course.dto'
+import { Request, Response } from 'express'
 
 @Controller('courses')
 export class CourseController {
@@ -39,7 +40,10 @@ export class CourseController {
 		return await this.courseService.updateCourse(body)
 	}
 	@Put('update-invite-code')
-	async updateInviteCode(@Body() body: { courseId: string }) {
+	async updateInviteCode(
+		@Req() request: Request,
+		@Body() body: { courseId: string }
+	) {
 		return await this.courseService.updateInviteCode(body.courseId)
 	}
 
