@@ -29,6 +29,13 @@ export class CourseRepository {
 		return result
 	}
 
+	async getEnrollmentById(params: Prisma.User_CourseWhereUniqueInput) {
+		const result = await this.prisma.user_Course.findUnique({
+			where: params
+		})
+		return result
+	}
+
 	async getAllCourse(
 		userId: string,
 		params?: {
@@ -53,7 +60,15 @@ export class CourseRepository {
 		})
 		return result.map((item) => item.course)
 	}
-
+	async getAllCourseMember(where: Prisma.User_CourseWhereInput) {
+		const result = await this.prisma.user_Course.findMany({
+			where,
+			select: {
+				user: true
+			}
+		})
+		return result
+	}
 	async getInvitation(params: Prisma.InvitationWhereUniqueInput) {
 		const result = await this.prisma.invitation.findUnique({
 			where: params
@@ -102,6 +117,17 @@ export class CourseRepository {
 	}): Promise<User_Course> {
 		const { data, where } = params
 		const result = await this.prisma.user_Course.update({
+			data,
+			where
+		})
+		return result
+	}
+	async updateInvitation(params: {
+		where: Prisma.InvitationWhereUniqueInput
+		data: Prisma.InvitationUpdateInput
+	}): Promise<Invitation> {
+		const { data, where } = params
+		const result = await this.prisma.invitation.update({
 			data,
 			where
 		})

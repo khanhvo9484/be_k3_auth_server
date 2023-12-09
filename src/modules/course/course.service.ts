@@ -54,7 +54,26 @@ export class CourseService {
 			throw new DatabaseExecutionException('Get all course failed')
 		}
 	}
-
+	async getAllCourseMember(user: CustomJwtPayload, courseId: string) {
+		try {
+			const userInCourse = await this.courseRepository.getEnrollmentById({
+				userId_courseId: {
+					userId: user.id,
+					courseId: courseId
+				}
+			})
+			if (!userInCourse) {
+				throw new BadRequestException('You are not in this course')
+			}
+			const result = await this.courseRepository.getAllCourseMember({
+				courseId: courseId
+			})
+			return result
+		} catch (error) {
+			console.log(error)
+			throw new DatabaseExecutionException('Get all course member failed')
+		}
+	}
 	async getCourseById(courseId: string): Promise<Course> {
 		try {
 			const result = await this.courseRepository.getCourseById({ id: courseId })
@@ -144,7 +163,7 @@ export class CourseService {
 		return result
 	}
 
-	async joinCourseByToken(inviteToken: string): Promise<User_Course> {
+	async joinCourseByToken(inviteToken: string) {
 		const payload = this.tokenFactoryService.verify(
 			inviteToken,
 			TokenType.INVITE_TO_COURSE
@@ -167,46 +186,62 @@ export class CourseService {
 				if (!invitaion) {
 					throw new BadRequestException('Invalid token, invitation not found')
 				}
+				const transactionResult = await this.prisma.$transaction(
+					async (prisma) => {
+						const enrollment = await this.courseRepository.getAllEnrollment({
+							userId: invitee.id,
+							courseId: payload.courseId
+						})
+						if (enrollment.length > 0) {
+							if (enrollment[0].roleInCourse === payload.roleInCourse) {
+								throw new BadRequestException(
+									'Invitee already joined this course'
+								)
+							} else {
+								await this.courseRepository.updateEnrollment({
+									where: {
+										userId_courseId: {
+											userId: enrollment[0].userId,
+											courseId: payload.courseId
+										}
+									},
+									data: { roleInCourse: payload.roleInCourse }
+								})
+							}
+						}
 
-				const enrollment = await this.courseRepository.getAllEnrollment({
-					userId: invitee.id,
-					courseId: payload.courseId
-				})
-				if (enrollment.length > 0) {
-					if (enrollment[0].roleInCourse === payload.roleInCourse) {
-						throw new BadRequestException('Invitee already joined this course')
-					} else {
-						await this.courseRepository.updateEnrollment({
-							where: {
-								userId_courseId: {
-									userId: enrollment[0].userId,
-									courseId: payload.courseId
+						const result = await this.courseRepository.joinCourse({
+							roleInCourse: payload.roleInCourse,
+							course: {
+								connect: {
+									id: payload.courseId
 								}
 							},
-							data: { roleInCourse: payload.roleInCourse }
+							user: {
+								connect: {
+									id: invitee.id
+								}
+							},
+							invitation: {
+								connect: {
+									id: payload.id
+								}
+							}
 						})
+						const updateInvitationResult =
+							await this.courseRepository.updateInvitation({
+								where: {
+									id: payload.id
+								},
+								data: {
+									status: 'accepted'
+								}
+							})
+						return result
 					}
-				}
+				)
 
-				const result = await this.courseRepository.joinCourse({
-					roleInCourse: payload.roleInCourse,
-					course: {
-						connect: {
-							id: payload.courseId
-						}
-					},
-					user: {
-						connect: {
-							id: invitee.id
-						}
-					},
-					invitation: {
-						connect: {
-							id: payload.id
-						}
-					}
-				})
-				return result
+				return transactionResult
 			} catch (error) {
 				throw new DatabaseExecutionException('Join course failed')
 			}

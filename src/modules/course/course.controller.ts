@@ -1,3 +1,4 @@
+import { User } from '@prisma/client'
 import {
 	Body,
 	Controller,
@@ -7,6 +8,7 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 	Req
 } from '@nestjs/common'
 import { CourseService } from './course.service'
@@ -19,6 +21,7 @@ import {
 } from './dto/course.dto'
 import { Request, Response } from 'express'
 import { plainToClass } from 'class-transformer'
+import { UserResponse } from '@user/dto/user.dto'
 
 @Controller('courses')
 export class CourseController {
@@ -35,9 +38,25 @@ export class CourseController {
 		return { message: 'get all course successfully', data: refinedResult }
 	}
 
+	@Get('get-all-course-member')
+	@HttpCode(200)
+	async getAllCourseMember(
+		@Req() request: Request,
+		@Query('courseId') courseId: string
+	) {
+		const user = request.user
+		console.log()
+		const result = await this.courseService.getAllCourseMember(user, courseId)
+		const refinedResult = result.map((item) => {
+			return plainToClass(UserResponse, item)
+		})
+		return { message: 'get all course member successfully', data: result }
+	}
+
 	@Get('course/:id')
 	async getCourseById(@Param('id') id: string) {
-		return await this.courseService.getCourseById(id)
+		const result = await this.courseService.getCourseById(id)
+		return { message: 'get course by id successfully', data: result }
 	}
 
 	@Post('create')
