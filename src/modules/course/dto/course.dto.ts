@@ -1,4 +1,6 @@
+import { UserResponse } from '@user/dto/user.dto'
 import { generateCode, generateId } from '@utils/id-helper'
+import { Expose, Type } from 'class-transformer'
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class CreateCourseRequest {
@@ -33,7 +35,26 @@ export class UpdateCourseRequest {
 	@IsString()
 	courseOwnerId?: string
 }
+export class CourseResponse {
+	@Expose()
+	id: string
 
+	@Expose()
+	name: string
+
+	@Expose()
+	description: string
+
+	@Expose()
+	createdAt: Date
+
+	@Expose()
+	updatedAt: Date
+
+	@Expose()
+	@Type(() => UserResponse) // Assuming you also have a UserResponse class
+	courseOwner: UserResponse
+}
 export class JoinCourseRequest {
 	@IsNotEmpty()
 	@IsString()

@@ -13,13 +13,15 @@ import {
 } from './dto/course.dto'
 import { TokenType } from '@utils/jwt-helper/resources/token-type.enum'
 import { InviteToCourseToken } from '@utils/jwt-helper/resources/invite-to-course-token'
+import { PrismaService } from '@my-prisma/prisma.service'
 
 @Injectable()
 export class CourseService {
 	constructor(
 		private courseRepository: CourseRepository,
 		private tokenFactoryService: TokenFactoryService,
-		private usersService: UsersService
+		private usersService: UsersService,
+		private prisma: PrismaService
 	) {}
 
 	async getAllCourse(
@@ -51,30 +53,33 @@ export class CourseService {
 		createCourseRequest: CreateCourseRequest
 	): Promise<Course> {
 		try {
-			const result = await this.courseRepository.createCourse({
-				id: createCourseRequest.id,
-				name: createCourseRequest.name,
-				description: createCourseRequest.description,
-				inviteCode: createCourseRequest.inviteCode,
-				courseOwner: {
-					connect: {
-						id: createCourseRequest.courseOwnerId
+			const result = await this.prisma.$transaction(async (prisma) => {
+				const createdCourse = await this.courseRepository.createCourse({
+					id: createCourseRequest.id,
+					name: createCourseRequest.name,
+					description: createCourseRequest.description,
+					inviteCode: createCourseRequest.inviteCode,
+					courseOwner: {
+						connect: {
+							id: createCourseRequest.courseOwnerId
+						}
 					}
-				}
-			})
+				})
 
-			const enrollment = await this.courseRepository.joinCourse({
-				roleInCourse: 'teacher',
-				course: {
-					connect: {
-						id: result.id
+				const createdEnrollment = await this.courseRepository.joinCourse({
+					roleInCourse: 'teacher',
+					course: {
+						connect: {
+							id: createdCourse.id
+						}
+					},
+					user: {
+						connect: {
+							id: createCourseRequest.courseOwnerId
+						}
 					}
-				},
-				user: {
-					connect: {
-						id: createCourseRequest.courseOwnerId
-					}
-				}
+				})
+				return createdCourse
 			})
 
 			return result

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, Course, User_Course, Invitation } from '@prisma/client'
 import { PrismaService } from '@my-prisma/prisma.service'
+import { CreateCourseRequest } from './dto/course.dto'
 @Injectable()
 export class CourseRepository {
 	constructor(private prisma: PrismaService) {}
@@ -43,7 +44,11 @@ export class CourseRepository {
 				userId: userId
 			},
 			select: {
-				course: true
+				course: {
+					include: {
+						courseOwner: true
+					}
+				}
 			}
 		})
 		return result.map((item) => item.course)

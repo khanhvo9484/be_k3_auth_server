@@ -11,11 +11,13 @@ import {
 } from '@nestjs/common'
 import { CourseService } from './course.service'
 import {
+	CourseResponse,
 	CreateCourseRequest,
 	JoinCourseRequest,
 	UpdateCourseRequest
 } from './dto/course.dto'
 import { Request, Response } from 'express'
+import { plainToClass } from 'class-transformer'
 
 @Controller('courses')
 export class CourseController {
@@ -26,7 +28,10 @@ export class CourseController {
 	async getAllCourse(@Req() request: Request) {
 		const user = request.user
 		const result = await this.courseService.getAllCourse(user.id)
-		return { message: 'get all course successfully', data: result }
+		const refinedResult = result.map((item) => {
+			return plainToClass(CourseResponse, item)
+		})
+		return { message: 'get all course successfully', data: refinedResult }
 	}
 
 	@Get('course/:id')
