@@ -30,7 +30,8 @@ import { CustomJWTModule } from '@utils/jwt-helper/custom-jwt.module'
 			isGlobal: true,
 			useFactory: async () => {
 				const store = await redisStore({
-					url: REDIS_URL
+					url: REDIS_URL,
+					store: 'memory'
 				})
 				return {
 					store: store as unknown as CacheStore
