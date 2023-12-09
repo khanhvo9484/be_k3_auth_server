@@ -36,7 +36,9 @@ export class CourseController {
 
 	@Get('course/:id')
 	async getCourseById(@Param('id') id: string) {
-		return await this.courseService.getCourseById(id)
+		const result = await this.courseService.getCourseById(id)
+
+		return { message: '', data: plainToClass(CourseResponse, result) }
 	}
 
 	@Post('create')

@@ -26,6 +26,7 @@ export class CourseRepository {
 		const result = await this.prisma.user_Course.findMany({
 			where
 		})
+
 		return result
 	}
 

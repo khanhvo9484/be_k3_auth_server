@@ -44,6 +44,7 @@ export class CourseService {
 	async getCourseById(courseId: string): Promise<Course> {
 		try {
 			const result = await this.courseRepository.getCourseById({ id: courseId })
+
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException('Get course by id failed')
