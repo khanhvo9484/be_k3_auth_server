@@ -3,15 +3,16 @@ import { SparkPostSender } from './sparkpost'
 
 export interface IEmailProvider {
 	send(email: Email): Promise<any>
-	sendWithTemplate(
-		to: string,
-		templateId: string,
+	sendWithTemplate(params: {
+		to: string
+		templateId: string
 		substitutionData: any
-	): Promise<any>
+	}): Promise<any>
 }
 
-export class EmailSender {
+export class EmailSenderService {
 	private emailProvider: IEmailProvider
+	// private emailProvider: any
 	constructor() {
 		this.emailProvider = new SparkPostSender()
 	}
@@ -19,16 +20,17 @@ export class EmailSender {
 		const result = await this.emailProvider.send(email)
 		return result
 	}
-	async sendWithTemplate(
-		to: string,
-		templateId: string,
+	async sendWithTemplate(params: {
+		to: string
+		templateId: string
 		substitutionData: any
-	) {
-		const result = await this.emailProvider.sendWithTemplate(
+	}) {
+		const { to, templateId, substitutionData } = params
+		const result = await this.emailProvider.sendWithTemplate({
 			to,
 			templateId,
 			substitutionData
-		)
+		})
 		return result
 	}
 }

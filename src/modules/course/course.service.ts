@@ -1,3 +1,7 @@
+import {
+	EmailTempateId,
+	InviteToCourseSubstitution
+} from './../../shared/email-template'
 import { UsersService } from './../user/user.service'
 import { TokenFactoryService } from './../../utils/jwt-helper/token-factory.service'
 import { generateCode } from '@utils/id-helper'
@@ -8,12 +12,21 @@ import { CourseRepository } from './course.repository'
 import { DatabaseExecutionException } from '@common/exceptions'
 import {
 	CreateCourseRequest,
+	CreateInvitationRequest,
+	InviteToCoursePayload,
 	JoinCourseRequest,
 	UpdateCourseRequest
 } from './dto/course.dto'
 import { TokenType } from '@utils/jwt-helper/resources/token-type.enum'
 import { InviteToCourseToken } from '@utils/jwt-helper/resources/invite-to-course-token'
 import { PrismaService } from '@my-prisma/prisma.service'
+import { SparkPostSender } from '@utils/email-sender/sparkpost'
+import { EmailSenderService } from '@utils/email-sender/email-sender.service'
+import {
+	FE_INVITE_TO_COURSE_URL,
+	FE_VERIFICATION_URL,
+	PROTOCOL
+} from '@enviroment/index'
 
 @Injectable()
 export class CourseService {
@@ -21,7 +34,8 @@ export class CourseService {
 		private courseRepository: CourseRepository,
 		private tokenFactoryService: TokenFactoryService,
 		private usersService: UsersService,
-		private prisma: PrismaService
+		private prisma: PrismaService,
+		private emailSenderService: EmailSenderService
 	) {}
 
 	async getAllCourse(
@@ -88,8 +102,46 @@ export class CourseService {
 		}
 	}
 
-	async sendInvitation(): Promise<void> {
-		throw new Error('Method not implemented.')
+	async sendInvitation(createInvitationRequest: CreateInvitationRequest) {
+		const tokenPayload = createInvitationRequest
+		const token = this.tokenFactoryService.sign(
+			tokenPayload,
+			TokenType.INVITE_TO_COURSE
+		)
+		const substitutionData: InviteToCourseSubstitution = {
+			invitation_link: FE_INVITE_TO_COURSE_URL + '?token=' + token,
+			protocol: PROTOCOL,
+			inviter_email: createInvitationRequest.inviterId,
+			inviter_name: createInvitationRequest.inviterId,
+			course_name: createInvitationRequest.courseId,
+			role_in_course:
+				createInvitationRequest.roleInCourse === 'teacher'
+					? 'giáo viên'
+					: 'học sinh'
+		}
+		const result = await this.courseRepository.createInvitation({
+			id: createInvitationRequest.id,
+			inviteeEmail: createInvitationRequest.inviteeEmail,
+			inviter: {
+				connect: {
+					id: createInvitationRequest.inviterId
+				}
+			},
+			status: 'pending',
+			course: {
+				connect: {
+					id: createInvitationRequest.courseId
+				}
+			},
+			roleInCourse: createInvitationRequest.roleInCourse
+		})
+		const sendEmailResult = await this.emailSenderService.sendWithTemplate({
+			to: createInvitationRequest.inviteeEmail,
+			templateId: EmailTempateId.INVITE_TO_COURSE,
+			substitutionData: substitutionData
+		})
+
+		return result
 	}
 
 	async joinCourseByToken(inviteToken: string): Promise<User_Course> {

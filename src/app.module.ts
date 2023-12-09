@@ -15,6 +15,8 @@ import {
 	JWT_ACCESS_TOKEN_PRIVATE_KEY,
 	JWT_ACCESS_TOKEN_PUBLIC_KEY,
 	JWT_OTHERS_TOKEN_EXPIRATION_TIME,
+	JWT_OTHERS_TOKEN_PRIVATE_KEY,
+	JWT_OTHERS_TOKEN_PUBLIC_KEY,
 	JWT_REFRESH_TOKEN_EXPIRATION_TIME,
 	JWT_REFRESH_TOKEN_PRIVATE_KEY,
 	JWT_REFRESH_TOKEN_PUBLIC_KEY,
@@ -24,6 +26,7 @@ import { redisStore } from 'cache-manager-redis-store'
 import { AuthGuard } from '@common/guard/auth.guard'
 import { CustomJWTModule } from '@utils/jwt-helper/custom-jwt.module'
 import { CourseModule } from 'modules/course/course.module'
+import { EmailSenderModule } from '@utils/email-sender/email-sender.module'
 
 @Module({
 	imports: [
@@ -46,12 +49,16 @@ import { CourseModule } from 'modules/course/course.module'
 			accessTokenPublicKey: JWT_ACCESS_TOKEN_PUBLIC_KEY,
 			refreshTokenPrivateKey: JWT_REFRESH_TOKEN_PRIVATE_KEY,
 			refreshTokenPublicKey: JWT_REFRESH_TOKEN_PUBLIC_KEY,
+			othersTokenPrivateKey: JWT_OTHERS_TOKEN_PRIVATE_KEY,
+			othersTokenPublicKey: JWT_OTHERS_TOKEN_PUBLIC_KEY,
 
 			accessTokenExpiresIn: parseInt(JWT_ACCESS_TOKEN_EXPIRATION_TIME),
 			refreshTokenExpiresIn: parseInt(JWT_REFRESH_TOKEN_EXPIRATION_TIME),
 			otherTokenExpiresIn: parseInt(JWT_OTHERS_TOKEN_EXPIRATION_TIME)
 		}),
-
+		EmailSenderModule.register({
+			isGlobal: true
+		}),
 		AuthModule,
 		UsersModule,
 		CourseModule,

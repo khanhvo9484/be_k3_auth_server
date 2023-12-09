@@ -1,5 +1,5 @@
-import SparkPost from 'sparkpost'
-import { IEmailProvider } from '.'
+import * as SparkPost from 'sparkpost'
+import { IEmailProvider } from './email-sender.service'
 import { Email } from './resources/email.interface'
 
 // const sparkpostClient = new SparkPost(process.env.SPARKPOST_API_KEY,{
@@ -26,11 +26,12 @@ export class SparkPostSender extends SparkPost implements IEmailProvider {
 			throw new Error('Cannot send email')
 		}
 	}
-	async sendWithTemplate(
-		to: string,
-		templateId: string,
+	async sendWithTemplate(params: {
+		to: string
+		templateId: string
 		substitutionData: any
-	): Promise<any> {
+	}): Promise<any> {
+		const { to, templateId, substitutionData } = params
 		try {
 			const result = await this.transmissions.send({
 				content: {
@@ -41,6 +42,7 @@ export class SparkPostSender extends SparkPost implements IEmailProvider {
 			})
 			return result
 		} catch (e) {
+			console.log(e)
 			throw new Error('Cannot send email')
 		}
 	}

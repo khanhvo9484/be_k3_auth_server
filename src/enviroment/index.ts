@@ -26,6 +26,8 @@ export const JWT_OTHERS_TOKEN_EXPIRATION_TIME =
 
 export const JWT_OTHERS_TOKEN_PRIVATE_KEY =
 	process.env.JWT_OTHERS_TOKEN_PRIVATE_KEY
+export const JWT_OTHERS_TOKEN_PUBLIC_KEY =
+	process.env.JWT_OTHERS_TOKEN_PUBLIC_KEY
 
 export const JWT_ACCESS_TOKEN_PRIVATE_KEY =
 	process.env.JWT_ACCESS_TOKEN_PRIVATE_KEY
@@ -46,6 +48,10 @@ export const BACK_END_URL =
 
 export const SUCCESS_OAUTH_LOGIN_PAGE_URL =
 	FRONT_END_URL + process.env.SUCCESS_OAUTH_LOGIN_PATH
+
+export const FE_VERIFICATION_URL = FRONT_END_DOMAIN + '/auth/verify-email'
+export const FE_RESET_PASSWORD_URL = FRONT_END_DOMAIN + '/auth/reset-password'
+export const FE_INVITE_TO_COURSE_URL = FRONT_END_DOMAIN + '/course/invite'
 // Email
 
 export const SPARKPOST_API_KEY = process.env.SPARKPOST_API_KEY

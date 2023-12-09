@@ -15,11 +15,3 @@ class CustomJwtPayload {
 	name: string
 	role: string
 }
-
-class InviteToCoursePayload {
-	id: string
-	inviterId: string
-	inviteeEmail: string
-	roleInCourse: string
-	courseId: string
-}

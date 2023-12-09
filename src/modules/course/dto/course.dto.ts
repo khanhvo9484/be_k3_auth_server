@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common'
 import { UserResponse } from '@user/dto/user.dto'
 import { generateCode, generateId } from '@utils/id-helper'
 import { Expose, Type } from 'class-transformer'
@@ -27,13 +28,15 @@ export class UpdateCourseRequest {
 	id: string
 
 	@IsString()
-	name?: string
+	@Optional()
+	name: string
 
 	@IsString()
-	description?: string
+	@Optional()
+	description: string
 
-	@IsString()
-	courseOwnerId?: string
+	@Optional()
+	courseOwnerId: string
 }
 export class CourseResponse {
 	@Expose()
@@ -72,4 +75,26 @@ export class JoinCourseRequest {
 
 	@IsString()
 	inviteCode: string
+}
+
+export class CreateInvitationRequest {
+	@IsString()
+	id: string = generateId('IN')
+
+	@IsOptional()
+	inviterId: string
+	@IsNotEmpty()
+	inviteeEmail: string
+	@IsNotEmpty()
+	roleInCourse: string
+	@IsNotEmpty()
+	courseId: string
+}
+
+export class InviteToCoursePayload {
+	id: string
+	inviterId: string
+	inviteeEmail: string
+	roleInCourse: string
+	courseId: string
 }

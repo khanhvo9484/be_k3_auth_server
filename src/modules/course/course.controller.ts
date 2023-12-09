@@ -13,6 +13,7 @@ import { CourseService } from './course.service'
 import {
 	CourseResponse,
 	CreateCourseRequest,
+	CreateInvitationRequest,
 	JoinCourseRequest,
 	UpdateCourseRequest
 } from './dto/course.dto'
@@ -52,15 +53,21 @@ export class CourseController {
 	}
 
 	@Put('update-course')
+	@HttpCode(200)
 	async updateCourse(@Body() body: UpdateCourseRequest) {
-		return await this.courseService.updateCourse(body)
+		const result = await this.courseService.updateCourse(body)
+		return { message: 'update course successfully', data: result }
 	}
+
+	// This API is used to update invite code of a course
 	@Put('update-invite-code')
+	@HttpCode(200)
 	async updateInviteCode(
 		@Req() request: Request,
 		@Body() body: { courseId: string }
 	) {
-		return await this.courseService.updateInviteCode(body.courseId)
+		const result = await this.courseService.updateInviteCode(body.courseId)
+		return { message: 'update invite code successfully', data: result }
 	}
 
 	@Put('update-role')
@@ -79,8 +86,16 @@ export class CourseController {
 	}
 
 	@Post('send-invitation')
-	async sendInvitation(@Body() body: { courseId: string; email: string }) {
-		throw new Error('Not implemented')
+	@HttpCode(201)
+	async sendInvitation(
+		@Req() request: Request,
+		@Body() body: CreateInvitationRequest
+	) {
+		const user = request.user
+		body.inviterId = user.id
+
+		const result = await this.courseService.sendInvitation(body)
+		return { message: 'send invitation successfully', data: result }
 	}
 
 	@Delete('delete/:id')

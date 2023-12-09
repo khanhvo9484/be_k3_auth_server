@@ -7,6 +7,7 @@ import { TokenType } from './resources/token-type.enum'
 import { VerifyEmailToken } from './resources/verify-email-token'
 import { ResetPasswordToken } from './resources/reset-password-token'
 import { InviteToCourseToken } from './resources/invite-to-course-token'
+import { InviteToCoursePayload } from 'modules/course/dto/course.dto'
 
 @Injectable()
 export class TokenFactoryService {
