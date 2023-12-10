@@ -280,7 +280,9 @@ export class CourseService {
 
 				return transactionResult
 			} catch (error) {
-				throw new DatabaseExecutionException('Join course failed')
+				throw new DatabaseExecutionException(
+					error.message || 'Join course failed'
+				)
 			}
 		}
 		throw new BadRequestException('Invalid token')
