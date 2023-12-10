@@ -30,8 +30,11 @@ jobs:
       - name: Install packages
         run: npm install
 
-      - name: Run Build
-        run: npm run build
+      - name: Install prisma
+        run: npm run generate
+
+      - name: Load env
+        run: npm run env:prod
 
       - name: Run tests
         run: npm test
