@@ -229,21 +229,24 @@ export class CourseService {
 							userId: invitee.id,
 							courseId: payload.courseId
 						})
+
 						if (enrollment.length > 0) {
 							if (enrollment[0].roleInCourse === payload.roleInCourse) {
 								throw new BadRequestException(
-									'Invitee already joined this course'
+									'Invitee already joined this course with this role'
 								)
 							} else {
-								await this.courseRepository.updateEnrollment({
-									where: {
-										userId_courseId: {
-											userId: enrollment[0].userId,
-											courseId: payload.courseId
-										}
-									},
-									data: { roleInCourse: payload.roleInCourse }
-								})
+								const updatedEnrollemt =
+									await this.courseRepository.updateEnrollment({
+										where: {
+											userId_courseId: {
+												userId: enrollment[0].userId,
+												courseId: payload.courseId
+											}
+										},
+										data: { roleInCourse: payload.roleInCourse }
+									})
+								return updatedEnrollemt
 							}
 						}
 
