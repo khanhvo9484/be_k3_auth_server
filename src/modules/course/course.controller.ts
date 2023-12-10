@@ -45,11 +45,8 @@ export class CourseController {
 		@Query('courseId') courseId: string
 	) {
 		const user = request.user
-		console.log()
 		const result = await this.courseService.getAllCourseMember(user, courseId)
-		// const refinedResult = result.map((item) => {
-		// 	return plainToClass(UserResponse, item)
-		// })
+
 		return { message: 'get all course member successfully', data: result }
 	}
 

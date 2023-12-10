@@ -27,6 +27,8 @@ import {
 	FE_VERIFICATION_URL,
 	PROTOCOL
 } from '@enviroment/index'
+import { plainToClass } from 'class-transformer'
+import { UserResponse } from '@user/dto/user.dto'
 
 @Injectable()
 export class CourseService {
@@ -66,9 +68,24 @@ export class CourseService {
 				throw new BadRequestException('You are not in this course')
 			}
 			const result = await this.prisma.$transaction(async (prisma) => {
-				const memberList = await this.courseRepository.getAllCourseMember({
-					courseId: courseId
+				const memberListResult = await this.courseRepository.getAllCourseMember(
+					{
+						courseId: courseId
+					}
+				)
+				const students = memberListResult.students.map((item) => {
+					return {
+						...plainToClass(UserResponse, item),
+						roleInCourse: 'student'
+					}
 				})
+				const teachers = memberListResult.teachers.map((item) => {
+					return {
+						...plainToClass(UserResponse, item),
+						roleInCourse: 'teacher'
+					}
+				})
+				const memberList = { teachers, students }
 				const invitationList = await this.courseRepository.getAllInvitation({
 					courseId: courseId,
 					status: 'pending'
