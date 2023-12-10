@@ -244,7 +244,14 @@ export class CourseService {
 												courseId: payload.courseId
 											}
 										},
-										data: { roleInCourse: payload.roleInCourse }
+										data: {
+											roleInCourse: payload.roleInCourse,
+											invitation: {
+												connect: {
+													id: payload.id
+												}
+											}
+										}
 									})
 								return updatedEnrollemt
 							}
