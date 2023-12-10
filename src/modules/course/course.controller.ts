@@ -128,7 +128,7 @@ export class CourseController {
 		return { message: 'send invitation successfully', data: result }
 	}
 
-	@Delete('delete/:id')
+	@Delete('delete-course/:id')
 	async deleteCourse(@Param('id') id: string) {
 		return await this.courseService.deleteCourse(id)
 	}
