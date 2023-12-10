@@ -130,7 +130,8 @@ export class CourseController {
 
 	@Delete('delete-course/:id')
 	async deleteCourse(@Param('id') id: string) {
-		return await this.courseService.deleteCourse(id)
+		const result = await this.courseService.deleteCourse(id)
+		return { message: 'delete course successfully', data: result }
 	}
 
 	@Delete('leave-course')
