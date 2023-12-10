@@ -157,4 +157,11 @@ export class CourseRepository {
 		})
 		return result
 	}
+
+	async deleteCourse(where: Prisma.CourseWhereUniqueInput) {
+		const result = await this.prisma.course.delete({
+			where
+		})
+		return result
+	}
 }

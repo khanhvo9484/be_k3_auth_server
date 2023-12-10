@@ -205,6 +205,7 @@ export class CourseService {
 			throw new BadRequestException('Invalid token')
 		}
 		const payload = plainToClass(InviteToCoursePayload, tempPayload)
+		console.log('payload', payload)
 
 		if (payload instanceof InviteToCoursePayload) {
 			try {
@@ -229,7 +230,7 @@ export class CourseService {
 							userId: invitee.id,
 							courseId: payload.courseId
 						})
-
+						console.log(enrollment)
 						if (enrollment.length > 0) {
 							if (enrollment[0].roleInCourse === payload.roleInCourse) {
 								throw new BadRequestException(
@@ -378,6 +379,34 @@ export class CourseService {
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException('Leave course failed')
+		}
+	}
+
+	async removeUserFromCourse(params: {
+		ownerId: string
+		userId: string
+		courseId: string
+	}) {
+		try {
+			const { ownerId, userId, courseId } = params
+			const course = await this.courseRepository.getCourseById({
+				id: courseId
+			})
+			if (!course) {
+				throw new BadRequestException('Course not found')
+			}
+			if (course.courseOwnerId !== ownerId) {
+				throw new BadRequestException('You are not the owner of this course')
+			}
+			const result = await this.courseRepository.leaveCourse({
+				userId_courseId: {
+					userId: userId,
+					courseId: courseId
+				}
+			})
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException('Remove user from course failed')
 		}
 	}
 }

@@ -143,11 +143,16 @@ export class CourseController {
 		const result = await this.courseService.leaveCourse(body)
 		return { message: 'leave course successfully', data: result }
 	}
-	@Delete('remove/:id')
+
+	@Delete('remove-user')
+	@HttpCode(200)
 	async removeUserFromCourse(
-		@Param('id') id: string,
-		@Req() request: { userId: string }
+		@Req() request: Request,
+		@Body() body: { ownerId: string; userId: string; courseId: string }
 	) {
-		// return await this.courseService.removeUserFromCourse(id, request.userId)
+		const user = request.user
+		body.ownerId = user.id
+		const result = await this.courseService.removeUserFromCourse(body)
+		return { message: 'remove user from course successfully', data: result }
 	}
 }
