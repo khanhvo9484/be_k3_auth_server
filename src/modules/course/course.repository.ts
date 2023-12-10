@@ -148,4 +148,13 @@ export class CourseRepository {
 		})
 		return result
 	}
+
+	async leaveCourse(
+		where: Prisma.User_CourseWhereUniqueInput
+	): Promise<User_Course> {
+		const result = await this.prisma.user_Course.delete({
+			where
+		})
+		return result
+	}
 }

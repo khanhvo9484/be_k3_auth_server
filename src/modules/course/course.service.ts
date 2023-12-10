@@ -90,6 +90,12 @@ export class CourseService {
 					courseId: courseId,
 					status: 'pending'
 				})
+				// const invitationList = invitationListResult.map((item) => {
+				// 	return {
+				// 		...item,
+				// 		roleInCourse: item.roleInCourse
+				// 	}
+				// })
 				const mergedList = { memberList, invitationList }
 				return mergedList
 			})
@@ -345,5 +351,17 @@ export class CourseService {
 	}
 	async deleteCourse(id: string): Promise<Course> {
 		throw new Error('Method not implemented.')
+	}
+
+	async leaveCourse(leaveCourseRquest: { userId: string; courseId: string }) {
+		try {
+			const { userId, courseId } = leaveCourseRquest
+			const result = await this.courseRepository.leaveCourse({
+				userId_courseId: { userId: userId, courseId: courseId }
+			})
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException('Leave course failed')
+		}
 	}
 }
