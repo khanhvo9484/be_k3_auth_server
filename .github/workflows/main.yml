@@ -17,15 +17,15 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Load Environment Variables
-        run: |
-          if [ "$GITHUB_EVENT_NAME" == "push" ] && [ "$GITHUB_REF" == "refs/heads/production_v1" ]; then
-            echo "Loading production environment variables..."
-            cp .env.production .env
-          else
-            echo "Loading default environment variables..."
-            cp .env.development .env
-          fi
+      # - name: Load Environment Variables
+      #   run: |
+      #     if [ "$GITHUB_EVENT_NAME" == "push" ] && [ "$GITHUB_REF" == "refs/heads/production_v1" ]; then
+      #       echo "Loading production environment variables..."
+      #       cp .env.production .env
+      #     else
+      #       echo "Loading default environment variables..."
+      #       cp .env.development .env
+      #     fi
 
       - name: Install packages
         run: npm install
