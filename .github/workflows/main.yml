@@ -17,24 +17,24 @@ jobs:
         with:
           node-version: 18.x
 
-      # - name: Load Environment Variables
-      #   run: |
-      #     if [ "$GITHUB_EVENT_NAME" == "push" ] && [ "$GITHUB_REF" == "refs/heads/production_v1" ]; then
-      #       echo "Loading production environment variables..."
-      #       cp .env.production .env
-      #     else
-      #       echo "Loading default environment variables..."
-      #       cp .env.development .env
-      #     fi
+      - name: Load Environment Variables
+        run: |
+          if [ "$GITHUB_EVENT_NAME" == "push" ] && [ "$GITHUB_REF" == "refs/heads/production_v1" ]; then
+            echo "Loading production environment variables..."
+            cp .env.production .env
+          else
+            echo "Loading default environment variables..."
+            cp .env.development .env
+          fi
 
       - name: Install packages
         run: npm install
 
-      # - name: Install prisma
-      #   run: npm run generate
+      - name: Install prisma
+        run: npm run generate
 
-      # - name: Load env
-      #   run: npm run env:prod
+      - name: Load env
+        run: npm run env:prod
 
       - name: Run tests
         run: npm test
@@ -43,6 +43,6 @@ jobs:
         run: npm i -g @railway/cli
 
       - name: Deploy to Railway
-        run: railway up
+        run: railway up --service WebAdvancedCD
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
