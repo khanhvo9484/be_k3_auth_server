@@ -24,13 +24,14 @@ import { Public } from '@common/decorator'
 import { RefreshTokenRequest } from './resources/dto'
 import { SUCCESS_OAUTH_LOGIN_PAGE_URL } from '@enviroment/index'
 
+@Public()
 @Controller('auth')
 export class AuthController {
 	constructor(
 		private authService: AuthService,
 		private oauthLoginService: OauthLoginService
 	) {}
-	@Public()
+
 	@Post('/sign-up')
 	async signUp(@Body() request: CreateUserRequest, @Res() res: Response) {
 		const result = await this.authService.signUp(request)
@@ -39,7 +40,7 @@ export class AuthController {
 			data: plainToClass(UserResponse, result)
 		})
 	}
-	@Public()
+
 	@Post('/sign-in')
 	async signIn(@Body() request: SignInRequest, @Res() res: Response) {
 		const result = await this.authService.signIn(request)
@@ -49,7 +50,6 @@ export class AuthController {
 		})
 	}
 
-	@Public()
 	@Post('/refresh-token/sign-out')
 	async signOut(
 		@Req() req: Request,
@@ -64,7 +64,6 @@ export class AuthController {
 		})
 	}
 
-	@Public()
 	@Post('/refresh-token/refresh')
 	async refreshToken(
 		@Req() req: Request,
