@@ -87,9 +87,14 @@ export class CreateInvitationRequest {
 }
 
 export class InviteToCoursePayload {
+	@Expose()
 	id: string
+	@Expose()
 	inviterId: string
+	@Expose()
 	inviteeEmail: string
+	@Expose()
 	roleInCourse: string
+	@Expose()
 	courseId: string
 }

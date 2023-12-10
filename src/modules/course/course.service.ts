@@ -197,20 +197,24 @@ export class CourseService {
 	}
 
 	async joinCourseByToken(inviteToken: string) {
-		const payload = this.tokenFactoryService.verify(
+		let tempPayload = await this.tokenFactoryService.verify(
 			inviteToken,
 			TokenType.INVITE_TO_COURSE
 		)
-		if (!payload) {
+		if (!tempPayload) {
 			throw new BadRequestException('Invalid token')
 		}
+		const payload = plainToClass(InviteToCoursePayload, tempPayload)
+
 		if (payload instanceof InviteToCoursePayload) {
 			try {
 				const invitee = await this.usersService.findUser({
 					email: payload.inviteeEmail
 				})
 				if (!invitee) {
-					throw new BadRequestException('Invalid token, invitee not found')
+					throw new BadRequestException(
+						'Invalid token, invitee not found, maybe user has not registered yet'
+					)
 				}
 				const invitaion = await this.courseRepository.getInvitation({
 					id: payload.id

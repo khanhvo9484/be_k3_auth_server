@@ -18,9 +18,9 @@ export class InviteToCourseToken implements IToken {
 	setJwtService(jwtService: any): void {
 		this.jwtService = jwtService
 	}
-	async verify(token: string): Promise<Object | CustomJwtPayload> {
+	async verify(token: string) {
 		try {
-			const result: CustomJwtPayload = await this.jwtService.verify(token, {
+			const result = await this.jwtService.verify(token, {
 				secret: this.publicKey,
 				algorithms: ['RS256']
 			})

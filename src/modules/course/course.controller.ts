@@ -22,6 +22,7 @@ import {
 import { Request, Response } from 'express'
 import { plainToClass } from 'class-transformer'
 import { UserResponse } from '@user/dto/user.dto'
+import { Public } from '@common/decorator'
 
 @Controller('courses')
 export class CourseController {
@@ -93,10 +94,12 @@ export class CourseController {
 		// return await this.courseService.updateRole(body.courseId)
 	}
 
+	@Public()
 	@Post('join-by-token')
 	@HttpCode(201)
 	async joinCourse(@Body() body: { inviteToken: string }) {
-		return await this.courseService.joinCourseByToken(body.inviteToken)
+		const result = await this.courseService.joinCourseByToken(body.inviteToken)
+		return { message: 'join course successfully', data: result }
 	}
 
 	@Post('join-by-invite-code')

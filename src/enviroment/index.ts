@@ -51,7 +51,7 @@ export const SUCCESS_OAUTH_LOGIN_PAGE_URL =
 
 export const FE_VERIFICATION_URL = FRONT_END_DOMAIN + '/auth/verify-email'
 export const FE_RESET_PASSWORD_URL = FRONT_END_DOMAIN + '/auth/reset-password'
-export const FE_INVITE_TO_COURSE_URL = FRONT_END_DOMAIN + '/course/invite'
+export const FE_INVITE_TO_COURSE_URL = FRONT_END_DOMAIN + '/invite-course'
 // Email
 
 export const SPARKPOST_API_KEY = process.env.SPARKPOST_API_KEY
