@@ -366,8 +366,22 @@ export class CourseService {
 			throw new DatabaseExecutionException('Update invite code failed')
 		}
 	}
-	async deleteCourse(id: string): Promise<Course> {
-		throw new Error('Method not implemented.')
+	async deleteCourse(id: string) {
+		try {
+			const result = await this.prisma.$transaction(async (prisma) => {
+				const updateCourseToDeleted = await this.courseRepository.deleteCourse({
+					id: id
+				})
+				const deletedEnrollment =
+					await this.courseRepository.deleteAllEnrollmentInCourse({
+						courseId: id
+					})
+				return updateCourseToDeleted
+			})
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException('Delete course failed')
+		}
 	}
 
 	async leaveCourse(leaveCourseRquest: { userId: string; courseId: string }) {

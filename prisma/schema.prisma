@@ -42,6 +42,7 @@ model Course {
   members       User_Course[]
   courseOwner   User          @relation(fields: [courseOwnerId], references: [id])
   inviations    Invitation[]
+  isDeleted     Boolean       @default(false)
 }
 
 model Invitation {

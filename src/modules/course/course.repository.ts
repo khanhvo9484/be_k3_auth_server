@@ -8,7 +8,7 @@ export class CourseRepository {
 
 	async getCourseById(params: Prisma.CourseWhereUniqueInput): Promise<Course> {
 		const result = await this.prisma.course.findUnique({
-			where: params
+			where: { isDeleted: false, ...params }
 		})
 		return result
 	}
@@ -159,7 +159,14 @@ export class CourseRepository {
 	}
 
 	async deleteCourse(where: Prisma.CourseWhereUniqueInput) {
-		const result = await this.prisma.course.delete({
+		const result = await this.prisma.course.update({
+			where: where,
+			data: { isDeleted: true }
+		})
+		return result
+	}
+	async deleteAllEnrollmentInCourse(where: Prisma.User_CourseWhereInput) {
+		const result = await this.prisma.user_Course.deleteMany({
 			where
 		})
 		return result
