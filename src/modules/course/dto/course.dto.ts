@@ -63,18 +63,13 @@ export class JoinCourseRequest {
 	@IsString()
 	courseId: string
 
+	@IsString()
 	@IsNotEmpty()
-	@IsString()
-	userId: string
-
-	@IsString()
-	invitationId?: string
-
-	@IsString()
-	roleInCourse?: string
-
-	@IsString()
 	inviteCode: string
+
+	@IsString()
+	@IsOptional()
+	userId: string
 }
 
 export class CreateInvitationRequest {

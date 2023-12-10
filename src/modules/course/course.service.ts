@@ -65,9 +65,18 @@ export class CourseService {
 			if (!userInCourse) {
 				throw new BadRequestException('You are not in this course')
 			}
-			const result = await this.courseRepository.getAllCourseMember({
-				courseId: courseId
+			const result = await this.prisma.$transaction(async (prisma) => {
+				const memberList = await this.courseRepository.getAllCourseMember({
+					courseId: courseId
+				})
+				const invitationList = await this.courseRepository.getAllInvitation({
+					courseId: courseId,
+					status: 'pending'
+				})
+				const mergedList = { memberList, invitationList }
+				return mergedList
 			})
+
 			return result
 		} catch (error) {
 			console.log(error)
@@ -273,7 +282,6 @@ export class CourseService {
 			}
 
 			const result = await this.courseRepository.joinCourse({
-				roleInCourse: joinCourseRequest.roleInCourse,
 				course: {
 					connect: {
 						id: joinCourseRequest.courseId

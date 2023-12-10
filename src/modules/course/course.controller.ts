@@ -47,9 +47,9 @@ export class CourseController {
 		const user = request.user
 		console.log()
 		const result = await this.courseService.getAllCourseMember(user, courseId)
-		const refinedResult = result.map((item) => {
-			return plainToClass(UserResponse, item)
-		})
+		// const refinedResult = result.map((item) => {
+		// 	return plainToClass(UserResponse, item)
+		// })
 		return { message: 'get all course member successfully', data: result }
 	}
 
@@ -91,18 +91,28 @@ export class CourseController {
 	}
 
 	@Put('update-role')
+	@HttpCode(200)
 	async updateRole(@Body() body: { courseId: string }) {
 		// return await this.courseService.updateRole(body.courseId)
 	}
 
 	@Post('join-by-token')
+	@HttpCode(201)
 	async joinCourse(@Body() body: { inviteToken: string }) {
 		return await this.courseService.joinCourseByToken(body.inviteToken)
 	}
 
 	@Post('join-by-invite-code')
-	async joinCourseByInviteCode(@Body() joinCourseRequest: JoinCourseRequest) {
-		return await this.courseService.joinCourseByInviteCode(joinCourseRequest)
+	@HttpCode(201)
+	async joinCourseByInviteCode(
+		@Req() request: Request,
+		@Body() joinCourseRequest: JoinCourseRequest
+	) {
+		const user = request.user
+		joinCourseRequest.userId = user.id
+		const result =
+			await this.courseService.joinCourseByInviteCode(joinCourseRequest)
+		return { message: 'join course successfully', data: result }
 	}
 
 	@Post('send-invitation')

@@ -64,15 +64,29 @@ export class CourseRepository {
 	async getAllCourseMember(where: Prisma.User_CourseWhereInput) {
 		const result = await this.prisma.user_Course.findMany({
 			where,
-			select: {
+			include: {
 				user: true
 			}
 		})
-		return result
+
+		const students = result
+			.filter((item) => item.roleInCourse === 'student')
+			.map((item) => item.user)
+		const teachers = result
+			.filter((item) => item.roleInCourse === 'teacher')
+			.map((item) => item.user)
+
+		return { students, teachers }
 	}
 	async getInvitation(params: Prisma.InvitationWhereUniqueInput) {
 		const result = await this.prisma.invitation.findUnique({
 			where: params
+		})
+		return result
+	}
+	async getAllInvitation(where: Prisma.InvitationWhereInput) {
+		const result = await this.prisma.invitation.findMany({
+			where
 		})
 		return result
 	}
