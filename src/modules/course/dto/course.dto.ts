@@ -59,10 +59,6 @@ export class CourseResponse {
 	courseOwner: UserResponse
 }
 export class JoinCourseRequest {
-	@IsNotEmpty()
-	@IsString()
-	courseId: string
-
 	@IsString()
 	@IsNotEmpty()
 	inviteCode: string

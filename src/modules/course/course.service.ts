@@ -205,7 +205,6 @@ export class CourseService {
 			throw new BadRequestException('Invalid token')
 		}
 		const payload = plainToClass(InviteToCoursePayload, tempPayload)
-		console.log('payload', payload)
 
 		if (payload instanceof InviteToCoursePayload) {
 			try {
@@ -304,17 +303,14 @@ export class CourseService {
 	): Promise<User_Course> {
 		try {
 			const course = await this.courseRepository.getCourseById({
-				id: joinCourseRequest.courseId
+				inviteCode: joinCourseRequest.inviteCode
 			})
 			if (!course) {
 				throw new BadRequestException('Course is not found')
 			}
-			if (course.inviteCode !== joinCourseRequest.inviteCode) {
-				throw new BadRequestException('Invalid invite code')
-			}
 			const enrollment = await this.courseRepository.getAllEnrollment({
 				userId: joinCourseRequest.userId,
-				courseId: joinCourseRequest.courseId
+				courseId: course.id
 			})
 
 			if (enrollment.length > 0) {
@@ -324,7 +320,7 @@ export class CourseService {
 			const result = await this.courseRepository.joinCourse({
 				course: {
 					connect: {
-						id: joinCourseRequest.courseId
+						id: course.id
 					}
 				},
 				user: {
@@ -335,6 +331,7 @@ export class CourseService {
 			})
 			return result
 		} catch (error) {
+			// console.log(error)
 			throw new DatabaseExecutionException('Join course failed')
 		}
 	}
