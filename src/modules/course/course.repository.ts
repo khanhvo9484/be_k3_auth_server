@@ -22,7 +22,7 @@ export class CourseRepository {
 			}
 		})
 		const course = { ...result.course, roleInCourse: result.roleInCourse }
-		return result.course
+		return course
 	}
 
 	async getAllEnrollment(

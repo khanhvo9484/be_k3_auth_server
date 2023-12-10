@@ -118,7 +118,6 @@ export class CourseService {
 					courseId: courseId
 				}
 			})
-
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException('Get course by id failed')
