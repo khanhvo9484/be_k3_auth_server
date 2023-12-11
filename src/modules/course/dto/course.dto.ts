@@ -100,7 +100,6 @@ export class CourseIdOnlyRequest {
 	@IsNotEmpty()
 	courseId: string
 
-	@IsString()
 	@IsOptional()
 	userId: string
 }
