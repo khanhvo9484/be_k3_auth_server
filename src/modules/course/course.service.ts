@@ -106,10 +106,18 @@ export class CourseService {
 			throw new DatabaseExecutionException('Get all course member failed')
 		}
 	}
-	async getCourseById(courseId: string): Promise<Course> {
+	async getCourseById(params: {
+		userId: string
+		courseId: string
+	}): Promise<Course> {
 		try {
-			const result = await this.courseRepository.getCourseById({ id: courseId })
-
+			const { userId, courseId } = params
+			const result = await this.courseRepository.getCourseByMemberId({
+				userId_courseId: {
+					userId: userId,
+					courseId: courseId
+				}
+			})
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException('Get course by id failed')

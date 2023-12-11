@@ -13,6 +13,18 @@ export class CourseRepository {
 		return result
 	}
 
+	async getCourseByMemberId(params: Prisma.User_CourseWhereUniqueInput) {
+		const result = await this.prisma.user_Course.findUnique({
+			where: params,
+			select: {
+				course: true,
+				roleInCourse: true
+			}
+		})
+		const course = { ...result.course, roleInCourse: result.roleInCourse }
+		return course
+	}
+
 	async getAllEnrollment(
 		where: Prisma.User_CourseWhereInput,
 		params?: {

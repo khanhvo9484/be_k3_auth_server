@@ -52,8 +52,10 @@ export class CourseController {
 	}
 
 	@Get('course/:id')
-	async getCourseById(@Param('id') id: string) {
-		const result = await this.courseService.getCourseById(id)
+	async getCourseById(@Req() request: Request, @Param('id') courseId: string) {
+		const user = request.user
+		const userId = user.id
+		const result = await this.courseService.getCourseById({ userId, courseId })
 
 		return { message: '', data: plainToClass(CourseResponse, result) }
 	}
