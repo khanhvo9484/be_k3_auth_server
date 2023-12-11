@@ -137,7 +137,7 @@ export class CourseController {
 		return { message: 'delete course successfully', data: result }
 	}
 
-	@Delete('leave-course')
+	@Post('leave-course')
 	async leaveCourse(
 		@Req() request: Request,
 		@Body() body: CourseIdOnlyRequest
