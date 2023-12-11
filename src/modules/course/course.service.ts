@@ -397,7 +397,7 @@ export class CourseService {
 			})
 			return result
 		} catch (error) {
-			throw new DatabaseExecutionException('Leave course failed')
+			throw new DatabaseExecutionException('Leave course failed', 'EEEEEE')
 		}
 	}
 
