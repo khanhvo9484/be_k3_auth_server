@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common'
 import { CourseService } from './course.service'
 import {
+	CourseIdOnlyRequest,
 	CourseResponse,
 	CreateCourseRequest,
 	CreateInvitationRequest,
@@ -139,7 +140,7 @@ export class CourseController {
 	@Delete('leave-course')
 	async leaveCourse(
 		@Req() request: Request,
-		@Body() body: { userId: string; courseId: string }
+		@Body() body: CourseIdOnlyRequest
 	) {
 		const user = request.user
 		body.userId = user.id

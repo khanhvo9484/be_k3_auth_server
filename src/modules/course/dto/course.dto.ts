@@ -94,3 +94,13 @@ export class InviteToCoursePayload {
 	@Expose()
 	courseId: string
 }
+
+export class CourseIdOnlyRequest {
+	@IsString()
+	@IsNotEmpty()
+	courseId: string
+
+	@IsString()
+	@IsOptional()
+	userId: string
+}
