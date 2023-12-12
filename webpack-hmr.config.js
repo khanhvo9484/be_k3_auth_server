@@ -19,6 +19,10 @@ module.exports = function (options, webpack) {
 			new RunScriptWebpackPlugin({
 				name: options.output.filename,
 				autoRestart: false
+			}),
+			new ForkTsCheckerWebpackPlugin({
+				memoryLimit: 4096 // Set an appropriate memory limit (in megabytes)
+				// ... other options
 			})
 		]
 	}
