@@ -43,6 +43,7 @@
 		"class-validator": "^0.14.0",
 		"cookie-parser": "^1.4.6",
 		"dotenv": "^16.3.1",
+		"fork-ts-checker-webpack-plugin": "^9.0.2",
 		"nanoid": "^3.0.0",
 		"passport": "^0.7.0",
 		"passport-facebook": "^3.0.0",
