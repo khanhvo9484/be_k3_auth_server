@@ -68,10 +68,7 @@ export class TokenFactoryService {
 		this.token.setJwtService(this.jwtService)
 		return this.token
 	}
-	async verify(
-		token: string,
-		type: TokenType
-	): Promise<Object | CustomJwtPayload | InviteToCoursePayload> {
+	async verify<T>(token: string, type: TokenType): Promise<T> {
 		this.createTokenInstance(type)
 		return this.token.verify(token)
 	}
@@ -79,10 +76,7 @@ export class TokenFactoryService {
 		this.createTokenInstance(type)
 		return this.token.sign(payload)
 	}
-	async decode(
-		token: string,
-		type: TokenType
-	): Promise<Object | CustomJwtPayload | InviteToCoursePayload> {
+	async decode<T>(token: string, type: TokenType): Promise<T> {
 		this.createTokenInstance(type)
 		return this.token.decode(token)
 	}

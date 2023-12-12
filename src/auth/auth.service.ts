@@ -78,14 +78,14 @@ export class AuthService {
 		}
 	}
 	async signOut(refreshToken: string): Promise<boolean> {
-		const payload: CustomJwtPayload | Object = await this.tokenFactory.verify(
+		const payload = await this.tokenFactory.verify<CustomJwtPayload>(
 			refreshToken,
 			TokenType.REFRESH_TOKEN
 		)
 		if (!payload) {
 			throw new BadRequestException('Invalid refresh token')
 		}
-		const email = payload['email']
+		const email = payload.email
 		if (!email) {
 			throw new BadRequestException('Invalid refresh token')
 		}
@@ -93,12 +93,13 @@ export class AuthService {
 		await this.cache.del('refresh_token_' + email)
 		return true
 	}
+
 	async refreshToken(refreshToken: string) {
-		const payload = await this.tokenFactory.verify(
+		const payload = await this.tokenFactory.verify<CustomJwtPayload>(
 			refreshToken,
 			TokenType.REFRESH_TOKEN
 		)
-		const email = payload['email']
+		const email = payload.email
 		if (!email) {
 			throw new BadRequestException('Invalid refresh token 1')
 		}
@@ -110,10 +111,10 @@ export class AuthService {
 			throw new BadRequestException('Invalid refresh token 3')
 		}
 		const newPayload: CustomJwtPayload = {
-			id: payload['id'],
-			email: payload['email'],
-			name: payload['name'],
-			role: payload['role']
+			id: payload.id,
+			email: payload.email,
+			name: payload.name,
+			role: payload.role
 		}
 		const newRefreshToken = this.tokenFactory.sign(
 			newPayload,

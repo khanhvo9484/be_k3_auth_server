@@ -1,7 +1,7 @@
 export interface IToken {
-	verify(token: string): Promise<Object>
+	verify<T>(token: string): Promise<T>
 	sign(payload: unknown): string
-	decode(token: string): Promise<Object>
+	decode<T>(token: string): Promise<T>
 	setKeys(privateKey: string | Buffer, publicKey: string | Buffer): void
 	setJwtService(jwtService: any): void
 	setExpiresIn(expiresIn: number): void

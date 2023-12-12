@@ -18,7 +18,7 @@ export class InviteToCourseToken implements IToken {
 	setJwtService(jwtService: any): void {
 		this.jwtService = jwtService
 	}
-	async verify(token: string) {
+	async verify<T>(token: string) {
 		try {
 			const result = await this.jwtService.verify(token, {
 				secret: this.publicKey,
@@ -44,7 +44,7 @@ export class InviteToCourseToken implements IToken {
 			throw new Error('Invalid payload type')
 		}
 	}
-	async decode(token: string): Promise<Object | CustomJwtPayload> {
+	async decode<T>(token: string): Promise<T> {
 		try {
 			return await this.jwtService.decode(token, {
 				json: true,
