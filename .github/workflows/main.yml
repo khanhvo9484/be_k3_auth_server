@@ -45,6 +45,12 @@ jobs:
           username: khanhvo9484
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: Build Docker Image
+        run: docker build -t khanhvo9484/newerbe1:latest .
+
+      - name: Push Docker Image
+        run: docker push khanhvo9484/newerbe1:latest
+
       - name: Install Railway
         run: npm i -g @railway/cli
 
