@@ -52,4 +52,4 @@ jobs:
         run: railway up --service WebAdvancedCD
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_DOCKER_IMAGE: khanhvo9484/nestbe2:latest
+          RAILWAY_DOCKER_IMAGE: khanhvo9484/newerbe1:latest
