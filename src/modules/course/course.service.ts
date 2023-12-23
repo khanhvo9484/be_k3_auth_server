@@ -56,6 +56,24 @@ export class CourseService {
 			throw new DatabaseExecutionException('Get all course failed')
 		}
 	}
+
+	async getAllArchivedCourse(
+		userId: string,
+		params?: {
+			skip?: number
+			take?: number
+			cursor?: Prisma.UserWhereUniqueInput
+			where?: Prisma.UserWhereInput
+			orderBy?: Prisma.UserOrderByWithRelationInput
+		}
+	) {
+		try {
+			return await this.courseRepository.getAllArchivedCourse(userId, params)
+		} catch (error) {
+			throw new DatabaseExecutionException('Get all archived course failed')
+		}
+	}
+
 	async getAllCourseMember(user: CustomJwtPayload, courseId: string) {
 		try {
 			const userInCourse = await this.courseRepository.getEnrollmentById({

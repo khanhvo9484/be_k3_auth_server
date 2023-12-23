@@ -73,6 +73,29 @@ export class CourseRepository {
 		})
 		return result.map((item) => item.course)
 	}
+
+	async getAllArchivedCourse(
+		userId: string,
+		params?: {
+			skip?: number
+			take?: number
+			cursor?: Prisma.UserWhereUniqueInput
+			where?: Prisma.UserWhereInput
+			orderBy?: Prisma.UserOrderByWithRelationInput
+		}
+	) {
+		const result = await this.prisma.course.findMany({
+			where: {
+				courseOwnerId: userId,
+				isDeleted: true
+			},
+			include: {
+				courseOwner: true
+			}
+		})
+		return result.map((item) => item)
+	}
+
 	async getAllCourseMember(where: Prisma.User_CourseWhereInput) {
 		const result = await this.prisma.user_Course.findMany({
 			where,
