@@ -5,7 +5,7 @@ export const gradeReviewCommentProvider = [
 	{
 		provide: 'GRADE_REVIEW_COMMENT_MODEL',
 		useFactory: (connection: Connection) =>
-			connection.model('GradeComponent', GradeReviewCommentSchema),
+			connection.model('GradeReviewComment', GradeReviewCommentSchema),
 		inject: ['MONGO_CONNECTION']
 	}
 ]

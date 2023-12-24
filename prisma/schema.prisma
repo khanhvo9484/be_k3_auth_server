@@ -84,35 +84,3 @@ model GradeStructure {
   deletedAt DateTime?
   course    Course    @relation(fields: [courseId], references: [id])
 }
-
-model GradeComponent {
-  id               String   @id
-  gradeStructureId String
-  percentage       Int
-  label            String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  status           String
-}
-
-model GradeSubComponent {
-  id               String   @id
-  gradeComponentId String
-  percentage       Int
-  label            String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  status           String
-}
-
-model Grade {
-  id                  String   @id
-  gradeSubComponentId String
-  gradeComponentId    String
-  gradeStructureId    String
-  userId              String
-  grade               Int
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  status              String
-}

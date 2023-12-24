@@ -28,6 +28,8 @@ import { CustomJWTModule } from '@utils/jwt-helper/custom-jwt.module'
 import { CourseModule } from 'modules/course/course.module'
 import { EmailSenderModule } from '@utils/email-sender/email-sender.module'
 import { GradeModule } from 'modules/grade/grade.module'
+import { GatewayModule } from 'gateway/gateway.module'
+import { NotificationModule } from 'modules/notification/notification.module'
 @Module({
 	imports: [
 		CacheModule.registerAsync({
@@ -63,7 +65,9 @@ import { GradeModule } from 'modules/grade/grade.module'
 		UsersModule,
 		CourseModule,
 		PrismaModule,
-		GradeModule
+		GradeModule,
+		GatewayModule,
+		NotificationModule
 	],
 	controllers: [AppController],
 	providers: [
