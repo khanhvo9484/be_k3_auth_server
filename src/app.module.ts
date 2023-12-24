@@ -27,7 +27,7 @@ import { AuthGuard } from '@common/guard/auth.guard'
 import { CustomJWTModule } from '@utils/jwt-helper/custom-jwt.module'
 import { CourseModule } from 'modules/course/course.module'
 import { EmailSenderModule } from '@utils/email-sender/email-sender.module'
-
+import { GradeModule } from 'modules/grade/grade.module'
 @Module({
 	imports: [
 		CacheModule.registerAsync({
@@ -62,7 +62,8 @@ import { EmailSenderModule } from '@utils/email-sender/email-sender.module'
 		AuthModule,
 		UsersModule,
 		CourseModule,
-		PrismaModule
+		PrismaModule,
+		GradeModule
 	],
 	controllers: [AppController],
 	providers: [

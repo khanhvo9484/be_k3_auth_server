@@ -27,4 +27,4 @@ jobs:
         with:
           deploy_key: ${{ secrets.ZEET_API_TOKEN }}
           project: zeet-k3/development_auth_server
-        #   image: khanhvo9484/development_auth_server
+        #   image: khanhvo9484/development_auth_serverd
