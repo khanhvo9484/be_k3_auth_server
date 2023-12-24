@@ -407,6 +407,20 @@ export class CourseService {
 		}
 	}
 
+	async realDeleteCourse(id: string) {
+		try {
+			const result = await this.prisma.$transaction(async (prisma) => {
+				const deletedCourse = await this.courseRepository.realDeleteCourse({
+					id: id
+				})
+				return deletedCourse
+			})
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException('Real delete course failed')
+		}
+	}
+
 	async leaveCourse(leaveCourseRquest: { userId: string; courseId: string }) {
 		try {
 			const { userId, courseId } = leaveCourseRquest

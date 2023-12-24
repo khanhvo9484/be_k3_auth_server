@@ -200,6 +200,14 @@ export class CourseRepository {
 		})
 		return result
 	}
+
+	async realDeleteCourse(where: Prisma.CourseWhereUniqueInput) {
+		const result = await this.prisma.course.delete({
+			where: where
+		})
+		return result
+	}
+
 	async deleteAllEnrollmentInCourse(where: Prisma.User_CourseWhereInput) {
 		const result = await this.prisma.user_Course.deleteMany({
 			where

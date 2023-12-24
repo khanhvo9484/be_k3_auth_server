@@ -2,7 +2,7 @@ import { Optional } from '@nestjs/common'
 import { UserResponse } from '@user/dto/user.dto'
 import { generateCode, generateId } from '@utils/id-helper'
 import { Expose, Type } from 'class-transformer'
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class CreateCourseRequest {
 	@IsString()
@@ -37,6 +37,10 @@ export class UpdateCourseRequest {
 
 	@Optional()
 	courseOwnerId: string
+
+	@IsBoolean()
+	@Optional()
+	isDeleted: boolean
 }
 export class CourseResponse {
 	@Expose()

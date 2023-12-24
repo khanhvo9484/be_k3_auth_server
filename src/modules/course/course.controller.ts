@@ -142,10 +142,16 @@ export class CourseController {
 		return { message: 'send invitation successfully', data: result }
 	}
 
-	@Delete('delete-course/:id')
+	@Post('delete-course/:id')
 	async deleteCourse(@Param('id') id: string) {
 		const result = await this.courseService.deleteCourse(id)
 		return { message: 'delete course successfully', data: result }
+	}
+
+	@Post('real-delete-course/:id')
+	async realDeleteCourse(@Param('id') id: string) {
+		const result = await this.courseService.realDeleteCourse(id)
+		return { message: 'Real delete course successfully', data: result }
 	}
 
 	@Post('leave-course')
@@ -159,7 +165,7 @@ export class CourseController {
 		return { message: 'leave course successfully', data: result }
 	}
 
-	@Delete('remove-user')
+	@Post('remove-user')
 	@HttpCode(200)
 	async removeUserFromCourse(
 		@Req() request: Request,
