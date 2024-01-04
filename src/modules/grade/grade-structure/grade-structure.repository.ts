@@ -26,11 +26,10 @@ export class GradeStructureRepository {
 	}
 
 	async updateGradeStructure(request: UpdateGradeStructureRequest) {
-		const result = await this.gradeStructureModel.updateOne(
-			{ id: request.id },
-			{
-				gradeComponent: request.gradeComponent
-			}
+		const { id } = request
+		const result = await this.gradeStructureModel.findByIdAndUpdate(
+			{ _id: id },
+			{ gradeComponent: request.gradeComponent }
 		)
 		return result
 	}

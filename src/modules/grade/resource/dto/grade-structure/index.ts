@@ -38,6 +38,9 @@ export class GradeComponent {
 	@Transform((params: TransformFnParams) => parseInt(params.value))
 	percentage: number
 
+	@IsNotEmpty()
+	order: number
+
 	@IsOptional()
 	status: string = GradeStructureStatus.IS_NOT_GRADED
 }
@@ -83,8 +86,6 @@ export class UpdateGradeStructureRequest {
 	description: string
 
 	@IsNotEmpty()
-	@ValidateNested({ each: true })
-	@Type(() => GradeComponent)
 	gradeComponent: GradeComponent[]
 
 	@IsOptional()

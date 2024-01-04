@@ -10,6 +10,7 @@ export interface IGradeComponent extends Document {
 	name: string
 	percentage: number
 	status: string
+	order: number
 	gradeSubComponent: IGradeSubComponent[]
 }
 
@@ -26,6 +27,7 @@ const GradeComponentSchema = new Schema<IGradeComponent>(
 		name: { type: String, required: true },
 		percentage: { type: Number, required: true },
 		status: { type: String, required: true },
+		order: { type: Number, required: true },
 		gradeSubComponent: [GradeSubComponentSchema]
 	},
 	{ _id: false }

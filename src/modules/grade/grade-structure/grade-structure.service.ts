@@ -69,6 +69,9 @@ export class GradeStructureService {
 	async updateGradeStructure(request: UpdateGradeStructureRequest) {
 		try {
 			const result = await this.gradeRepository.updateGradeStructure(request)
+			if (!result) {
+				throw new BadRequestException('Grade structure not found')
+			}
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException(error.message)

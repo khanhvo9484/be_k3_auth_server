@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, Req, Res } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Get,
+	Param,
+	Post,
+	Put,
+	Req,
+	Res
+} from '@nestjs/common'
 import { Request, Response } from 'express'
 import { GradeStructureService } from './grade-structure.service'
 import {
@@ -30,7 +39,6 @@ export class GradeStructureController {
 		@Req() request: Request,
 		@Body() body: UpdateGradeStructureRequest
 	) {
-		// console.log(body)
 		const result = await this.gradeService.updateGradeStructure(body)
 		return {
 			message: 'update grade structure success',
