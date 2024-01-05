@@ -48,7 +48,10 @@ export class CourseController {
 		const refinedResult = result.map((item) => {
 			return plainToClass(CourseResponse, item)
 		})
-		return { message: 'get all archived course successfully', data: refinedResult }
+		return {
+			message: 'get all archived course successfully',
+			data: refinedResult
+		}
 	}
 
 	@Get('get-all-course-member')
@@ -80,7 +83,7 @@ export class CourseController {
 	) {
 		const user = request.user
 		body.courseOwnerId = user.id
-		const result = await this.courseService.createCourse(body)
+		const result = await this.courseService.createCourse(body, user)
 		return { message: 'create course successfully', data: result }
 	}
 

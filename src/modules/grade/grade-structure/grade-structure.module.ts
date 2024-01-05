@@ -7,6 +7,7 @@ import { GradeStructureController } from './grade-structure.controller'
 @Module({
 	imports: [MongooseDatabaseModule],
 	providers: [GradeStructureService, GradeStructureRepository],
-	controllers: [GradeStructureController]
+	controllers: [GradeStructureController],
+	exports: [GradeStructureService]
 })
 export class GradeStructureModule {}

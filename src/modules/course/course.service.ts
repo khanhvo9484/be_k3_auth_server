@@ -29,6 +29,8 @@ import {
 } from '@enviroment/index'
 import { plainToClass } from 'class-transformer'
 import { UserResponse } from '@user/dto/user.dto'
+import { GradeStructureService } from '../grade/grade-structure/grade-structure.service'
+import { CreateGradeStructureRequest } from 'modules/grade/resource/dto'
 
 @Injectable()
 export class CourseService {
@@ -37,7 +39,8 @@ export class CourseService {
 		private tokenFactoryService: TokenFactoryService,
 		private usersService: UsersService,
 		private prisma: PrismaService,
-		private emailSenderService: EmailSenderService
+		private emailSenderService: EmailSenderService,
+		private gradeStructureService: GradeStructureService
 	) {}
 
 	async getAllCourse(
@@ -163,7 +166,8 @@ export class CourseService {
 		}
 	}
 	async createCourse(
-		createCourseRequest: CreateCourseRequest
+		createCourseRequest: CreateCourseRequest,
+		user: CustomJwtPayload
 	): Promise<Course> {
 		try {
 			const result = await this.prisma.$transaction(async (prisma) => {
@@ -192,6 +196,19 @@ export class CourseService {
 						}
 					}
 				})
+
+				const createGradeStructureRequest = plainToClass(
+					CreateGradeStructureRequest,
+					{
+						courseId: createdCourse.id,
+						gradeComponent: []
+					}
+				)
+				const createdGradeStructure =
+					await this.gradeStructureService.createGradeStructure(
+						createGradeStructureRequest,
+						user
+					)
 				return createdCourse
 			})
 
