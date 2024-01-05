@@ -1,1 +1,1 @@
-export * from './grade-structure'
+export * from '../../grade-structure/resource/dto'

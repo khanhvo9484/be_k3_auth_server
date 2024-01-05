@@ -6,7 +6,7 @@ import {
 	ValidateNested
 } from 'class-validator'
 import { generateId } from '@utils/id-helper'
-import { GradeStructureStatus } from '../../enum'
+import { GradeStructureStatus } from '../../../resource/enum'
 import { Expose, Transform, TransformFnParams, Type } from 'class-transformer'
 export class CreateGradeStructureRequest {
 	@IsOptional()
@@ -87,6 +87,51 @@ export class UpdateGradeStructureRequest {
 
 	@IsNotEmpty()
 	gradeComponent: GradeComponent[]
+
+	@IsOptional()
+	status: string = GradeStructureStatus.IS_NOT_GRADED
+}
+
+export class CreateGradeSubcomponent {
+	@IsNotEmpty()
+	gradeStructureId: string
+
+	@IsNotEmpty()
+	gradeComponentId: string
+
+	@IsNotEmpty()
+	name: string
+
+	@IsOptional()
+	description: string
+
+	@IsNotEmpty()
+	@Transform((params: TransformFnParams) => parseInt(params.value))
+	percentage: number
+
+	@IsOptional()
+	status: string = GradeStructureStatus.IS_NOT_GRADED
+}
+
+export class UpdateGradeSubComponentRequest {
+	@IsNotEmpty()
+	gradeStructureId: string
+
+	@IsNotEmpty()
+	gradeComponentId: string
+
+	@IsNotEmpty()
+	gradeSubComponentId: string
+
+	@IsOptional()
+	name: string
+
+	@IsOptional()
+	description: string
+
+	@IsOptional()
+	@Transform((params: TransformFnParams) => parseInt(params.value))
+	percentage: number
 
 	@IsOptional()
 	status: string = GradeStructureStatus.IS_NOT_GRADED

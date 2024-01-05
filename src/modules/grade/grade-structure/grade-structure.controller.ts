@@ -12,8 +12,10 @@ import { Request, Response } from 'express'
 import { GradeStructureService } from './grade-structure.service'
 import {
 	CreateGradeStructureRequest,
-	UpdateGradeStructureRequest
-} from '../resource/dto/grade-structure'
+	CreateGradeSubcomponent,
+	UpdateGradeStructureRequest,
+	UpdateGradeSubComponentRequest
+} from './resource/dto'
 import { Public } from '@common/decorator'
 
 @Controller('grade-structure')
@@ -45,6 +47,34 @@ export class GradeStructureController {
 			data: result
 		}
 	}
+
+	@Public()
+	@Post('create-grade-subcomponent')
+	async createGradeSubcomponent(
+		@Req() request: Request,
+		@Body() body: { subComponent: CreateGradeSubcomponent[] }
+	) {
+		const subComponent = body.subComponent
+		const result = await this.gradeService.createGradeSubcomponent(subComponent)
+		return {
+			message: 'create grade subcomponent success',
+			data: result
+		}
+	}
+
+	// @Public()
+	// @Put('update-grade-subcomponent')
+	// async updateGradeSubComponent (
+	// 	@Req() request: Request,
+	// 	@Body() body: { subComponent: UpdateGradeSubComponentRequest[] }
+	// ) {
+	// 	const subComponent = body.subComponent
+	// 	const result = await this.gradeService.updateGradeSubComponent(subComponent)
+	// 	return {
+	// 		message: 'update grade subcomponent success',
+	// 		data: result
+	// 	}
+	// }
 
 	@Public()
 	@Get('get/:courseId')
