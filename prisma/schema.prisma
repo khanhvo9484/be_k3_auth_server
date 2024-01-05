@@ -11,23 +11,26 @@ datasource db {
 }
 
 model User {
-  id          String        @id
-  email       String        @unique
-  name        String?
-  password    String
-  role        String        @default("user")
-  dob         DateTime?
-  avatar      String?
-  bio         String?
-  phoneNumber String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  deletedAt   DateTime?
-  isVerified  Boolean       @default(false)
-  accountType String        @default("local")
-  ownCourses  Course[]
-  joinCourses User_Course[]
-  invitions   Invitation[]
+  id                String        @id
+  email             String        @unique
+  name              String?
+  password          String
+  role              String        @default("user")
+  dob               DateTime?
+  avatar            String?
+  bio               String?
+  phoneNumber       String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  deletedAt         DateTime?
+  isVerified        Boolean       @default(false)
+  accountType       String        @default("local")
+  ownCourses        Course[]
+  joinCourses       User_Course[]
+  invitions         Invitation[]
+  isSuspensed       Boolean       @default(false)
+  isBlocked         Boolean       @default(false)
+  studentOfficialId String?
 }
 
 model Course {

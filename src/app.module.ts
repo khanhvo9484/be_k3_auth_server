@@ -30,6 +30,9 @@ import { EmailSenderModule } from '@utils/email-sender/email-sender.module'
 import { GradeModule } from 'modules/grade/grade.module'
 import { GatewayModule } from 'gateway/gateway.module'
 import { NotificationModule } from 'modules/notification/notification.module'
+import { ExcelModule } from '@utils/excel/excel.module'
+import { StudentGradeModule } from 'modules/grade/student-grade-upload/student-grade.module'
+
 @Module({
 	imports: [
 		CacheModule.registerAsync({
@@ -67,7 +70,8 @@ import { NotificationModule } from 'modules/notification/notification.module'
 		PrismaModule,
 		GradeModule,
 		GatewayModule,
-		NotificationModule
+		NotificationModule,
+		ExcelModule
 	],
 	controllers: [AppController],
 	providers: [
