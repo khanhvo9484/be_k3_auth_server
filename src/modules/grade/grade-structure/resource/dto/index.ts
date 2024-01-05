@@ -77,7 +77,7 @@ export class GradeStructureResponse {
 
 export class UpdateGradeStructureRequest {
 	@IsNotEmpty()
-	id: string
+	gradeStructureId: string
 
 	@IsOptional()
 	courseId: string
@@ -86,7 +86,14 @@ export class UpdateGradeStructureRequest {
 	description: string
 
 	@IsNotEmpty()
-	gradeComponent: GradeComponent[]
+	gradeComponentId: string
+
+	@IsOptional()
+	name: string
+
+	@IsOptional()
+	@Transform((params: TransformFnParams) => parseInt(params.value))
+	percentage: number
 
 	@IsOptional()
 	status: string = GradeStructureStatus.IS_NOT_GRADED

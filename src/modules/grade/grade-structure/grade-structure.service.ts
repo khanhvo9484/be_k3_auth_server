@@ -6,7 +6,8 @@ import {
 	CreateGradeStructureRequest,
 	CreateGradeSubcomponent,
 	GradeStructureResponse,
-	UpdateGradeStructureRequest
+	UpdateGradeStructureRequest,
+	UpdateGradeSubComponentRequest
 } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { PrismaService } from '@my-prisma/prisma.service'
@@ -73,10 +74,22 @@ export class GradeStructureService {
 		}
 	}
 
-	async updateGradeStructure(request: UpdateGradeStructureRequest) {
+	async updateGradeStructure(request: UpdateGradeStructureRequest[]) {
 		try {
-			const result = await this.gradeRepository.updateGradeStructure(request)
+			const gradeStructureList = request.map((item) => {
+				return plainToClass(UpdateGradeStructureRequest, item)
+			})
+			const result = await Promise.all(
+				gradeStructureList.map(async (item) => {
+					return await this.gradeRepository.updateGradeStructure(item)
+				})
+			)
+
 			if (!result) {
+				throw new BadRequestException('Grade structure not found')
+			}
+			if (Array.isArray(result)) {
+				if (result[0] !== null) return result[0]
 				throw new BadRequestException('Grade structure not found')
 			}
 			return result
@@ -113,6 +126,30 @@ export class GradeStructureService {
 				throw new BadRequestException('Grade structure not found')
 			}
 			if (Array.isArray(result)) {
+				if (result[0] !== null) return result[0]
+				throw new BadRequestException('Grade structure not found')
+			}
+			return result
+		} catch (error) {
+			console.log(error)
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
+
+	async updateGradeSubComponent(request: UpdateGradeSubComponentRequest[]) {
+		try {
+			const subcomponentList = request.map((item) => {
+				return plainToClass(UpdateGradeSubComponentRequest, item)
+			})
+			const result = await Promise.all(
+				subcomponentList.map(async (item) => {
+					return await this.gradeRepository.updateGradeSubComponent(item)
+				})
+			)
+			if (!result) {
+				throw new BadRequestException('Grade structure not found')
+			}
+			if (Array.isArray(result)) {
 				return result[0]
 			}
 			return result
@@ -122,28 +159,6 @@ export class GradeStructureService {
 		}
 	}
 
-	// async updateGradeSubComponent(request: UpdateGradeSubComponentRequest[]) {
-	// 	try {
-	// 		const subcomponentList = request.map((item) => {
-	// 			return plainToClass(UpdateGradeSubComponentRequest, item)
-	// 		})
-	// 		const result = await Promise.all(
-	// 			subcomponentList.map(async (item) => {
-	// 				return await this.gradeRepository.updateGradeSubComponent(item)
-	// 			})
-	// 		)
-	// 		if (!result) {
-	// 			throw new BadRequestException('Grade structure not found')
-	// 		}
-	// 		if (Array.isArray(result)) {
-	// 			return result[0]
-	// 		}
-	// 		return result
-	// 	} catch (error) {
-	// 		console.log(error)
-	// 		throw new DatabaseExecutionException(error.message)
-	// 	}
-	// }
 	async isCourseOwner(courseId: string, userId: string) {
 		try {
 			const result = await this.prismaService.user_Course.findFirst({

@@ -39,9 +39,11 @@ export class GradeStructureController {
 	@Put('update')
 	async updateGradeStructure(
 		@Req() request: Request,
-		@Body() body: UpdateGradeStructureRequest
+		@Body() body: { gradeComponent: UpdateGradeStructureRequest[] }
 	) {
-		const result = await this.gradeService.updateGradeStructure(body)
+		const result = await this.gradeService.updateGradeStructure(
+			body.gradeComponent
+		)
 		return {
 			message: 'update grade structure success',
 			data: result
@@ -62,19 +64,19 @@ export class GradeStructureController {
 		}
 	}
 
-	// @Public()
-	// @Put('update-grade-subcomponent')
-	// async updateGradeSubComponent (
-	// 	@Req() request: Request,
-	// 	@Body() body: { subComponent: UpdateGradeSubComponentRequest[] }
-	// ) {
-	// 	const subComponent = body.subComponent
-	// 	const result = await this.gradeService.updateGradeSubComponent(subComponent)
-	// 	return {
-	// 		message: 'update grade subcomponent success',
-	// 		data: result
-	// 	}
-	// }
+	@Public()
+	@Put('update-grade-subcomponent')
+	async updateGradeSubComponent(
+		@Req() request: Request,
+		@Body() body: { subComponent: UpdateGradeSubComponentRequest[] }
+	) {
+		const subComponent = body.subComponent
+		const result = await this.gradeService.updateGradeSubComponent(subComponent)
+		return {
+			message: 'update grade subcomponent success',
+			data: result
+		}
+	}
 
 	@Public()
 	@Get('get/:courseId')

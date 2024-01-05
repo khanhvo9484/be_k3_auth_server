@@ -4,7 +4,8 @@ import { IGradeStructure } from '../resource/shemas'
 import {
 	CreateGradeStructureRequest,
 	CreateGradeSubcomponent,
-	UpdateGradeStructureRequest
+	UpdateGradeStructureRequest,
+	UpdateGradeSubComponentRequest
 } from './resource/dto'
 
 @Injectable()
@@ -32,12 +33,41 @@ export class GradeStructureRepository {
 	}
 
 	async updateGradeStructure(request: UpdateGradeStructureRequest) {
-		const { id } = request
+		console.log(request)
 		const result = await this.gradeStructureModel.updateOne(
-			{ _id: id },
-			{ gradeComponent: request.gradeComponent }
+			{
+				_id: request.gradeStructureId,
+				'gradeComponent._id': request.gradeComponentId
+			},
+			{
+				$set: {
+					'gradeComponent.$[element].name': request.name,
+					'gradeComponent.$[element].description': request.description,
+					'gradeComponent.$[element].percentage': request.percentage,
+					'gradeComponent.$[element].status': request.status
+				}
+			},
+
+			{
+				arrayFilters: [{ 'element._id': request.gradeComponentId }]
+			}
 		)
-		return result
+
+		if (result.acknowledged === true) {
+			const updatedDocument = await this.gradeStructureModel.findOne(
+				{
+					_id: request.gradeStructureId,
+					'gradeComponent._id': request.gradeComponentId
+				},
+				{ 'gradeComponent.$': 1 } // Use $ projection to return only the matched gradeComponent
+			)
+
+			if (updatedDocument) {
+				return updatedDocument.gradeComponent[0]
+			}
+		}
+
+		// return null
 	}
 
 	async createGradeSubcomponent(request: CreateGradeSubcomponent) {
@@ -47,6 +77,43 @@ export class GradeStructureRepository {
 				'gradeComponent._id': request.gradeComponentId
 			},
 			{ $push: { 'gradeComponent.$.gradeSubComponent': request } }
+		)
+		if (result.acknowledged === true) {
+			const updatedDocument = await this.gradeStructureModel.findOne(
+				{
+					_id: request.gradeStructureId,
+					'gradeComponent._id': request.gradeComponentId
+				},
+				{ 'gradeComponent.$': 1 } // Use $ projection to return only the matched gradeComponent
+			)
+
+			if (updatedDocument) {
+				return updatedDocument.gradeComponent[0]
+			}
+		}
+
+		return null
+	}
+	async updateGradeSubComponent(request: UpdateGradeSubComponentRequest) {
+		const result = await this.gradeStructureModel.updateOne(
+			{
+				_id: request.gradeStructureId,
+				'gradeComponent._id': request.gradeComponentId,
+				'gradeComponent.gradeSubComponent._id': request.gradeSubComponentId
+			},
+			{
+				$set: {
+					'gradeComponent.$.gradeSubComponent.$[element].name': request.name,
+					'gradeComponent.$.gradeSubComponent.$[element].description':
+						request.description,
+					'gradeComponent.$.gradeSubComponent.$[element].percentage':
+						request.percentage,
+					'gradeComponent.$.gradeSubComponent.$[element].status': request.status
+				}
+			},
+			{
+				arrayFilters: [{ 'element._id': request.gradeSubComponentId }]
+			}
 		)
 		if (result.acknowledged === true) {
 			const updatedDocument = await this.gradeStructureModel.findOne(
