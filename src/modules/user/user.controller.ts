@@ -32,24 +32,50 @@ export class UsersController {
 			data: plainToClass(UserResponse, result)
 		}
 	}
-	// @Put('/user')
-	// async updateUser(@Req() request: Request, @Body() body: UpdateUserRequest) {
-	// 	if (!request['user']) {
-	// 		throw new BadRequestException('Invalid call')
-	// 	}
-	// 	if (!request['user'].id) {
-	// 		throw new BadRequestException('Invalid call')
-	// 	}
-	// 	const userId = request['user'].id
-	// 	const result = await this.userService.updateUser({
-	// 		where: {
-	// 			id: userId
-	// 		},
-	// 		data: body
-	// 	})
-	// 	return {
-	// 		message: 'Update user info',
-	// 		data: plainToClass(UserResponse, result)
-	// 	}
-	// }
+	@Put('/user')
+	async updateUser(@Req() request: Request, @Body() body: UpdateUserRequest) {
+		if (!request['user']) {
+			throw new BadRequestException('Invalid call')
+		}
+		if (!request['user'].id) {
+			throw new BadRequestException('Invalid call')
+		}
+		const userId = request['user'].id
+		const result = await this.userService.updateUser({
+			where: {
+				id: userId
+			},
+			data: body
+		})
+		return {
+			message: 'Update user info',
+			data: plainToClass(UserResponse, result)
+		}
+	}
+
+	@Put('/update-official-id')
+	async updateOfficialId(
+		@Req() request: Request,
+		@Body() body: { officialId: string }
+	) {
+		if (!request['user']) {
+			throw new BadRequestException('Invalid call')
+		}
+		if (!request['user'].id) {
+			throw new BadRequestException('Invalid call')
+		}
+		const userId = request['user'].id
+		const result = await this.userService.updateUserOfficialId({
+			where: {
+				id: userId
+			},
+			data: {
+				studentOfficialId: body.officialId
+			}
+		})
+		return {
+			message: 'Update user info',
+			data: plainToClass(UserResponse, result)
+		}
+	}
 }
