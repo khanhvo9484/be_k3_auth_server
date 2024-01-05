@@ -77,14 +77,24 @@ export class StudentGradeController {
 		}
 	}
 
+	@UseInterceptors(FileInterceptor('file'))
 	@Post('upload-student-mapping-id')
 	async uploadStudentMappingId(
+		@UploadedFile() file,
 		@Req() request: Request,
-		@Res() response: Response
+		@Body() body: { courseId: string }
 	) {
-		return response.status(200).send({
-			message: 'upload student mapping id success'
-		})
+		const courseId = body.courseId
+		const user = request.user
+		const result = await this.studentGradeService.uploadStudentMappingId(
+			file,
+			courseId,
+			user
+		)
+		return {
+			message: 'upload student list success',
+			data: result
+		}
 	}
 
 	@Post('upload-student-grade')

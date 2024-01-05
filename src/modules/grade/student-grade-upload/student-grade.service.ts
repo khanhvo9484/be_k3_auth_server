@@ -5,14 +5,21 @@ import {
 	STUDENT_MAPPING_ID_COLUMNS
 } from './resource/constant'
 import { plainToClass } from 'class-transformer'
-import { CreateStudentGradeDto } from './resource/dto'
+import {
+	CreateStudentGradeDto,
+	CreateStudentMappingIdDto
+} from './resource/dto'
 import { StudentGradeRepository } from './student-grade.repository'
 import { DatabaseExecutionException } from '@common/exceptions'
+import { UsersService } from '@user/user.service'
+import { CourseService } from 'modules/course/course.service'
 @Injectable()
 export class StudentGradeService {
 	constructor(
 		private readonly excelService: ExcelService,
-		private studentGradeRepository: StudentGradeRepository
+		private studentGradeRepository: StudentGradeRepository,
+		private userService: UsersService,
+		private courseService: CourseService
 	) {}
 
 	async generateExcelFileWithColumns(
@@ -71,6 +78,27 @@ export class StudentGradeService {
 				return item.toJSON()
 			})
 			return result
+		} catch (err) {
+			throw new DatabaseExecutionException(err.message)
+		}
+	}
+
+	async uploadStudentMappingId(
+		file: any,
+		courseId: string,
+		user: CustomJwtPayload
+	) {
+		try {
+			const data = await this.excelService.readExcelFile(file)
+			const listStudents = data.map((item) => {
+				return plainToClass(CreateStudentMappingIdDto, item)
+			})
+			const listStudentsWithCourseId = listStudents.map((item) => {
+				return { ...item, courseId }
+			})
+			const result = await this.courseService.getAllCourseStudentIds(courseId)
+			console.log(result)
+			// console.log(listStudentsWithCourseId)
 		} catch (err) {
 			throw new DatabaseExecutionException(err.message)
 		}

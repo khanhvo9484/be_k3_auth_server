@@ -21,3 +21,16 @@ export class CreateStudentGradeDto {
 	@Expose()
 	finalGrade: number
 }
+
+@Exclude()
+export class CreateStudentMappingIdDto {
+	@Expose({ name: 'MSSV' })
+	@IsNotEmpty()
+	@IsString()
+	studentOfficialId: string
+
+	@Expose({ name: 'Email' })
+	@IsNotEmpty()
+	@IsString()
+	email: string
+}

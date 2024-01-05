@@ -78,6 +78,19 @@ export class GradeStructureService {
 		}
 	}
 
+	async getGradeStructure(courseId: string) {
+		try {
+			const result =
+				await this.gradeRepository.getGradeStructureByCourseId(courseId)
+			if (!result) {
+				throw new BadRequestException('Grade structure not found')
+			}
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
+
 	async isCourseOwner(courseId: string, userId: string) {
 		try {
 			const result = await this.prismaService.user_Course.findFirst({

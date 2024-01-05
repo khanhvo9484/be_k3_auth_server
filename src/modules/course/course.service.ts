@@ -120,7 +120,28 @@ export class CourseService {
 
 			return result
 		} catch (error) {
-			console.log(error)
+			console.error(error)
+			throw new DatabaseExecutionException('Get all course member failed')
+		}
+	}
+
+	async getAllCourseStudentIds(courseId: string) {
+		try {
+			const result = await this.prisma.$transaction(async (prisma) => {
+				const memberListResult = await this.courseRepository.getAllCourseMember(
+					{
+						courseId: courseId
+					}
+				)
+				const students = memberListResult.students.map((item) => {
+					return item.id
+				})
+				return students
+			})
+
+			return result
+		} catch (error) {
+			console.error(error)
 			throw new DatabaseExecutionException('Get all course member failed')
 		}
 	}

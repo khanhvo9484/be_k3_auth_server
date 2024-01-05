@@ -46,14 +46,16 @@ export class GradeStructureController {
 		}
 	}
 
-	// @Public()
-	// @Get('get-grade-structure')
-	// async getGradeStructure(@Req() request: Request) {
-	// 	const courseId = request.query.courseId
-	// 	const result = await this.gradeService.getGradeStructure(courseId)
-	// 	return {
-	// 		message: 'get grade structure success',
-	// 		data: result
-	// 	}
-	// }
+	@Public()
+	@Get('get/:courseId')
+	async getGradeStructure(
+		@Req() request: Request,
+		@Param() param: { courseId: string }
+	) {
+		const result = await this.gradeService.getGradeStructure(param.courseId)
+		return {
+			message: 'get grade structure success',
+			data: result
+		}
+	}
 }
