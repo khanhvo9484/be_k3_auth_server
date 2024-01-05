@@ -8,20 +8,23 @@ export interface IGradeSubComponent extends Document {
 	percentage: number
 }
 
-const GradeSubComponentSchema = new Schema<IGradeSubComponent>({
-	_id: {
-		type: String,
-		default: () => {
-			return generateId('SC')
+const GradeSubComponentSchema = new Schema<IGradeSubComponent>(
+	{
+		_id: {
+			type: String,
+			default: () => {
+				return generateId('SC')
+			},
+			index: true,
+			unique: true,
+			required: true
 		},
-		index: true,
-		unique: true,
-		required: true
+		name: { type: String, required: true },
+		status: { type: String, required: true },
+		percentage: { type: Number, required: true }
 	},
-	name: { type: String, required: true },
-	status: { type: String, required: true },
-	percentage: { type: Number, required: true }
-})
+	{ _id: true }
+)
 
 GradeSubComponentSchema.set('toObject', { getters: true }).set('toJSON', {
 	getters: true,

@@ -13,4 +13,11 @@ export class StudentGradeRepository {
 		const result = await this.studentGradeModel.insertMany(entity)
 		return result
 	}
+	async getStudentGradeByCourseId(courseId: string) {
+		const result = await this.studentGradeModel.find({ courseId })
+		// .populate('student')
+		// .populate('grade')
+		// .exec()
+		return result
+	}
 }

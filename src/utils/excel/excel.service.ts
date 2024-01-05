@@ -29,6 +29,15 @@ export class ExcelService {
 		return XLSX.write(workBook, { bookType: 'xlsx', type: 'buffer' })
 	}
 
+	async generateExcelBufferWithData(data: any[], sheetName: string) {
+		const workBook = XLSX.utils.book_new()
+		const workSheet = XLSX.utils.json_to_sheet(data)
+
+		XLSX.utils.book_append_sheet(workBook, workSheet, sheetName)
+
+		return XLSX.write(workBook, { bookType: 'xlsx', type: 'buffer' })
+	}
+
 	async readExcelFile(file: any) {
 		try {
 			if (!file || !file.buffer || !(file.buffer instanceof Buffer)) {

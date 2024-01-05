@@ -15,14 +15,16 @@ const GradeStructureSchema = new Schema<IGradeStructure>(
 			default: () => {
 				return generateId('GS')
 			},
+			index: true,
 			unique: true,
 			required: true
 		},
+
 		courseId: { type: String, required: true },
 		gradeComponent: [GradeComponentSchema],
 		status: { type: String, required: true }
 	},
-	{ id: true }
+	{ _id: true }
 )
 
 GradeStructureSchema.set('toObject', { getters: true }).set('toJSON', {

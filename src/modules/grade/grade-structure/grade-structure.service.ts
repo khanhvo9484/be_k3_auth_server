@@ -12,6 +12,8 @@ import { PrismaService } from '@my-prisma/prisma.service'
 import { NotificationService } from 'modules/notification/notification.service'
 import { CreateNotificationDto } from 'modules/notification/resource/dto'
 import { NotificationType } from 'modules/notification/resource/enum'
+
+import { generateId } from '@utils/id-helper'
 @Injectable()
 export class GradeStructureService {
 	constructor(
@@ -40,7 +42,10 @@ export class GradeStructureService {
 				throw new BadRequestException('Grade structure already exists')
 			}
 
-			const result = await this.gradeRepository.createGradeStructure(request)
+			const result = await this.gradeRepository.createGradeStructure({
+				...request,
+				_id: generateId('GS')
+			})
 
 			const notification: CreateNotificationDto = {
 				userId: user.id,

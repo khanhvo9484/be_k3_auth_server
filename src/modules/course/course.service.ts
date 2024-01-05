@@ -134,7 +134,7 @@ export class CourseService {
 					}
 				)
 				const students = memberListResult.students.map((item) => {
-					return item.id
+					return { id: item.id, email: item.email }
 				})
 				return students
 			})

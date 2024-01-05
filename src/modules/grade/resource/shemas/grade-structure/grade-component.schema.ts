@@ -30,7 +30,7 @@ const GradeComponentSchema = new Schema<IGradeComponent>(
 		order: { type: Number, required: true },
 		gradeSubComponent: [GradeSubComponentSchema]
 	},
-	{ _id: false }
+	{ _id: true }
 )
 
 GradeComponentSchema.set('toObject', { getters: true }).set('toJSON', {

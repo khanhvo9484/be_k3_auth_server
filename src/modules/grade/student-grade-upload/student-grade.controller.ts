@@ -1,5 +1,5 @@
 import { StudentGradeService } from './student-grade.service'
-import { Body, Controller, UploadedFile } from '@nestjs/common'
+import { Body, Controller, Param, UploadedFile } from '@nestjs/common'
 import { Get, Post, Put, Req, Res, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express/multer'
 import { Request, Response } from 'express'
@@ -30,13 +30,14 @@ export class StudentGradeController {
 		response.send(buffer)
 	}
 
-	@Get('student-mapping-id-xlsx-template')
+	@Get('student-mapping-id-xlsx-template/:courseId')
 	async getStudentMappingIdXlsxTemplate(
 		@Req() request: Request,
-		@Res() response: Response
+		@Res() response: Response,
+		@Param('courseId') courseId: string
 	) {
 		const { buffer, fileName } =
-			await this.studentGradeService.getStudentMappingIdXlsxTemplate()
+			await this.studentGradeService.getStudentMappingIdXlsxTemplate(courseId)
 
 		response.setHeader(
 			'Content-Type',

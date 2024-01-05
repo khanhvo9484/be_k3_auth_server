@@ -41,16 +41,6 @@ export class UserRepository {
 		})
 	}
 
-	async updateManyUser(params: {
-		where: Prisma.UserWhereUniqueInput
-		data: Prisma.UserUpdateInput
-	}) {
-		const { data, where } = params
-		return await this.prisma.user.updateMany({
-			data,
-			where
-		})
-	}
 	async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
 		return this.prisma.user.delete({
 			where

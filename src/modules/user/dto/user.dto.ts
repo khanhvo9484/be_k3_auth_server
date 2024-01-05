@@ -97,6 +97,24 @@ class UserResponse {
 
 	@Expose()
 	updatedAt: Date
+
+	@Expose()
+	dob: Date
+
+	@Expose()
+	studentOfficialId: string
+
+	@Expose()
+	isVerified: boolean
+
+	@Expose()
+	isBlocked: boolean
+
+	@Expose()
+	isSuspended: boolean
+
+	@Expose()
+	accountType: string
 }
 export { CreateUserRequest, SignInRequest, UserResponse, UpdateUserRequest }
 export default CreateUserRequest
