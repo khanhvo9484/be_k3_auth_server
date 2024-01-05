@@ -15,9 +15,6 @@ export class StudentGradeRepository {
 	}
 	async getStudentGradeByCourseId(courseId: string) {
 		const result = await this.studentGradeModel.find({ courseId })
-		// .populate('student')
-		// .populate('grade')
-		// .exec()
 		return result
 	}
 }

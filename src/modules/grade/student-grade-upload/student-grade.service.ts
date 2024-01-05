@@ -48,14 +48,28 @@ export class StudentGradeService {
 	}
 
 	async getStudentMappingIdXlsxTemplate(courseId: string) {
-		const studentGrades =
-			this.studentGradeRepository.getStudentGradeByCourseId(courseId)
-		console.log(studentGrades)
+		try {
+			const studentList =
+				await this.studentGradeRepository.getStudentGradeByCourseId(courseId)
+			const studentListInExcel = studentList.map((item) => {
+				return {
+					MSSV: item.studentOfficialId,
+					'Họ và tên': item.fullName,
+					Email: ''
+				}
+			})
 
-		// const sheetName = 'student account'
-		// const fileName = 'studentsMappingAccount.xlsx'
+			const sheetName = 'student account'
+			const fileName = 'studentsMappingAccount.xlsx'
+			const buffer = await this.excelService.generateExcelBufferWithData(
+				studentListInExcel,
+				sheetName
+			)
 
-		return { buffer: 1, fileName: 2 }
+			return { buffer, fileName }
+		} catch (err) {
+			console.log(err)
+		}
 	}
 
 	async uploadStudentList(file: any, courseId: string) {
