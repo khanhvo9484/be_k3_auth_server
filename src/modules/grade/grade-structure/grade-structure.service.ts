@@ -162,6 +162,9 @@ export class GradeStructureService {
 				courseId
 			)
 
+			if (!result) {
+				throw new BadRequestException('Grade structure not found')
+			}
 			return result
 		} catch (error) {
 			console.log(error)

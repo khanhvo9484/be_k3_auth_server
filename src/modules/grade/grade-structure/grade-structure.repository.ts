@@ -91,14 +91,18 @@ export class GradeStructureRepository {
 		request: UpdateGradeStructureRequestRewrite[],
 		courseId: string
 	) {
-		const result = await this.gradeStructureModel.updateOne(
+		const result = await this.gradeStructureModel.findOneAndUpdate(
 			{ courseId: courseId },
 			{
 				$set: {
 					gradeComponent: request
 				}
+			},
+			{
+				new: true
 			}
 		)
+		return result
 	}
 
 	async createGradeSubcomponent(request: CreateGradeSubcomponent) {
