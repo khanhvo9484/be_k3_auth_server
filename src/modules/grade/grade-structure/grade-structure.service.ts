@@ -112,6 +112,21 @@ export class GradeStructureService {
 		}
 	}
 
+	async getGradeComponentById(courseId: string, componentId: string) {
+		try {
+			const result = await this.gradeRepository.getGradeComponentById(
+				courseId,
+				componentId
+			)
+			if (!result) {
+				throw new BadRequestException('Grade component not found')
+			}
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
+
 	async createGradeSubcomponent(request: CreateGradeSubcomponent[]) {
 		try {
 			const subcomponentList = request.map((item) => {

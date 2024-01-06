@@ -38,6 +38,9 @@ export class ExcelService {
 		return XLSX.write(workBook, { bookType: 'xlsx', type: 'buffer' })
 	}
 
+	async generateExcelBufferWithComplexData() {
+		throw new Error('Not implemented')
+	}
 	async readExcelFile(file: any) {
 		try {
 			if (!file || !file.buffer || !(file.buffer instanceof Buffer)) {

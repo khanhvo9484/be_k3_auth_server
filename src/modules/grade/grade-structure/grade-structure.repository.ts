@@ -32,6 +32,22 @@ export class GradeStructureRepository {
 		return result.toJSON()
 	}
 
+	async getGradeComponentById(courseId: string, gradeComponentId: string) {
+		const result = await this.gradeStructureModel.findOne(
+			{
+				courseId: courseId,
+				'gradeComponent._id': gradeComponentId
+			},
+			{ 'gradeComponent.$': 1 }
+		)
+
+		if (!result) {
+			return null
+		}
+
+		return result.toJSON()
+	}
+
 	async updateGradeStructure(request: UpdateGradeStructureRequest) {
 		console.log(request)
 		const result = await this.gradeStructureModel.updateOne(

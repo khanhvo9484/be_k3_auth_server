@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ExcelService } from '@utils/excel/excel.service'
 import {
 	STUDENT_INFO_COLUMNS,
@@ -14,13 +14,15 @@ import { DatabaseExecutionException } from '@common/exceptions'
 import { UsersService } from '@user/user.service'
 import { CourseService } from 'modules/course/course.service'
 import { UserResponse } from '@user/dto/user.dto'
+import { GradeStructureService } from '../grade-structure/grade-structure.service'
 @Injectable()
 export class StudentGradeService {
 	constructor(
 		private readonly excelService: ExcelService,
 		private studentGradeRepository: StudentGradeRepository,
 		private userService: UsersService,
-		private courseService: CourseService
+		private courseService: CourseService,
+		private gradeStructureService: GradeStructureService
 	) {}
 
 	async generateExcelFileWithColumns(
@@ -72,6 +74,70 @@ export class StudentGradeService {
 		}
 	}
 
+	async getStudentGradeXlsxTemplate(
+		courseId: string,
+		gradeComponentId: string
+	) {
+		try {
+			const sheetName = 'student account'
+			const fileName = 'studentgrades.xlsx'
+			const studentList =
+				await this.studentGradeRepository.getStudentGradeByCourseId(courseId)
+
+			const gradeStructure =
+				await this.gradeStructureService.getGradeComponentById(
+					courseId,
+					gradeComponentId
+				)
+			if (gradeStructure.gradeComponent.length === 0) {
+				throw new BadRequestException('Grade component not found')
+			}
+			const gradeComponent = gradeStructure.gradeComponent
+
+			if (gradeComponent[0].gradeSubComponent.length === 0) {
+				const data = studentList.map((item) => {
+					return {
+						MSSV: item.studentOfficialId,
+						'Họ và tên': item.fullName,
+						[gradeComponent[0].name]: ''
+					}
+				})
+				const buffer = await this.excelService.generateExcelBufferWithData(
+					data,
+					sheetName
+				)
+				return { buffer, fileName }
+			} else {
+				const data = studentList.map((item) => {
+					const gradeSubcomponents = gradeComponent[0].gradeSubComponent.map(
+						(gradeSubItem) => {
+							return {
+								[gradeComponent[0].gradeSubComponent[0].name]: ''
+							}
+						}
+					)
+
+					const data3 = gradeSubcomponents.reduce(
+						(a, b) => Object.assign(a, b),
+						{}
+					)
+					return {
+						MSSV: item.studentOfficialId,
+						'Họ và tên': item.fullName,
+						...data3
+					}
+				})
+				const buffer = await this.excelService.generateExcelBufferWithData(
+					data,
+					sheetName
+				)
+				return { buffer, fileName }
+			}
+		} catch (err) {
+			console.log(err)
+		}
+	}
+
 	async uploadStudentList(file: any, courseId: string) {
 		try {
 			const data = await this.excelService.readExcelFile(file)
@@ -116,6 +182,10 @@ export class StudentGradeService {
 				return plainToClass(CreateStudentMappingIdDto, item)
 			})
 
+			if (data.length === 0) {
+				throw new BadRequestException('File is empty')
+			}
+
 			const studentListInCourse =
 				await this.courseService.getAllCourseStudentIds(courseId)
 
@@ -147,6 +217,31 @@ export class StudentGradeService {
 			return plainToClass(UserResponse, updateResult)
 		} catch (err) {
 			console.log(err)
+			throw new DatabaseExecutionException(err.message)
+		}
+	}
+
+	async uploadStudentGrade(file: any, courseId: string) {
+		try {
+			const data = await this.excelService.readExcelFile(file)
+			const listStudents = data.map((item) => {
+				return plainToClass(CreateStudentGradeDto, item)
+			})
+			const listStudentsWithCourseId = listStudents.map((item) => {
+				return { ...item, courseId }
+			})
+			const result = await this.studentGradeRepository.createManyStudentGrade(
+				listStudentsWithCourseId
+			)
+
+			if (!result) {
+				throw new DatabaseExecutionException('upload student list failed')
+			}
+			const finalResult = result.map((item) => {
+				return item.toJSON()
+			})
+			return result
+		} catch (err) {
 			throw new DatabaseExecutionException(err.message)
 		}
 	}

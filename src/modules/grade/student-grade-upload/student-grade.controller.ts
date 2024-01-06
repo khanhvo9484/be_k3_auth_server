@@ -1,5 +1,5 @@
 import { StudentGradeService } from './student-grade.service'
-import { Body, Controller, Param, UploadedFile } from '@nestjs/common'
+import { Body, Controller, Param, Query, UploadedFile } from '@nestjs/common'
 import { Get, Post, Put, Req, Res, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express/multer'
 import { Request, Response } from 'express'
@@ -50,14 +50,28 @@ export class StudentGradeController {
 		response.send(buffer)
 	}
 
-	@Get('student-grade-xlsx-template')
+	@Get('student-grade-xlsx-template/:courseId')
 	async getStudentGradeXlsxTemplate(
 		@Req() request: Request,
+		@Param('courseId') courseId: string,
+		@Query('grade-component-id') gradeComponentId: string,
 		@Res() response: Response
 	) {
-		return response.status(200).send({
-			message: 'get student grade xlsx template success'
-		})
+		const { buffer, fileName } =
+			await this.studentGradeService.getStudentGradeXlsxTemplate(
+				courseId,
+				gradeComponentId
+			)
+
+		response.setHeader(
+			'Content-Type',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		)
+		response.setHeader(
+			'Content-Disposition',
+			'attachment; filename=' + fileName
+		)
+		response.send(buffer)
 	}
 
 	@UseInterceptors(FileInterceptor('file'))
@@ -98,10 +112,20 @@ export class StudentGradeController {
 		}
 	}
 
+	@UseInterceptors(FileInterceptor('file'))
 	@Post('upload-student-grade')
-	async uploadStudentGrade(@Req() request: Request, @Res() response: Response) {
-		return response.status(200).send({
-			message: 'upload student grade success'
-		})
+	async uploadStudentGrade(
+		@UploadedFile() file,
+		@Req() request: Request,
+		@Body() body: { courseId: string }
+	) {
+		const result = await this.studentGradeService.uploadStudentGrade(
+			file,
+			body.courseId
+		)
+		return {
+			message: 'upload student grade success',
+			data: result
+		}
 	}
 }
