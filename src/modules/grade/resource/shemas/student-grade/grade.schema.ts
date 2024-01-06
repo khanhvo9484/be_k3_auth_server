@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose'
 
 export interface IGrade {
-	gradeComponent: Array<{
+	gradeStructure: Array<{
 		gradeComponentId: string
 		gradeComponentName: string
 		percentage: number
@@ -16,7 +16,7 @@ export interface IGrade {
 }
 
 const GradeSchema = new Schema<IGrade>({
-	gradeComponent: [
+	gradeStructure: [
 		{
 			gradeComponentId: { type: String, required: true },
 			gradeComponentName: { type: String, required: true },

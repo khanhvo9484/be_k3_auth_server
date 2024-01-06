@@ -34,6 +34,7 @@ export class GradeStructureRepository {
 	}
 
 	async getGradeComponentById(courseId: string, gradeComponentId: string) {
+		console.log(courseId, gradeComponentId)
 		const result = await this.gradeStructureModel.findOne(
 			{
 				courseId: courseId,
@@ -41,7 +42,6 @@ export class GradeStructureRepository {
 			},
 			{ 'gradeComponent.$': 1 }
 		)
-
 		if (!result) {
 			return null
 		}

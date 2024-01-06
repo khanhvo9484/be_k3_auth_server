@@ -9,7 +9,8 @@ import { plainToClass } from 'class-transformer'
 import {
 	AddGradeStudentDto,
 	CreateStudentGradeDto,
-	CreateStudentMappingIdDto
+	CreateStudentMappingIdDto,
+	DataFromExcelFile
 } from './resource/dto'
 import { StudentGradeRepository } from './student-grade.repository'
 import { DatabaseExecutionException } from '@common/exceptions'
@@ -86,11 +87,16 @@ export class StudentGradeService {
 			const studentList =
 				await this.studentGradeRepository.getStudentGradeByCourseId(courseId)
 
+			if (studentList.length === 0) {
+				throw new BadRequestException('Student list not found')
+			}
+
 			const gradeStructure =
 				await this.gradeStructureService.getGradeComponentById(
 					courseId,
 					gradeComponentId
 				)
+
 			if (gradeStructure.gradeComponent.length === 0) {
 				throw new BadRequestException('Grade component not found')
 			}
@@ -114,7 +120,7 @@ export class StudentGradeService {
 					const gradeSubcomponents = gradeComponent[0].gradeSubComponent.map(
 						(gradeSubItem) => {
 							return {
-								[gradeComponent[0].gradeSubComponent[0].name]: ''
+								[gradeSubItem.name]: ''
 							}
 						}
 					)
@@ -123,12 +129,14 @@ export class StudentGradeService {
 						(a, b) => Object.assign(a, b),
 						{}
 					)
+
 					return {
 						MSSV: item.studentOfficialId,
 						'Họ và tên': item.fullName,
 						...gradeSubComponentObject
 					}
 				})
+
 				const buffer = await this.excelService.generateExcelBufferWithData(
 					data,
 					sheetName
@@ -137,6 +145,7 @@ export class StudentGradeService {
 			}
 		} catch (err) {
 			console.log(err)
+			throw err
 		}
 	}
 
@@ -147,7 +156,14 @@ export class StudentGradeService {
 				return plainToClass(CreateStudentGradeDto, item)
 			})
 			const listStudentsWithCourseId = listStudents.map((item) => {
-				return { ...item, courseId, grade: null }
+				return {
+					...item,
+					courseId,
+					finalGrade: null,
+					grade: {
+						gradeStructure: []
+					}
+				}
 			})
 			const result = await this.studentGradeRepository.createManyStudentGrade(
 				listStudentsWithCourseId
@@ -159,7 +175,7 @@ export class StudentGradeService {
 			const finalResult = result.map((item) => {
 				return item.toJSON()
 			})
-			return result
+			return finalResult
 		} catch (err) {
 			throw new DatabaseExecutionException(err.message)
 		}
@@ -178,6 +194,7 @@ export class StudentGradeService {
 				return item.email === email
 			})
 		}
+
 		try {
 			const data = await this.excelService.readExcelFile(file)
 			const studentsListFromFile = data.map((item) => {
@@ -255,15 +272,52 @@ export class StudentGradeService {
 				) {
 					throw new BadRequestException('File is not correct')
 				}
-				const listStudentGrades = data.map((item) => {
+
+				const typedData = data.map((item) => {
+					return plainToClass(DataFromExcelFile, item)
+				})
+				const dataWithCourseId = typedData.map((item) => {
+					return { ...item, courseId }
+				})
+				const gradeComponentName = gradeComponent[0].name
+				const dataWithGradeComponent = dataWithCourseId.map((item) => {
+					return {
+						studentOfficialId: item.studentOfficialId,
+						fullName: item.fullName,
+						courseId: item.courseId,
+						finalGrade: null,
+
+						gradeStructure: gradeComponent.map((gradeComponent) => {
+							return {
+								gradeComponentName: gradeComponent.name,
+								gradeComponentId: gradeComponent.id,
+								gradeSubComponent: [],
+								totalGrade: item[gradeComponentName],
+								percentage: gradeComponent.percentage
+							}
+						})
+					}
+				})
+				const typeDataWithFinalGrade = dataWithGradeComponent.map((item) => {
 					return plainToClass(AddGradeStudentDto, item)
 				})
+				const result = await Promise.all(
+					typeDataWithFinalGrade.map(async (item) => {
+						return await this.studentGradeRepository.updateStudentGradeOnceUploadExcel(
+							item
+						)
+					})
+				)
+				if (!result) {
+					throw new DatabaseExecutionException('Upload grade failed')
+				}
+				return result
 			} else {
 				if (
 					data[0][gradeComponent[0].gradeSubComponent[0].name] === undefined ||
 					data[0][gradeComponent[0].gradeSubComponent[0].name] === null
 				) {
-					throw new BadRequestException('File is not correct')
+					throw new BadRequestException('File is not correct 2')
 				}
 
 				const listSubComponent = gradeComponent[0].gradeSubComponent.map(
@@ -279,34 +333,88 @@ export class StudentGradeService {
 					{}
 				)
 				const keysArray = Object.keys(gradeSubComponentObject)
-				console.log(gradeSubComponentObject)
-				console.log(keysArray)
-				const listStudentGrades = data.map((item) => {
-					return {}
+
+				const typedData = data.map((item) => {
+					return plainToClass(DataFromExcelFile, item)
+				})
+				const dataWithCourseId = typedData.map((item) => {
+					return { ...item, courseId }
+				})
+				const dataWithGradeComponent = dataWithCourseId.map((item) => {
+					return {
+						studentOfficialId: item.studentOfficialId,
+						fullName: item.fullName,
+						courseId: item.courseId,
+						finalGrade: null,
+
+						gradeStructure: gradeComponent.map((gradeComponent) => {
+							return {
+								gradeComponentName: gradeComponent.name,
+								gradeComponentId: gradeComponent.id,
+								gradeSubComponent: keysArray.map((key) => {
+									return {
+										gradeSubComponentName: key,
+										gradeSubComponentId: gradeSubComponent.find(
+											(subComponent) => {
+												return subComponent.name === key
+											}
+										)._id,
+										percentage: gradeSubComponent.find((subComponent) => {
+											return subComponent.name === key
+										}).percentage,
+										grade: item[key]
+									}
+								}),
+								totalGrade: null,
+								percentage: gradeComponent.percentage
+							}
+						})
+					}
 				})
 
-				console.log(data)
-				console.log(listStudentGrades)
+				const dataWithFinalGrade = dataWithGradeComponent.map((item) => {
+					const gradeComponent = item.gradeStructure.map((gradeComponent) => {
+						const gradeSubComponent = gradeComponent.gradeSubComponent.map(
+							(gradeSubComponent) => {
+								return {
+									grade: gradeSubComponent.grade,
+									percentage: gradeSubComponent.percentage
+								}
+							}
+						)
+						const finalGrade = gradeSubComponent.reduce(
+							(accumulator, { grade, percentage }) => {
+								return accumulator + (grade * percentage) / 100
+							},
+							0
+						)
+						return {
+							...gradeComponent,
+							totalGrade: finalGrade
+						}
+					})
+					return {
+						...item,
+						gradeStructure: gradeComponent
+					}
+				})
+
+				const typeDataWithFinalGrade = dataWithFinalGrade.map((item) => {
+					return plainToClass(AddGradeStudentDto, item)
+				})
+
+				const result = await Promise.all(
+					typeDataWithFinalGrade.map(async (item) => {
+						return await this.studentGradeRepository.updateStudentGradeOnceUploadExcel(
+							item
+						)
+					})
+				)
+				if (!result) {
+					throw new DatabaseExecutionException('Upload grade failed')
+				}
+				return result
 			}
-
-			// const listStudents = data.map((item) => {
-			// 	return plainToClass(CreateStudentGradeDto, item)
-			// })
-			// const listStudentsWithCourseId = listStudents.map((item) => {
-			// 	return { ...item, courseId }
-			// })
-			// const result = await this.studentGradeRepository.createManyStudentGrade(
-			// 	listStudentsWithCourseId
-			// )
-
-			// if (!result) {
-			// 	throw new DatabaseExecutionException('upload student list failed')
-			// }
-			// const finalResult = result.map((item) => {
-			// 	return item.toJSON()
-			// })
-			// return result
-			return 2
 		} catch (err) {
 			throw new DatabaseExecutionException(err.message)
 		}

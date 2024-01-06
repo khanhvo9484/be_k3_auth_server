@@ -24,7 +24,7 @@ export class CreateStudentGradeDto {
 	grade: IGrade
 
 	@Expose()
-	finalGrade: number
+	finalGrade: number = null
 }
 
 @Exclude()
@@ -43,22 +43,34 @@ export class CreateStudentMappingIdDto {
 @Exclude()
 export class AddGradeStudentDto {
 	@Expose()
-	@IsNotEmpty()
-	@IsString()
-	gradeStructureId: string
-
-	@Expose()
-	@IsNotEmpty()
-	gradeComponent: StudentGradeComponent[]
-
+	gradeStructure: {
+		gradeStructure: Array<{
+			gradeComponentId: string
+			gradeComponentName: string
+			percentage: number
+			totalGrade: number
+			gradeSubComponent: Array<{
+				gradeSubComponentId: string
+				gradeSubComponentName: string
+				percentage: number
+				grade: number
+			}>
+		}>
+	}
 	@Expose()
 	@IsOptional()
-	gradeSubComponent: StudentGradeSubComponent[]
+	fullName: string
+
+	@Expose()
+	courseId: string
+
+	@Expose()
+	studentOfficialId: string
 
 	@Expose()
 	@IsString()
 	@Transform((params: TransformFnParams) => parseFloat(params.value))
-	totalGrade: number
+	finalGrade: number
 }
 
 @Exclude()
@@ -102,4 +114,14 @@ export class StudentGradeSubComponent {
 	@IsString()
 	@Transform((params: TransformFnParams) => parseFloat(params.value))
 	grade: number
+}
+
+export class DataFromExcelFile {
+	@Expose({ name: 'MSSV' })
+	studentOfficialId: string
+
+	@Expose({ name: 'Họ và tên' })
+	fullName: string;
+
+	[key: string]: any
 }

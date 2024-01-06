@@ -1,5 +1,6 @@
 import { ExcelParserException } from '@common/exceptions'
 import { Injectable } from '@nestjs/common'
+import { plainToClass } from 'class-transformer'
 import * as XLSX from 'xlsx'
 
 @Injectable()
@@ -41,7 +42,7 @@ export class ExcelService {
 	async generateExcelBufferWithComplexData() {
 		throw new Error('Not implemented')
 	}
-	async readExcelFile(file: any) {
+	async readExcelFile<T>(file: any) {
 		try {
 			if (!file || !file.buffer || !(file.buffer instanceof Buffer)) {
 				throw new Error('Invalid Excel file')

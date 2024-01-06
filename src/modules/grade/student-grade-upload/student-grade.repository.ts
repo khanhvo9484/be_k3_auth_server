@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { IGradeStructure, IStudentGrade } from '../resource/shemas'
 import { Model } from 'mongoose'
-import { CreateStudentGradeDto } from './resource/dto'
+import { AddGradeStudentDto, CreateStudentGradeDto } from './resource/dto'
 @Injectable()
 export class StudentGradeRepository {
 	constructor(
@@ -18,5 +18,27 @@ export class StudentGradeRepository {
 		return result
 	}
 
-	async updateStudentGrade(entity: Object, where: Object) {}
+	async updateStudentGrade(entity: Object, where: Object) {
+		const result = await this.studentGradeModel.updateOne(where, entity)
+		return result
+	}
+
+	async updateStudentGradeOnceUploadExcel(request: AddGradeStudentDto) {
+		const result = await this.studentGradeModel.findOneAndUpdate(
+			{
+				courseId: request.courseId,
+				studentOfficialId: request.studentOfficialId
+			},
+			{
+				$push: {
+					'grade.gradeStructure': request.gradeStructure[0]
+					// grade: { gradeStructure: request.gradeStructure }
+				}
+			},
+			{
+				new: true
+			}
+		)
+		return result.toJSON()
+	}
 }
