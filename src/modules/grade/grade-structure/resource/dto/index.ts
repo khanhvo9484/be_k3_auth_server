@@ -99,6 +99,30 @@ export class UpdateGradeStructureRequest {
 	status: string = GradeStructureStatus.IS_NOT_GRADED
 }
 
+export class UpdateGradeStructureRequestRewrite {
+	@IsNotEmpty()
+	gradeStructureId: string
+
+	@IsNotEmpty()
+	name: string
+
+	@IsOptional()
+	description: string
+
+	@IsNotEmpty()
+	@Transform((params: TransformFnParams) => parseInt(params.value))
+	percentage: number
+
+	@IsNotEmpty()
+	order: number
+
+	@IsOptional()
+	status: string = GradeStructureStatus.IS_NOT_GRADED
+
+	@IsNotEmpty()
+	gradeSubComponent: GradeSubComponent[]
+}
+
 export class CreateGradeSubcomponent {
 	@IsNotEmpty()
 	gradeStructureId: string

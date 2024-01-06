@@ -7,6 +7,7 @@ import {
 	CreateGradeSubcomponent,
 	GradeStructureResponse,
 	UpdateGradeStructureRequest,
+	UpdateGradeStructureRequestRewrite,
 	UpdateGradeSubComponentRequest
 } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
@@ -144,6 +145,23 @@ export class GradeStructureService {
 				if (result[0] !== null) return result[0]
 				throw new BadRequestException('Grade structure not found')
 			}
+			return result
+		} catch (error) {
+			console.log(error)
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
+
+	async updateGradeRewrite(
+		request: UpdateGradeStructureRequestRewrite[],
+		courseId
+	) {
+		try {
+			const result = await this.gradeRepository.updateGradeStructureRewrite(
+				request,
+				courseId
+			)
+
 			return result
 		} catch (error) {
 			console.log(error)

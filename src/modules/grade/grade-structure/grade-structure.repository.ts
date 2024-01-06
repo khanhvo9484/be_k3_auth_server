@@ -5,6 +5,7 @@ import {
 	CreateGradeStructureRequest,
 	CreateGradeSubcomponent,
 	UpdateGradeStructureRequest,
+	UpdateGradeStructureRequestRewrite,
 	UpdateGradeSubComponentRequest
 } from './resource/dto'
 
@@ -84,6 +85,20 @@ export class GradeStructureRepository {
 		}
 
 		// return null
+	}
+
+	async updateGradeStructureRewrite(
+		request: UpdateGradeStructureRequestRewrite[],
+		courseId: string
+	) {
+		const result = await this.gradeStructureModel.updateOne(
+			{ courseId: courseId },
+			{
+				$set: {
+					gradeComponent: request
+				}
+			}
+		)
 	}
 
 	async createGradeSubcomponent(request: CreateGradeSubcomponent) {

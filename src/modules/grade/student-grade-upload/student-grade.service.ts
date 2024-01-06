@@ -1,3 +1,4 @@
+import { GradeSubComponent } from './../grade-structure/resource/dto/index'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ExcelService } from '@utils/excel/excel.service'
 import {
@@ -6,6 +7,7 @@ import {
 } from './resource/constant'
 import { plainToClass } from 'class-transformer'
 import {
+	AddGradeStudentDto,
 	CreateStudentGradeDto,
 	CreateStudentMappingIdDto
 } from './resource/dto'
@@ -117,14 +119,14 @@ export class StudentGradeService {
 						}
 					)
 
-					const data3 = gradeSubcomponents.reduce(
+					const gradeSubComponentObject = gradeSubcomponents.reduce(
 						(a, b) => Object.assign(a, b),
 						{}
 					)
 					return {
 						MSSV: item.studentOfficialId,
 						'Họ và tên': item.fullName,
-						...data3
+						...gradeSubComponentObject
 					}
 				})
 				const buffer = await this.excelService.generateExcelBufferWithData(
@@ -221,26 +223,90 @@ export class StudentGradeService {
 		}
 	}
 
-	async uploadStudentGrade(file: any, courseId: string) {
+	async uploadStudentGrade(
+		file: any,
+		courseId: string,
+		gradeComponentId: string
+	) {
 		try {
 			const data = await this.excelService.readExcelFile(file)
-			const listStudents = data.map((item) => {
-				return plainToClass(CreateStudentGradeDto, item)
-			})
-			const listStudentsWithCourseId = listStudents.map((item) => {
-				return { ...item, courseId }
-			})
-			const result = await this.studentGradeRepository.createManyStudentGrade(
-				listStudentsWithCourseId
-			)
 
-			if (!result) {
-				throw new DatabaseExecutionException('upload student list failed')
+			if (data.length === 0) {
+				throw new BadRequestException('File is empty')
 			}
-			const finalResult = result.map((item) => {
-				return item.toJSON()
-			})
-			return result
+			if (data[0]['MSSV'] === undefined || data[0]['MSSV'] === null) {
+				throw new BadRequestException('File is not correct')
+			}
+			const gradeStructure =
+				await this.gradeStructureService.getGradeComponentById(
+					courseId,
+					gradeComponentId
+				)
+
+			const gradeComponent = gradeStructure.gradeComponent
+			if (gradeComponent.length === 0) {
+				throw new BadRequestException('Grade component not found')
+			}
+			const gradeSubComponent = gradeComponent[0].gradeSubComponent
+			if (gradeSubComponent.length === 0) {
+				if (
+					data[0][gradeComponent[0].name] === undefined ||
+					data[0][gradeComponent[0].name] === null
+				) {
+					throw new BadRequestException('File is not correct')
+				}
+				const listStudentGrades = data.map((item) => {
+					return plainToClass(AddGradeStudentDto, item)
+				})
+			} else {
+				if (
+					data[0][gradeComponent[0].gradeSubComponent[0].name] === undefined ||
+					data[0][gradeComponent[0].gradeSubComponent[0].name] === null
+				) {
+					throw new BadRequestException('File is not correct')
+				}
+
+				const listSubComponent = gradeComponent[0].gradeSubComponent.map(
+					(subComponent) => {
+						return {
+							[subComponent.name]: null
+						}
+					}
+				)
+
+				const gradeSubComponentObject = listSubComponent.reduce(
+					(a, b) => Object.assign(a, b),
+					{}
+				)
+				const keysArray = Object.keys(gradeSubComponentObject)
+				console.log(gradeSubComponentObject)
+				console.log(keysArray)
+				const listStudentGrades = data.map((item) => {
+					return {}
+				})
+
+				console.log(data)
+				console.log(listStudentGrades)
+			}
+
+			// const listStudents = data.map((item) => {
+			// 	return plainToClass(CreateStudentGradeDto, item)
+			// })
+			// const listStudentsWithCourseId = listStudents.map((item) => {
+			// 	return { ...item, courseId }
+			// })
+			// const result = await this.studentGradeRepository.createManyStudentGrade(
+			// 	listStudentsWithCourseId
+			// )
+
+			// if (!result) {
+			// 	throw new DatabaseExecutionException('upload student list failed')
+			// }
+			// const finalResult = result.map((item) => {
+			// 	return item.toJSON()
+			// })
+			// return result
+			return 2
 		} catch (err) {
 			throw new DatabaseExecutionException(err.message)
 		}

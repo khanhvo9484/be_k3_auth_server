@@ -15,7 +15,7 @@ export interface IGrade {
 	}>
 }
 
-export const GradeSchema = new Schema<IGrade>({
+const GradeSchema = new Schema<IGrade>({
 	gradeComponent: [
 		{
 			gradeComponentId: { type: String, required: true },
@@ -33,3 +33,26 @@ export const GradeSchema = new Schema<IGrade>({
 		}
 	]
 })
+
+GradeSchema.set('toObject', { getters: true }).set('toJSON', {
+	getters: true,
+	minimize: false,
+	transform: function (doc, ret, options) {
+		// Create a new object to control property order
+		const transformedObject: Record<string, any> = {}
+
+		// Add 'id' property at the start
+		transformedObject.id = ret._id
+
+		// Copy other properties to the new object
+		for (const key in ret) {
+			if (key !== '_id' && key !== '__v') {
+				transformedObject[key] = ret[key]
+			}
+		}
+
+		return transformedObject
+	}
+})
+
+export { GradeSchema }

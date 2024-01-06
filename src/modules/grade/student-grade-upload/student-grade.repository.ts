@@ -17,4 +17,6 @@ export class StudentGradeRepository {
 		const result = await this.studentGradeModel.find({ courseId })
 		return result
 	}
+
+	async updateStudentGrade(entity: Object, where: Object) {}
 }

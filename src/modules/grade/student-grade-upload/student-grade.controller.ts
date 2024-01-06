@@ -117,11 +117,16 @@ export class StudentGradeController {
 	async uploadStudentGrade(
 		@UploadedFile() file,
 		@Req() request: Request,
-		@Body() body: { courseId: string }
+		@Body()
+		body: {
+			courseId: string
+			gradeComponentId: string
+		}
 	) {
 		const result = await this.studentGradeService.uploadStudentGrade(
 			file,
-			body.courseId
+			body.courseId,
+			body.gradeComponentId
 		)
 		return {
 			message: 'upload student grade success',

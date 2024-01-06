@@ -1,5 +1,6 @@
 import { Document, Schema } from 'mongoose'
 import { IGrade, GradeSchema } from './grade.schema'
+import { GradeStructureStatus } from '../../enum'
 
 export interface IStudentGrade extends Document {
 	courseId: string
@@ -7,6 +8,7 @@ export interface IStudentGrade extends Document {
 	fullName: string
 	grade: IGrade
 	finalGrade: number
+	status: string
 }
 
 const StudentGradeSchema = new Schema<IStudentGrade>({
@@ -14,7 +16,13 @@ const StudentGradeSchema = new Schema<IStudentGrade>({
 	studentOfficialId: { type: String, required: true },
 	fullName: { type: String, required: true },
 	grade: { type: GradeSchema },
-	finalGrade: { type: Number }
+	finalGrade: { type: Number },
+	status: {
+		type: String,
+		default: () => {
+			return GradeStructureStatus.IS_NOT_GRADED
+		}
+	}
 })
 
 StudentGradeSchema.set('toObject', { getters: true }).set('toJSON', {

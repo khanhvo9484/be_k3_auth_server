@@ -14,6 +14,7 @@ import {
 	CreateGradeStructureRequest,
 	CreateGradeSubcomponent,
 	UpdateGradeStructureRequest,
+	UpdateGradeStructureRequestRewrite,
 	UpdateGradeSubComponentRequest
 } from './resource/dto'
 import { Public } from '@common/decorator'
@@ -60,6 +61,26 @@ export class GradeStructureController {
 		const result = await this.gradeService.createGradeSubcomponent(subComponent)
 		return {
 			message: 'create grade subcomponent success',
+			data: result
+		}
+	}
+
+	@Public()
+	@Put('update-grade-rewrite')
+	async updateGradeRewrite(
+		@Req() request: Request,
+		@Body()
+		body: {
+			gradeComponent: UpdateGradeStructureRequestRewrite[]
+			courseId: string
+		}
+	) {
+		const result = await this.gradeService.updateGradeRewrite(
+			body.gradeComponent,
+			body.courseId
+		)
+		return {
+			message: 'update grade structure success',
 			data: result
 		}
 	}
