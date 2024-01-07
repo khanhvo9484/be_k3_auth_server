@@ -11,29 +11,31 @@ datasource db {
 }
 
 model User {
-  id                String               @id
-  email             String               @unique
+  id                String        @id
+  email             String        @unique
   name              String?
   password          String
-  role              String               @default("user")
+  role              String        @default("user")
   dob               DateTime?
   avatar            String?
   bio               String?
   phoneNumber       String?
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
   deletedAt         DateTime?
-  isVerified        Boolean              @default(false)
-  accountType       String               @default("local")
+  isVerified        Boolean       @default(false)
+  accountType       String        @default("local")
   ownCourses        Course[]
   joinCourses       User_Course[]
   invitions         Invitation[]
-  isSuspensed       Boolean              @default(false)
-  isBlocked         Boolean              @default(false)
+  isSuspended       Boolean       @default(false)
+  isBlocked         Boolean       @default(false)
   studentOfficialId String?
-  notifications     Notification[]
-  gradeReviews      GradeReview[]
-  comments          GradeReviewComment[]
+
+  gradeReviews  GradeReview[]
+  comments      GradeReviewComment[]
+  notifications Notification[]       @relation("User")
+  actions       Notification[]       @relation("Actor")
 }
 
 model Course {
@@ -95,17 +97,21 @@ model GradeStructure {
 model Notification {
   id        String    @id
   userId    String
+  actorId   String
   title     String
   content   String
+  type      String
+  targetId  String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation("User", fields: [userId], references: [id])
+  actor     User      @relation("Actor", fields: [actorId], references: [id])
 }
 
 model GradeReview {
   id            String               @id
-  userId        String
+  studentId     String
   courseId      String
   currentGrade  Int
   expectedGrade Int
@@ -113,21 +119,21 @@ model GradeReview {
   updatedAt     DateTime             @updatedAt
   deletedAt     DateTime?
   imgURL        String?
-  user          User                 @relation(fields: [userId], references: [id])
+  status        String               @default("pending")
+  user          User                 @relation(fields: [studentId], references: [id])
   course        Course               @relation(fields: [courseId], references: [id])
   comments      GradeReviewComment[]
 }
 
 model GradeReviewComment {
-  id            String      @id
+  id            String @id
   userId        String
   gradeReviewId String
   content       String
-  type          String
-  targetId      String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  deletedAt     DateTime?
-  user          User        @relation(fields: [userId], references: [id])
-  gradeReview   GradeReview @relation(fields: [gradeReviewId], references: [id])
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+  user        User        @relation(fields: [userId], references: [id])
+  gradeReview GradeReview @relation(fields: [gradeReviewId], references: [id])
 }

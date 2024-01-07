@@ -2,6 +2,7 @@ import { Exclude, Expose, Type } from 'class-transformer'
 
 import { IsEmail, IsNotEmpty, IsString, IsOptional } from 'class-validator'
 import { generateId } from '@utils/id-helper'
+import { User } from '@prisma/client'
 
 class CreateUserRequest {
 	@IsString()
@@ -69,6 +70,60 @@ class UpdateUserRequest {
 	@IsOptional()
 	@IsString()
 	phoneNumber: string
+}
+
+class UpdateUserByAdminRequest implements User {
+	id: string
+	email: string
+	password: string
+	createdAt: Date
+	updatedAt: Date
+	deletedAt: Date
+	isSuspensed: boolean
+	@IsOptional()
+	@IsString()
+	name: string
+
+	@IsOptional()
+	@IsString()
+	avatar: string
+
+	@IsOptional()
+	@Type(() => Date)
+	@IsNotEmpty({ message: 'Date of birth is required' })
+	dob: Date
+
+	@IsOptional()
+	@IsString()
+	bio: string
+
+	@IsOptional()
+	@IsString()
+	phoneNumber: string
+
+	@IsOptional()
+	@IsString()
+	role: string
+
+	@IsOptional()
+	@IsString()
+	studentOfficialId: string
+
+	@IsOptional()
+	@IsString()
+	isVerified: boolean
+
+	@IsOptional()
+	@IsString()
+	isBlocked: boolean
+
+	@IsOptional()
+	@IsString()
+	isSuspended: boolean
+
+	@IsOptional()
+	@IsString()
+	accountType: string
 }
 
 @Exclude()
