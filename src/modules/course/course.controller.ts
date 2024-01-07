@@ -40,6 +40,17 @@ export class CourseController {
 		return { message: 'get all course successfully', data: refinedResult }
 	}
 
+	@Get('admin-all')
+	@HttpCode(200)
+	async getAllCourseByAdmin(@Req() request: Request) {
+		const user = request.user
+		const result = await this.courseService.getAllCourseByAdmin()
+		const refinedResult = result.map((item) => {
+			return plainToClass(CourseResponse, item)
+		})
+		return { message: 'get all course successfully', data: refinedResult }
+	}
+
 	@Get('all-archived')
 	@HttpCode(200)
 	async getAllArchivedCourse(@Req() request: Request) {

@@ -60,6 +60,13 @@ export class CourseService {
 			throw new DatabaseExecutionException('Get all course failed')
 		}
 	}
+	async getAllCourseByAdmin() {
+		try {
+			return await this.courseRepository.getAllCourseByAdmin()
+		} catch (error) {
+			throw new DatabaseExecutionException('Get all course failed')
+		}
+	}
 
 	async getAllArchivedCourse(
 		userId: string,

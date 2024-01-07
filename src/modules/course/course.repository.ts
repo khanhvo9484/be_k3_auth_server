@@ -74,6 +74,15 @@ export class CourseRepository {
 		return result.map((item) => item.course)
 	}
 
+	async getAllCourseByAdmin() {
+		const result = await this.prisma.course.findMany({
+			include: {
+				courseOwner: true
+			}
+		})
+		return result
+	}
+
 	async getAllArchivedCourse(
 		userId: string,
 		params?: {
