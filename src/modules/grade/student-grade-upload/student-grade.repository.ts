@@ -30,7 +30,7 @@ export class StudentGradeRepository {
 				studentOfficialId: request.studentOfficialId
 			},
 			{
-				$push: {
+				$set: {
 					'grade.gradeComponent': request.gradeComponent
 					// grade: { gradeStructure: request.gradeStructure }
 				}

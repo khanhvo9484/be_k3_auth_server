@@ -156,8 +156,7 @@ export class StudentGradeService {
 				await this.studentGradeRepository.getStudentGradeByCourseId(courseId)
 			const gradeComponent =
 				await this.gradeStructureService.getGradeStructure(courseId)
-			console.log(result)
-			console.log(gradeComponent)
+
 			if (result.length === 0) {
 				throw new BadRequestException('Student list not found')
 			}
