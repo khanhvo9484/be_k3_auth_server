@@ -21,7 +21,7 @@ export class CreateStudentGradeDto {
 
 	@Expose()
 	@IsOptional()
-	grade: IGrade
+	grade: IGrade = null
 
 	@Expose()
 	finalGrade: number = null

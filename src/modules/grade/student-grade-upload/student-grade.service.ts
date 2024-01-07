@@ -149,6 +149,23 @@ export class StudentGradeService {
 		}
 	}
 
+	async getStudentGradeBoard(courseId: string) {
+		try {
+			const result =
+				await this.studentGradeRepository.getStudentGradeByCourseId(courseId)
+			if (result.length === 0) {
+				throw new BadRequestException('Student list not found')
+			}
+			const finalResult = result.map((item) => {
+				return item.toJSON()
+			})
+			return finalResult
+		} catch (err) {
+			console.log(err)
+			throw err
+		}
+	}
+
 	async uploadStudentList(file: any, courseId: string) {
 		try {
 			const data = await this.excelService.readExcelFile(file)
@@ -161,7 +178,7 @@ export class StudentGradeService {
 					courseId,
 					finalGrade: null,
 					grade: {
-						gradeStructure: []
+						gradeComponent: []
 					}
 				}
 			})
@@ -289,8 +306,8 @@ export class StudentGradeService {
 
 						gradeStructure: gradeComponent.map((gradeComponent) => {
 							return {
-								gradeComponentName: gradeComponent.name,
-								gradeComponentId: gradeComponent.id,
+								name: gradeComponent.name,
+								_id: gradeComponent.id,
 								gradeSubComponent: [],
 								totalGrade: item[gradeComponentName],
 								percentage: gradeComponent.percentage

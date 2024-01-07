@@ -1,31 +1,54 @@
+import { generateId } from '@utils/id-helper'
 import { Schema } from 'mongoose'
+import { IGradeComponent } from '../grade-structure/grade-component.schema'
+import { IGradeSubComponent } from '../grade-structure/grade-sub-component.schema'
 
 export interface IGrade {
-	gradeStructure: Array<{
-		gradeComponentId: string
-		gradeComponentName: string
-		percentage: number
-		totalGrade: number
-		gradeSubComponent: Array<{
-			gradeSubComponentId: string
-			gradeSubComponentName: string
-			percentage: number
-			grade: number
-		}>
-	}>
+	// gradeComponent: Array<{
+	// 	_id: string
+	// 	name: string
+	// 	percentage: number
+	// 	totalGrade: number
+	// 	gradeSubComponent: Array<{
+	// 		gradeSubComponentId: string
+	// 		gradeSubComponentName: string
+	// 		percentage: number
+	// 		grade: number
+	// 	}>
+	// }>
+	gradeComponent: IGradeComponent &
+		{
+			totalGrade: number
+			gradeSubComponent: IGradeSubComponent &
+				{
+					grade: number
+				}[]
+		}[]
 }
 
 const GradeSchema = new Schema<IGrade>({
-	gradeStructure: [
+	gradeComponent: [
 		{
-			gradeComponentId: { type: String, required: true },
-			gradeComponentName: { type: String, required: true },
+			_id: {
+				type: String,
+				required: true,
+				default: () => {
+					return generateId('GC')
+				}
+			},
+			name: { type: String, required: true },
 			percentage: { type: Number, required: true },
 			totalGrade: { type: Number },
 			gradeSubComponent: [
 				{
-					gradeSubComponentId: { type: String, required: true },
-					gradeSubComponentName: { type: String, required: true },
+					_id: {
+						type: String,
+						required: true,
+						default: () => {
+							return generateId('SC')
+						}
+					},
+					name: { type: String, required: true },
 					percentage: { type: Number, required: true },
 					grade: { type: Number, required: true }
 				}

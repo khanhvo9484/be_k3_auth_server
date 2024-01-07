@@ -74,6 +74,20 @@ export class StudentGradeController {
 		response.send(buffer)
 	}
 
+	@Get('student-grade-board/:courseId')
+	async getStudentGradeBoard(
+		@Req() request: Request,
+		@Param() param: { courseId: string }
+	) {
+		const result = await this.studentGradeService.getStudentGradeBoard(
+			param.courseId
+		)
+		return {
+			message: 'get student grade board success',
+			data: result
+		}
+	}
+
 	@UseInterceptors(FileInterceptor('file'))
 	@Post('upload-student-list')
 	async uploadStudentList(
