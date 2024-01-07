@@ -32,6 +32,21 @@ export class UsersController {
 			data: plainToClass(UserResponse, result)
 		}
 	}
+
+	@Get('/all-users')
+	async getAllUser() {
+		const result = await this.userService.getAllUsers({})
+		if (!result) {
+			throw new DatabaseExecutionException('User not found', 'E1276')
+			// throw new NotFoundException('User not found', 'E1276')
+		}
+		return {
+			message: 'Get all user info',
+			data: result.map((item) => {
+				return plainToClass(UserResponse, item)
+			})
+		}
+	}
 	@Put('/user')
 	async updateUser(@Req() request: Request, @Body() body: UpdateUserRequest) {
 		if (!request['user']) {

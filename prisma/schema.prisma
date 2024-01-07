@@ -11,26 +11,29 @@ datasource db {
 }
 
 model User {
-  id                String        @id
-  email             String        @unique
+  id                String               @id
+  email             String               @unique
   name              String?
   password          String
-  role              String        @default("user")
+  role              String               @default("user")
   dob               DateTime?
   avatar            String?
   bio               String?
   phoneNumber       String?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
   deletedAt         DateTime?
-  isVerified        Boolean       @default(false)
-  accountType       String        @default("local")
+  isVerified        Boolean              @default(false)
+  accountType       String               @default("local")
   ownCourses        Course[]
   joinCourses       User_Course[]
   invitions         Invitation[]
-  isSuspensed       Boolean       @default(false)
-  isBlocked         Boolean       @default(false)
+  isSuspensed       Boolean              @default(false)
+  isBlocked         Boolean              @default(false)
   studentOfficialId String?
+  notifications     Notification[]
+  gradeReviews      GradeReview[]
+  comments          GradeReviewComment[]
 }
 
 model Course {
@@ -46,6 +49,7 @@ model Course {
   courseOwner    User             @relation(fields: [courseOwnerId], references: [id])
   inviations     Invitation[]
   gradeStructure GradeStructure[]
+  gradeReviews   GradeReview[]
   isDeleted      Boolean          @default(false)
 }
 
@@ -86,4 +90,44 @@ model GradeStructure {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   course    Course    @relation(fields: [courseId], references: [id])
+}
+
+model Notification {
+  id        String    @id
+  userId    String
+  title     String
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model GradeReview {
+  id            String               @id
+  userId        String
+  courseId      String
+  currentGrade  Int
+  expectedGrade Int
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  deletedAt     DateTime?
+  imgURL        String?
+  user          User                 @relation(fields: [userId], references: [id])
+  course        Course               @relation(fields: [courseId], references: [id])
+  comments      GradeReviewComment[]
+}
+
+model GradeReviewComment {
+  id            String      @id
+  userId        String
+  gradeReviewId String
+  content       String
+  type          String
+  targetId      String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  user          User        @relation(fields: [userId], references: [id])
+  gradeReview   GradeReview @relation(fields: [gradeReviewId], references: [id])
 }
