@@ -43,7 +43,7 @@ export class CreateStudentMappingIdDto {
 @Exclude()
 export class AddGradeStudentDto {
 	@Expose()
-	gradeComponent: Array<{
+	gradeComponent: {
 		_id: string
 		name: string
 		percentage: number
@@ -54,7 +54,7 @@ export class AddGradeStudentDto {
 			percentage: number
 			grade: number
 		}>
-	}>
+	}
 
 	@Expose()
 	@IsOptional()
