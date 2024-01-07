@@ -27,11 +27,10 @@ export class GradeReviewController {
 	@UseInterceptors(FileInterceptor('file'))
 	async uploadFile(@UploadedFile() file: any) {
 		try {
-			// const result = await this.fileUploaderService.uploadFile(file)
-			console.log(file)
+			const result = await this.fileUploaderService.uploadFile(file)
 			return {
 				message: 'upload file success',
-				data: file
+				data: result
 			}
 		} catch (error) {
 			console.log(error)
@@ -62,22 +61,22 @@ export class GradeReviewController {
 		}
 	}
 
-	// @UseInterceptors(FileInterceptor('file'))
-	// @Post('create-grade-review')
-	// async createGradeReview(
-	// 	@UploadedFile() file: any,
-	// 	@Req() request: Request,
-	// 	@Body() body: CreateGradeReviewRequest
-	// ) {
-	// 	try {
-	// 		const result = await this.gradeReviewService.createGradeReview(body, file)
-	// 		return {
-	// 			message: 'create grade review success',
-	// 			data: result
-	// 		}
-	// 	} catch (error) {
-	// 		console.log(error)
-	// 		throw new Error(error)
-	// 	}
-	// }
+	@UseInterceptors(FileInterceptor('file'))
+	@Post('create-grade-review')
+	async createGradeReview(
+		@UploadedFile() file: any,
+		@Req() request: Request,
+		@Body() body: CreateGradeReviewRequest
+	) {
+		try {
+			const result = await this.gradeReviewService.createGradeReview(body, file)
+			return {
+				message: 'create grade review success',
+				data: result
+			}
+		} catch (error) {
+			console.log(error)
+			throw new Error(error)
+		}
+	}
 }

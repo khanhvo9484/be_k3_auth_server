@@ -31,6 +31,7 @@ import { plainToClass } from 'class-transformer'
 import { UserResponse } from '@user/dto/user.dto'
 import { GradeStructureService } from '../grade/grade-structure/grade-structure.service'
 import { CreateGradeStructureRequest } from 'modules/grade/resource/dto'
+import { create } from 'domain'
 
 @Injectable()
 export class CourseService {
@@ -204,6 +205,7 @@ export class CourseService {
 						gradeComponent: []
 					}
 				)
+
 				const createdGradeStructure =
 					await this.gradeStructureService.createGradeStructure(
 						createGradeStructureRequest,
@@ -214,6 +216,7 @@ export class CourseService {
 
 			return result
 		} catch (error) {
+			console.log(error)
 			throw new DatabaseExecutionException('Create course failed')
 		}
 	}

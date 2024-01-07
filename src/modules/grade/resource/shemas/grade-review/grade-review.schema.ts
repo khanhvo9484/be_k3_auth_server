@@ -32,7 +32,12 @@ const GradeReviewSchema = new Schema<IGradeReview>(
 		expectedGrade: { type: Number, required: true },
 		explaination: { type: String, required: true },
 		imgURL: { type: String },
-		status: { type: String, required: true },
+		status: {
+			type: String,
+			default: () => {
+				return GradeReviewStatus.PENDING
+			}
+		},
 		createdAt: { type: Date, default: Date.now }
 	},
 	{ _id: true }

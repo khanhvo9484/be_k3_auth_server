@@ -25,7 +25,8 @@ const NotificationSchema = new Schema(
 		actions: [ActionSchema]
 	},
 	{
-		timestamps: true
+		timestamps: true,
+		_id: true
 	}
 )
 

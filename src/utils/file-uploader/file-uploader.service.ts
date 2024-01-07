@@ -1,17 +1,31 @@
 import { Injectable } from '@nestjs/common'
 import { storage } from './resource/config'
-import { getDownloadURL, ref as refs, uploadBytes } from 'firebase/storage'
+import {
+	getDownloadURL,
+	ref as refs,
+	updateMetadata,
+	uploadBytes
+} from 'firebase/storage'
 import { nanoid } from 'nanoid'
-import { fileTypeFromFile } from 'file-type'
+
 @Injectable()
 export class FileUploaderService {
 	constructor() {}
 
 	async uploadFile(file: any) {
-		console.log(file)
-		const storageRef = refs(storage, nanoid() + file.name)
-		const snapshot = await uploadBytes(storageRef, file.buffer)
-		const downloadURL = await getDownloadURL(snapshot.ref)
-		return downloadURL
+		try {
+			const storageRef = refs(storage, nanoid() + file.originalname)
+			const snapshot = await uploadBytes(storageRef, file.buffer)
+
+			// Set metadata to allow for browser preview
+			await updateMetadata(storageRef, {
+				contentType: file.mimetype // Set the content type based on the file mimetype
+			})
+			const downloadURL = await getDownloadURL(snapshot.ref)
+			return downloadURL
+		} catch (error) {
+			console.log(error)
+			throw new Error(error)
+		}
 	}
 }

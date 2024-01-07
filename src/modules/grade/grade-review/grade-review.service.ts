@@ -7,13 +7,15 @@ import { IGradeReview } from '../resource/shemas'
 import { CreateGradeReviewRequest, GradeReviewResponse } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { FileUploaderService } from '@utils/file-uploader/file-uploader.service'
+import { NotificationService } from 'modules/notification/notification.service'
 
 @Injectable()
 export class GradeReviewService {
 	constructor(
 		private gradeReviewRepository: GradeReviewRepository,
 		private courseService: CourseService,
-		private fileUploaderService: FileUploaderService
+		private fileUploaderService: FileUploaderService,
+		private notificationService: NotificationService
 	) {}
 
 	async getAllGradeReview(
@@ -55,7 +57,9 @@ export class GradeReviewService {
 			if (!result) {
 				throw new Error('cannot create grade review')
 			} else {
-				return plainToClass(GradeReviewResponse, result)
+				// const teacher =
+				// const notification = await this.notificationService.create({})
+				// return plainToClass(GradeReviewResponse, result)
 			}
 		} catch (error) {
 			console.log(error)

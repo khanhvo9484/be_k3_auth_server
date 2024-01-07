@@ -1,5 +1,6 @@
 import { Exclude, Expose } from 'class-transformer'
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import { GradeReviewStatus } from 'modules/grade/resource/enum'
 
 @Exclude()
 export class GradeReviewResponse {
@@ -48,17 +49,17 @@ export class CreateGradeReviewRequest {
 	courseId: string
 
 	@IsNotEmpty()
-	currentGrade: number
+	currentGrade: number = null
 
 	@IsNotEmpty()
-	expectedGrade: number
+	expectedGrade: number = null
 
 	@IsOptional()
-	explaination: string
+	explaination: string = null
 
 	@IsOptional()
-	imgURL: string
+	imgURL: string = null
 
 	@IsOptional()
-	status: string
+	status: string = GradeReviewStatus.PENDING
 }

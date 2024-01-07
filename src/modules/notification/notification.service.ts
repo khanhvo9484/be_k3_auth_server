@@ -34,4 +34,30 @@ export class NotificationService {
 			throw new DatabaseExecutionException(error.message)
 		}
 	}
+
+	async createNotificationForTeacher(params: {
+		courseId: string
+		notification: CreateNotificationDto
+	}) {
+		try {
+			const { courseId, notification } = params
+			const result = await this.notificationRepository.create(notification)
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
+
+	async createNotificationForStudent(params: {
+		courseId: string
+		notification: CreateNotificationDto
+	}) {
+		try {
+			const { courseId, notification } = params
+			const result = await this.notificationRepository.create(notification)
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
 }
