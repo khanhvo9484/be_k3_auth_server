@@ -223,4 +223,17 @@ export class CourseRepository {
 		})
 		return result
 	}
+
+	async getMemberInCourseByRole(courseId: string, role: string) {
+		const result = await this.prisma.user_Course.findMany({
+			where: {
+				courseId: courseId,
+				roleInCourse: role
+			},
+			select: {
+				user: true
+			}
+		})
+		return result.map((item) => item.user)
+	}
 }

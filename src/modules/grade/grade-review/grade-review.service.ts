@@ -7,15 +7,13 @@ import { IGradeReview } from '../resource/shemas'
 import { CreateGradeReviewRequest, GradeReviewResponse } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { FileUploaderService } from '@utils/file-uploader/file-uploader.service'
-import { NotificationService } from 'modules/notification/notification.service'
 
 @Injectable()
 export class GradeReviewService {
 	constructor(
 		private gradeReviewRepository: GradeReviewRepository,
 		private courseService: CourseService,
-		private fileUploaderService: FileUploaderService,
-		private notificationService: NotificationService
+		private fileUploaderService: FileUploaderService
 	) {}
 
 	async getAllGradeReview(
@@ -24,12 +22,12 @@ export class GradeReviewService {
 		roleInCourse: string
 	) {
 		try {
-			let result: IGradeReview[]
+			let result: any
 			if (roleInCourse === 'student') {
-				result = await this.gradeReviewRepository.getAllStudentGradeReview(
-					courseId,
-					user.id
-				)
+				result = await this.gradeReviewRepository.getAllStudentGradeReview({
+					courseId: courseId,
+					studentId: user.id
+				})
 			} else {
 				result = await this.gradeReviewRepository.getAllGradeReview(courseId)
 				return result
@@ -37,9 +35,7 @@ export class GradeReviewService {
 			if (!result) {
 				throw new Error('not found')
 			} else {
-				return result.map((item) => {
-					plainToClass(GradeReviewResponse, item.toJSON())
-				})
+				return result
 			}
 		} catch (error) {
 			console.log(error)
@@ -53,14 +49,28 @@ export class GradeReviewService {
 				const result = await this.fileUploaderService.uploadFile(file)
 				request.imgURL = result
 			}
-			const result = await this.gradeReviewRepository.createGradeReview(request)
-			if (!result) {
-				throw new Error('cannot create grade review')
-			} else {
-				// const teacher =
-				// const notification = await this.notificationService.create({})
-				// return plainToClass(GradeReviewResponse, result)
+			const studentId = request.studentId
+			const courseId = request.courseId
+			const requestWithoutStudentId = {
+				...request,
+				studentId: undefined,
+				courseId: undefined
 			}
+			const result = await this.gradeReviewRepository.createGradeReview({
+				...requestWithoutStudentId,
+				user: {
+					connect: {
+						id: studentId
+					}
+				},
+				course: {
+					connect: {
+						id: courseId
+					}
+				}
+			})
+
+			return result
 		} catch (error) {
 			console.log(error)
 			throw new DatabaseExecutionException(error.message)

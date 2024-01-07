@@ -1,4 +1,11 @@
-import { Exclude, Expose } from 'class-transformer'
+import { GradeReview } from '@prisma/client'
+import { generateId } from '@utils/id-helper'
+import {
+	Exclude,
+	Expose,
+	Transform,
+	TransformFnParams
+} from 'class-transformer'
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import { GradeReviewStatus } from 'modules/grade/resource/enum'
 
@@ -36,9 +43,21 @@ export class GradeReviewResponse {
 }
 
 export class CreateGradeReviewRequest {
+	@IsOptional()
+	id: string = generateId('GR')
+
+	@IsOptional()
+	createdAt: Date
+
+	@IsOptional()
+	updatedAt: Date
+
+	@IsOptional()
+	deletedAt: Date
+
 	@IsNotEmpty()
 	@IsString()
-	studentId: string
+	studentId?: string
 
 	@IsNotEmpty()
 	@IsString()
@@ -49,9 +68,11 @@ export class CreateGradeReviewRequest {
 	courseId: string
 
 	@IsNotEmpty()
+	@Transform((params: TransformFnParams) => parseFloat(params.value))
 	currentGrade: number = null
 
 	@IsNotEmpty()
+	@Transform((params: TransformFnParams) => parseFloat(params.value))
 	expectedGrade: number = null
 
 	@IsOptional()

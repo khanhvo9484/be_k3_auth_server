@@ -102,6 +102,7 @@ model Notification {
   content   String
   type      String
   targetId  String?
+  isRead    Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -113,8 +114,10 @@ model GradeReview {
   id            String               @id
   studentId     String
   courseId      String
+  gradeId       String
   currentGrade  Int
   expectedGrade Int
+  explaination  String?
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
   deletedAt     DateTime?

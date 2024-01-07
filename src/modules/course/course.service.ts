@@ -508,4 +508,16 @@ export class CourseService {
 			throw new DatabaseExecutionException('Remove user from course failed')
 		}
 	}
+
+	async getMemberInCourseByRole(courseId: string, role: string) {
+		try {
+			const result = await this.courseRepository.getMemberInCourseByRole(
+				courseId,
+				role
+			)
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException('Get teacher list failed')
+		}
+	}
 }

@@ -1,33 +1,38 @@
 import { Injectable, Inject } from '@nestjs/common'
-import { Model } from 'mongoose'
-import { IGradeReview } from '../resource/shemas'
 import { CreateGradeReviewRequest } from './resource/dto'
+import { PrismaService } from '@my-prisma/prisma.service'
+import { Prisma } from '@prisma/client'
 @Injectable()
 export class GradeReviewRepository {
-	constructor(
-		@Inject('GRADE_REVIEW_MODEL') private gradeReviewModel: Model<IGradeReview>
-	) {}
+	constructor(private prismaService: PrismaService) {}
 
-	async getAllStudentGradeReview(
-		courseId: string,
+	async getAllStudentGradeReview(params: {
+		courseId: string
 		studentId: string
-	): Promise<IGradeReview[]> {
-		const result = await this.gradeReviewModel.find({
-			courseId: courseId,
-			studentId: studentId
+	}) {
+		const { courseId, studentId } = params
+		const result = await this.prismaService.gradeReview.findMany({
+			where: {
+				courseId: courseId,
+				studentId: studentId
+			}
 		})
 		return result
 	}
 
-	async getAllGradeReview(courseId: string): Promise<IGradeReview[]> {
-		const result = await this.gradeReviewModel.find({ courseId: courseId })
+	async getAllGradeReview(courseId: string) {
+		const result = await this.prismaService.gradeReview.findMany({
+			where: {
+				courseId: courseId
+			}
+		})
 		return result
 	}
 
-	async createGradeReview(
-		request: CreateGradeReviewRequest
-	): Promise<IGradeReview> {
-		const result = await this.gradeReviewModel.create(request)
-		return result.toJSON()
+	async createGradeReview(data: Prisma.GradeReviewCreateInput) {
+		const result = await this.prismaService.gradeReview.create({
+			data: data
+		})
+		return result
 	}
 }

@@ -12,9 +12,6 @@ import {
 } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { PrismaService } from '@my-prisma/prisma.service'
-import { NotificationService } from 'modules/notification/notification.service'
-import { CreateNotificationDto } from 'modules/notification/resource/dto'
-import { NotificationType } from 'modules/notification/resource/enum'
 
 import { generateId } from '@utils/id-helper'
 import { plainToClass } from 'class-transformer'
@@ -24,8 +21,7 @@ export class GradeStructureService {
 		@Inject('GRADE_STRUCTURE_MODEL')
 		private gradeStructureModel: Model<IGradeStructure>,
 		private gradeRepository: GradeStructureRepository,
-		private prismaService: PrismaService,
-		private notificationService: NotificationService
+		private prismaService: PrismaService
 	) {}
 
 	async createGradeStructure(
@@ -51,20 +47,6 @@ export class GradeStructureService {
 				_id: generateId('GS')
 			})
 
-			const notification: CreateNotificationDto = {
-				userId: user.id,
-				actions: [
-					{
-						actorId: user.id,
-						type: NotificationType.NEW_GRADE_STRUCTURE,
-						targetId: request.courseId,
-						content: `New grade structure for course ${request.courseId}`,
-						isRead: false
-					}
-				]
-			}
-
-			this.notificationService.create(notification)
 			return result
 		} catch (error) {
 			console.log(error)
