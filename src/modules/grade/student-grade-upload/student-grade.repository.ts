@@ -24,6 +24,7 @@ export class StudentGradeRepository {
 	}
 
 	async updateStudentGradeOnceUploadExcel(request: AddGradeStudentDto) {
+		console.log(request)
 		const result = await this.studentGradeModel.findOneAndUpdate(
 			{
 				courseId: request.courseId,
@@ -31,7 +32,7 @@ export class StudentGradeRepository {
 			},
 			{
 				$push: {
-					'grade.gradeStructure': request.gradeStructure[0]
+					'grade.gradeComponent': request.gradeComponent
 					// grade: { gradeStructure: request.gradeStructure }
 				}
 			},

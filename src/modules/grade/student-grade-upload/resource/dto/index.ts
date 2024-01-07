@@ -43,20 +43,19 @@ export class CreateStudentMappingIdDto {
 @Exclude()
 export class AddGradeStudentDto {
 	@Expose()
-	gradeStructure: {
-		gradeStructure: Array<{
-			gradeComponentId: string
-			gradeComponentName: string
+	gradeComponent: Array<{
+		_id: string
+		name: string
+		percentage: number
+		totalGrade: number
+		gradeSubComponent: Array<{
+			_id: string
+			name: string
 			percentage: number
-			totalGrade: number
-			gradeSubComponent: Array<{
-				gradeSubComponentId: string
-				gradeSubComponentName: string
-				percentage: number
-				grade: number
-			}>
+			grade: number
 		}>
-	}
+	}>
+
 	@Expose()
 	@IsOptional()
 	fullName: string

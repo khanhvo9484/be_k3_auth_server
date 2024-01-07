@@ -18,6 +18,8 @@ import { UsersService } from '@user/user.service'
 import { CourseService } from 'modules/course/course.service'
 import { UserResponse } from '@user/dto/user.dto'
 import { GradeStructureService } from '../grade-structure/grade-structure.service'
+import { generateId } from '@utils/id-helper'
+
 @Injectable()
 export class StudentGradeService {
 	constructor(
@@ -268,9 +270,11 @@ export class StudentGradeService {
 			if (data.length === 0) {
 				throw new BadRequestException('File is empty')
 			}
+
 			if (data[0]['MSSV'] === undefined || data[0]['MSSV'] === null) {
-				throw new BadRequestException('File is not correct')
+				throw new BadRequestException('File is not correct 1')
 			}
+
 			const gradeStructure =
 				await this.gradeStructureService.getGradeComponentById(
 					courseId,
@@ -281,13 +285,15 @@ export class StudentGradeService {
 			if (gradeComponent.length === 0) {
 				throw new BadRequestException('Grade component not found')
 			}
+			console.log(gradeStructure)
 			const gradeSubComponent = gradeComponent[0].gradeSubComponent
+
 			if (gradeSubComponent.length === 0) {
 				if (
 					data[0][gradeComponent[0].name] === undefined ||
 					data[0][gradeComponent[0].name] === null
 				) {
-					throw new BadRequestException('File is not correct')
+					throw new BadRequestException('File is not correct 2')
 				}
 
 				const typedData = data.map((item) => {
@@ -297,6 +303,7 @@ export class StudentGradeService {
 					return { ...item, courseId }
 				})
 				const gradeComponentName = gradeComponent[0].name
+
 				const dataWithGradeComponent = dataWithCourseId.map((item) => {
 					return {
 						studentOfficialId: item.studentOfficialId,
@@ -304,7 +311,7 @@ export class StudentGradeService {
 						courseId: item.courseId,
 						finalGrade: null,
 
-						gradeStructure: gradeComponent.map((gradeComponent) => {
+						gradeComponent: gradeComponent.map((gradeComponent) => {
 							return {
 								name: gradeComponent.name,
 								_id: gradeComponent.id,
@@ -315,9 +322,11 @@ export class StudentGradeService {
 						})
 					}
 				})
+
 				const typeDataWithFinalGrade = dataWithGradeComponent.map((item) => {
 					return plainToClass(AddGradeStudentDto, item)
 				})
+
 				const result = await Promise.all(
 					typeDataWithFinalGrade.map(async (item) => {
 						return await this.studentGradeRepository.updateStudentGradeOnceUploadExcel(
@@ -325,6 +334,7 @@ export class StudentGradeService {
 						)
 					})
 				)
+
 				if (!result) {
 					throw new DatabaseExecutionException('Upload grade failed')
 				}
@@ -344,7 +354,6 @@ export class StudentGradeService {
 						}
 					}
 				)
-
 				const gradeSubComponentObject = listSubComponent.reduce(
 					(a, b) => Object.assign(a, b),
 					{}
@@ -364,18 +373,16 @@ export class StudentGradeService {
 						courseId: item.courseId,
 						finalGrade: null,
 
-						gradeStructure: gradeComponent.map((gradeComponent) => {
+						gradeComponent: gradeComponent.map((gradeComponent) => {
 							return {
-								gradeComponentName: gradeComponent.name,
-								gradeComponentId: gradeComponent.id,
+								name: gradeComponent.name,
+								_id: gradeComponent.id,
 								gradeSubComponent: keysArray.map((key) => {
 									return {
-										gradeSubComponentName: key,
-										gradeSubComponentId: gradeSubComponent.find(
-											(subComponent) => {
-												return subComponent.name === key
-											}
-										)._id,
+										name: key,
+										_id: gradeSubComponent.find((subComponent) => {
+											return subComponent.name === key
+										})._id,
 										percentage: gradeSubComponent.find((subComponent) => {
 											return subComponent.name === key
 										}).percentage,
@@ -390,7 +397,7 @@ export class StudentGradeService {
 				})
 
 				const dataWithFinalGrade = dataWithGradeComponent.map((item) => {
-					const gradeComponent = item.gradeStructure.map((gradeComponent) => {
+					const gradeComponent = item.gradeComponent.map((gradeComponent) => {
 						const gradeSubComponent = gradeComponent.gradeSubComponent.map(
 							(gradeSubComponent) => {
 								return {
@@ -433,6 +440,7 @@ export class StudentGradeService {
 				return result
 			}
 		} catch (err) {
+			console.log(err)
 			throw new DatabaseExecutionException(err.message)
 		}
 	}
