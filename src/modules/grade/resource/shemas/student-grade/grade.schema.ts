@@ -38,7 +38,7 @@ const GradeSubComponentWithGradeSchema =
 			},
 			name: { type: String, required: true },
 			percentage: { type: Number, required: true },
-			grade: { type: Number, required: true }
+			grade: { type: Number }
 		},
 		{ _id: true }
 	)
@@ -54,7 +54,7 @@ const GradeComponentWithGradeSchema = new Schema<IGradeComponentWithGrade>(
 		},
 		name: { type: String, required: true },
 		percentage: { type: Number, required: true },
-		totalGrade: { type: Number, required: true },
+		totalGrade: { type: Number },
 		gradeSubComponent: [GradeSubComponentWithGradeSchema]
 	},
 	{ _id: true }

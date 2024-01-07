@@ -2,9 +2,10 @@ import { Document, Schema } from 'mongoose'
 import { GradeReviewStatus } from '../../enum'
 import { generateId } from '@utils/id-helper'
 
-export interface IGradeReivew extends Document {
+export interface IGradeReview extends Document {
 	_id: string
 	studentId: string
+	courseId: string
 	gradeId: string
 	currentGrade: number
 	expectedGrade: number
@@ -14,7 +15,7 @@ export interface IGradeReivew extends Document {
 	createdAt: Date
 }
 
-const GradeReviewSchema = new Schema<IGradeReivew>(
+const GradeReviewSchema = new Schema<IGradeReview>(
 	{
 		_id: {
 			type: String,
@@ -26,6 +27,7 @@ const GradeReviewSchema = new Schema<IGradeReivew>(
 		},
 		studentId: { type: String, required: true },
 		gradeId: { type: String, required: true },
+		courseId: { type: String, required: true },
 		currentGrade: { type: Number, required: true },
 		expectedGrade: { type: Number, required: true },
 		explaination: { type: String, required: true },
@@ -33,7 +35,7 @@ const GradeReviewSchema = new Schema<IGradeReivew>(
 		status: { type: String, required: true },
 		createdAt: { type: Date, default: Date.now }
 	},
-	{ _id: false }
+	{ _id: true }
 )
 
 GradeReviewSchema.set('toObject', { getters: true }).set('toJSON', {

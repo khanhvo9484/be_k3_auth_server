@@ -103,7 +103,6 @@ export class GradeStructureService {
 		try {
 			const result =
 				await this.gradeRepository.getGradeStructureByCourseId(courseId)
-			console.log(result)
 			if (!result) {
 				throw new BadRequestException('Grade structure not found')
 			}

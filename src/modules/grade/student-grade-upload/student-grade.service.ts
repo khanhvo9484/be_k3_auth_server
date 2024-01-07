@@ -18,7 +18,6 @@ import { UsersService } from '@user/user.service'
 import { CourseService } from 'modules/course/course.service'
 import { UserResponse } from '@user/dto/user.dto'
 import { GradeStructureService } from '../grade-structure/grade-structure.service'
-import { generateId } from '@utils/id-helper'
 
 @Injectable()
 export class StudentGradeService {
@@ -155,6 +154,10 @@ export class StudentGradeService {
 		try {
 			const result =
 				await this.studentGradeRepository.getStudentGradeByCourseId(courseId)
+			const gradeComponent =
+				await this.gradeStructureService.getGradeStructure(courseId)
+			console.log(result)
+			console.log(gradeComponent)
 			if (result.length === 0) {
 				throw new BadRequestException('Student list not found')
 			}
@@ -174,13 +177,34 @@ export class StudentGradeService {
 			const listStudents = data.map((item) => {
 				return plainToClass(CreateStudentGradeDto, item)
 			})
+			const gradeStructure =
+				await this.gradeStructureService.getGradeStructure(courseId)
+			const gradeComponent = gradeStructure.gradeComponent
+
 			const listStudentsWithCourseId = listStudents.map((item) => {
 				return {
 					...item,
 					courseId,
 					finalGrade: null,
 					grade: {
-						gradeComponent: []
+						gradeComponent: gradeComponent.map((gradeComponent) => {
+							return {
+								name: gradeComponent.name,
+								_id: gradeComponent.id,
+								gradeSubComponent: gradeComponent.gradeSubComponent.map(
+									(gradeSubComponent) => {
+										return {
+											name: gradeSubComponent.name,
+											_id: gradeSubComponent._id,
+											grade: null,
+											percentage: gradeSubComponent.percentage
+										}
+									}
+								),
+								totalGrade: null,
+								percentage: gradeComponent.percentage
+							}
+						})
 					}
 				}
 			})
@@ -285,7 +309,7 @@ export class StudentGradeService {
 			if (gradeComponent.length === 0) {
 				throw new BadRequestException('Grade component not found')
 			}
-			console.log(gradeStructure)
+
 			const gradeSubComponent = gradeComponent[0].gradeSubComponent
 
 			if (gradeSubComponent.length === 0) {

@@ -24,7 +24,6 @@ export class StudentGradeRepository {
 	}
 
 	async updateStudentGradeOnceUploadExcel(request: AddGradeStudentDto) {
-		console.log(request)
 		const result = await this.studentGradeModel.findOneAndUpdate(
 			{
 				courseId: request.courseId,
