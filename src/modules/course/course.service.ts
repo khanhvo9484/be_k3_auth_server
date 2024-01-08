@@ -5,7 +5,12 @@ import {
 import { UsersService } from './../user/user.service'
 import { TokenFactoryService } from './../../utils/jwt-helper/token-factory.service'
 import { generateCode } from '@utils/id-helper'
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+	BadRequestException,
+	Inject,
+	Injectable,
+	forwardRef
+} from '@nestjs/common'
 import { ICourseService } from './course.interface'
 import { Prisma, Course, User_Course } from '@prisma/client'
 import { CourseRepository } from './course.repository'
@@ -31,7 +36,6 @@ import { plainToClass } from 'class-transformer'
 import { UserResponse } from '@user/dto/user.dto'
 import { GradeStructureService } from '../grade/grade-structure/grade-structure.service'
 import { CreateGradeStructureRequest } from 'modules/grade/resource/dto'
-import { create } from 'domain'
 
 @Injectable()
 export class CourseService {
@@ -40,8 +44,10 @@ export class CourseService {
 		private tokenFactoryService: TokenFactoryService,
 		private usersService: UsersService,
 		private prisma: PrismaService,
-		private emailSenderService: EmailSenderService,
-		private gradeStructureService: GradeStructureService
+		private emailSenderService: EmailSenderService
+
+		// @Inject(forwardRef(() => GradeStructureService))
+		// private gradeStructureService: GradeStructureService
 	) {}
 
 	async getAllCourse(
@@ -213,11 +219,11 @@ export class CourseService {
 					}
 				)
 
-				const createdGradeStructure =
-					await this.gradeStructureService.createGradeStructure(
-						createGradeStructureRequest,
-						user
-					)
+				// const createdGradeStructure =
+				// 	await this.gradeStructureService.createGradeStructure(
+				// 		createGradeStructureRequest,
+				// 		user
+				// 	)
 				return createdCourse
 			})
 

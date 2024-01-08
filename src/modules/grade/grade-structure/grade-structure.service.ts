@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common'
+import { NotificationService } from './../../../notification/notification.service'
+import {
+	BadRequestException,
+	Inject,
+	Injectable,
+	forwardRef
+} from '@nestjs/common'
 import { Model } from 'mongoose'
 import { IGradeStructure } from '../resource/shemas'
 import { GradeStructureRepository } from './grade-structure.repository'
@@ -16,13 +22,20 @@ import { PrismaService } from '@my-prisma/prisma.service'
 
 import { generateId } from '@utils/id-helper'
 import { plainToClass } from 'class-transformer'
+import { CreateNotificationDto } from 'notification/resource/dto'
+import { NotificationType } from 'notification/resource/enum'
+import { CourseService } from 'modules/course/course.service'
 @Injectable()
 export class GradeStructureService {
 	constructor(
 		@Inject('GRADE_STRUCTURE_MODEL')
 		private gradeStructureModel: Model<IGradeStructure>,
 		private gradeRepository: GradeStructureRepository,
-		private prismaService: PrismaService
+		private prismaService: PrismaService,
+		private notificationService: NotificationService
+
+		// @Inject(forwardRef(() => CourseService))
+		// private courseService: CourseService
 	) {}
 
 	async createGradeStructure(
@@ -177,15 +190,35 @@ export class GradeStructureService {
 		}
 	}
 
-	async markGradeFinal(request: MarkGradeFinalRequest) {
+	async markGradeFinal(request: MarkGradeFinalRequest, user: CustomJwtPayload) {
 		try {
 			const result = await this.gradeRepository.markGradeFinal(
 				request.courseId,
 				request.gradeComponentId
 			)
-			if (!result) {
-				throw new BadRequestException('Grade structure not found')
-			}
+			// const course = await this.courseService.getCourseById({
+			// 	userId: user.id,
+			// 	courseId: request.courseId
+			// })
+			// if (!result) {
+			// 	throw new BadRequestException('Grade structure not found')
+			// }
+			// const createNotificationDto = new CreateNotificationDto({
+			// 	type: NotificationType.NEW_GRADE_REVIEW,
+			// 	content: ` đã đăng tải điểm thành phần ${result.toJSON()} của khóa học ${
+			// 		course.name
+			// 	}`,
+			// 	title: 'New grade review request',
+			// 	targetId: result.id,
+			// 	actorId: user.id
+			// })
+			// const notificationResult =
+			// 	await this.notificationService.createNotificationForStudent({
+			// 		courseId: request.courseId,
+			// 		notification: createNotificationDto
+			// 	})
+			// console.log(notificationResult)
+
 			return result.toJSON()
 		} catch (error) {
 			console.log(error)

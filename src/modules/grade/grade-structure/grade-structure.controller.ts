@@ -118,7 +118,8 @@ export class GradeStructureController {
 		@Req() request: Request,
 		@Body() body: MarkGradeFinalRequest
 	) {
-		const result = await this.gradeService.markGradeFinal(body)
+		const user = request.user
+		const result = await this.gradeService.markGradeFinal(body, user)
 		return {
 			message: 'mark grade final success',
 			data: result

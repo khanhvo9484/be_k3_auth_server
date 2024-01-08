@@ -26,8 +26,38 @@ export class StudentGradeRepository {
 		return result
 	}
 
-	async updateStudentGrade(entity: Object, where: Object) {
-		const result = await this.studentGradeModel.updateOne(where, entity)
+	async updateStudentGrade(
+		params: { courseId: string; studentOfficialId: string; gradeId: string },
+		gradeObject: { grade: number }
+	) {
+		const { courseId, studentOfficialId, gradeId } = params
+		const { grade } = gradeObject
+
+		const result = await this.studentGradeModel.findOneAndUpdate(
+			{
+				courseId: courseId,
+				studentOfficialId: studentOfficialId,
+				$or: [
+					{ 'grade.gradeComponent._id': gradeId },
+					{ 'grade.gradeComponent.gradeSubComponent._id': gradeId }
+				]
+			},
+			{
+				$set: {
+					'grade.gradeComponent.$[compElem].grade': grade, // Update totalGrade if the first condition matches
+					'grade.gradeComponent.$[compElem].gradeSubComponent.$[subCompElem].grade':
+						grade // Update grade if the second condition matches
+				}
+			},
+			{
+				arrayFilters: [
+					{ 'compElem._id': gradeId },
+					{ 'subCompElem._id': gradeId }
+				],
+				new: true
+			}
+		)
+		console.log(result)
 		return result
 	}
 

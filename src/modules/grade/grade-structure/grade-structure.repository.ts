@@ -179,9 +179,7 @@ export class GradeStructureRepository {
 					'gradeComponent.$.status': GradeComponentStatus.IS_GRADED
 				}
 			},
-			{
-				new: true
-			}
+			{ 'gradeComponent.$': 1, new: true }
 		)
 		return result
 	}

@@ -163,4 +163,22 @@ export class StudentGradeController {
 			data: result
 		}
 	}
+
+	@Put('update-student-grade')
+	async updateStudentGrade(
+		@Req() request: Request,
+		@Body()
+		body: {
+			studentOfficialId: string
+			courseId: string
+			gradeId: string
+			grade: number
+		}
+	) {
+		const result = await this.studentGradeService.updateStudentGrade(body)
+		return {
+			message: 'update student grade success',
+			data: result
+		}
+	}
 }

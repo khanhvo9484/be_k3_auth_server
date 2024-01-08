@@ -506,4 +506,32 @@ export class StudentGradeService {
 			throw new DatabaseExecutionException(err.message)
 		}
 	}
+
+	async updateStudentGrade(params: {
+		courseId: string
+		studentOfficialId: string
+		gradeId: string
+		grade: number
+	}) {
+		try {
+			const { courseId, studentOfficialId, gradeId, grade } = params
+			const result = await this.studentGradeRepository.updateStudentGrade(
+				{
+					courseId,
+					studentOfficialId,
+					gradeId
+				},
+				{
+					grade
+				}
+			)
+			if (!result) {
+				throw new BadRequestException('Update grade failed')
+			}
+			return result
+		} catch (err) {
+			console.log(err)
+			throw new DatabaseExecutionException(err.message)
+		}
+	}
 }

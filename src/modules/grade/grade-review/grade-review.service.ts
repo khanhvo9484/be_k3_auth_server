@@ -82,8 +82,8 @@ export class GradeReviewService {
 
 				const createNotificationDto = new CreateNotificationDto({
 					type: NotificationType.NEW_GRADE_REVIEW,
-					content: ` has requested a grade review for ${result.course.name}`,
-					title: 'New grade review request',
+					content: `đã tạo đơn phúc khảo cho ${result.course.name}`,
+					title: 'Tạo đơn phúc khảo',
 					targetId: result.id,
 					actorId: studentId,
 					userId: result.course.teacherId
