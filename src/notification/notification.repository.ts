@@ -14,23 +14,37 @@ export class NotificationRepository {
 		return result
 	}
 
+	async createMany(data: Prisma.NotificationCreateManyInput[], tx?: any) {
+		if (tx)
+			return await tx.notification.createMany({
+				data
+			})
+		const result = await this.prismaService.notification.createMany({
+			data
+		})
+		return result
+	}
+
 	async getNotificationByUserId(where: Prisma.NotificationWhereInput) {
 		const result = await this.prismaService.notification.findMany({
 			where,
 			include: {
 				actor: true,
 				user: true
+			},
+			orderBy: {
+				createdAt: 'desc'
 			}
 		})
 		return result
 	}
 
 	async updateNotification(params: {
-		where: Prisma.NotificationWhereUniqueInput
+		where: Prisma.NotificationWhereInput
 		data: Prisma.NotificationUpdateInput
 	}) {
 		const { where, data } = params
-		const result = await this.prismaService.notification.update({
+		const result = await this.prismaService.notification.updateMany({
 			where,
 			data
 		})

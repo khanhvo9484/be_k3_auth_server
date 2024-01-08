@@ -1,3 +1,6 @@
+import { Prisma } from '@prisma/client'
+import { CreateNotificationDto } from './../../../notification/resource/dto/request-response.dto'
+import { NotificationService } from './../../../notification/notification.service'
 import { plainToClass } from 'class-transformer'
 
 import { CourseService } from 'modules/course/course.service'
@@ -7,13 +10,16 @@ import { IGradeReview } from '../resource/shemas'
 import { CreateGradeReviewRequest, GradeReviewResponse } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { FileUploaderService } from '@utils/file-uploader/file-uploader.service'
-
+import { NotificationType } from 'notification/resource/enum'
+import { PrismaService } from '@my-prisma/prisma.service'
 @Injectable()
 export class GradeReviewService {
 	constructor(
 		private gradeReviewRepository: GradeReviewRepository,
 		private courseService: CourseService,
-		private fileUploaderService: FileUploaderService
+		private fileUploaderService: FileUploaderService,
+		private notificationService: NotificationService,
+		private prismaService: PrismaService
 	) {}
 
 	async getAllGradeReview(
@@ -56,21 +62,44 @@ export class GradeReviewService {
 				studentId: undefined,
 				courseId: undefined
 			}
-			const result = await this.gradeReviewRepository.createGradeReview({
-				...requestWithoutStudentId,
-				user: {
-					connect: {
-						id: studentId
-					}
-				},
-				course: {
-					connect: {
-						id: courseId
-					}
-				}
+			const results = await this.prismaService.$transaction(async (prisma) => {
+				const result = await this.gradeReviewRepository.createGradeReview(
+					{
+						...requestWithoutStudentId,
+						user: {
+							connect: {
+								id: studentId
+							}
+						},
+						course: {
+							connect: {
+								id: courseId
+							}
+						}
+					},
+					prisma
+				)
+
+				const createNotificationDto = new CreateNotificationDto({
+					type: NotificationType.NEW_GRADE_REVIEW,
+					content: ` has requested a grade review for ${result.course.name}`,
+					title: 'New grade review request',
+					targetId: result.id,
+					actorId: studentId,
+					userId: result.course.teacherId
+				})
+				console.log(createNotificationDto)
+				const notifications =
+					await this.notificationService.createNotificationForTeacher({
+						courseId: courseId,
+						notification: createNotificationDto,
+						tx: prisma
+					})
+
+				return result
 			})
 
-			return result
+			return results
 		} catch (error) {
 			console.log(error)
 			throw new DatabaseExecutionException(error.message)

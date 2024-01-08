@@ -29,10 +29,17 @@ export class GradeReviewRepository {
 		return result
 	}
 
-	async createGradeReview(data: Prisma.GradeReviewCreateInput) {
-		const result = await this.prismaService.gradeReview.create({
-			data: data
-		})
-		return result
+	async createGradeReview(data: Prisma.GradeReviewCreateInput, tx?: any) {
+		if (tx)
+			return await tx.gradeReview.create({ data, include: { course: true } })
+		else {
+			const result = await this.prismaService.gradeReview.create({
+				data: data,
+				include: {
+					course: true
+				}
+			})
+			return result
+		}
 	}
 }

@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common'
+import { MyGatewayService } from './../socket/gateway'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { NotificationRepository } from './notification.repository'
 import { CreateNotificationDto } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
@@ -7,7 +8,9 @@ import { CourseService } from 'modules/course/course.service'
 export class NotificationService {
 	constructor(
 		private notificationRepository: NotificationRepository,
-		private courseService: CourseService
+		private courseService: CourseService,
+		@Inject(forwardRef(() => MyGatewayService))
+		private myGatewayService: MyGatewayService
 	) {}
 
 	async create(notification: CreateNotificationDto) {
@@ -30,11 +33,11 @@ export class NotificationService {
 		}
 	}
 
-	async setIsRead(params: { userId: string; notificationId: string }) {
+	async setIsRead(params: { userId: string }) {
 		try {
 			const result = await this.notificationRepository.updateNotification({
 				where: {
-					id: params.notificationId
+					userId: params.userId
 				},
 				data: {
 					isRead: true
@@ -50,6 +53,7 @@ export class NotificationService {
 		courseId: string
 		notification: CreateNotificationDto
 		role: string
+		tx?: any
 	}) {
 		try {
 			const { courseId, notification, role } = params
@@ -58,32 +62,29 @@ export class NotificationService {
 				role
 			)
 
-			const actorId = notification.actorId
-			const notificationForCreate = {
-				...notification,
-				userId: undefined,
-				actorId: undefined
+			const data = memberList.map((member) => {
+				return {
+					...notification,
+					userId: member.id
+				}
+			})
+			let returnData = null
+			if (params.tx) {
+				returnData = await this.notificationRepository.createMany(
+					data,
+					params.tx
+				)
+			} else {
+				returnData = await this.notificationRepository.createMany(data)
 			}
 
-			const createNotificationResult = await Promise.all(
-				memberList.map(async (member) => {
-					const result = await this.notificationRepository.create({
-						...notificationForCreate,
-						user: {
-							connect: {
-								id: member.id
-							}
-						},
-						actor: {
-							connect: {
-								id: actorId
-							}
-						}
-					})
-					return result
-				})
-			)
-			return createNotificationResult
+			const listUserIds = memberList.map((member) => {
+				return { userId: member.id }
+			})
+
+			this.myGatewayService.broadcastNotification(listUserIds, notification)
+
+			return returnData
 		} catch (error) {
 			throw new DatabaseExecutionException(error.message)
 		}
@@ -93,20 +94,36 @@ export class NotificationService {
 	async createNotificationForTeacher(params: {
 		courseId: string
 		notification: CreateNotificationDto
+		tx?: any
 	}) {
-		return this.createNotificationForRole({
-			...params,
-			role: 'teacher'
-		})
+		if (params.tx)
+			return this.createNotificationForRole({
+				...params,
+				role: 'teacher',
+				tx: params.tx
+			})
+		else
+			return this.createNotificationForRole({
+				...params,
+				role: 'teacher'
+			})
 	}
 
 	async createNotificationForStudent(params: {
 		courseId: string
 		notification: CreateNotificationDto
+		tx?: any
 	}) {
-		return this.createNotificationForRole({
-			...params,
-			role: 'student'
-		})
+		if (params.tx)
+			return this.createNotificationForRole({
+				...params,
+				role: 'student',
+				tx: params.tx
+			})
+		else
+			return this.createNotificationForRole({
+				...params,
+				role: 'student'
+			})
 	}
 }

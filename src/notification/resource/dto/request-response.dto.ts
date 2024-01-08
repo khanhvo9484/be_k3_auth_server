@@ -7,6 +7,10 @@ import { generateId } from '@utils/id-helper'
 
 @Exclude()
 export class CreateNotificationDto implements Notification {
+	constructor(params: Partial<CreateNotificationDto>) {
+		Object.assign(this, params)
+	}
+
 	@Expose()
 	@IsOptional()
 	id: string = generateId('NT')

@@ -7,6 +7,7 @@ import * as cookieParser from 'cookie-parser'
 import { PORT, ENVIROMENT, PROTOCOL } from './enviroment'
 import { LoggerMiddleware } from './common/middleware/logger.middleware'
 import { MyLogger } from './config/logger'
+import { SocketIoAdapter } from './socket-io.adapter'
 
 declare const module: any
 async function bootstrap() {
@@ -22,6 +23,8 @@ async function bootstrap() {
 	app.enableShutdownHooks()
 	// // adapter for e2e testing
 	const httpAdapter = app.getHttpAdapter()
+
+	// app.useWebSocketAdapter(new SocketIoAdapter(app))
 
 	if (ENVIROMENT === 'development' || ENVIROMENT === 'prouction') {
 		app.use(LoggerMiddleware)
