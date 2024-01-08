@@ -8,8 +8,10 @@ import { CourseService } from 'modules/course/course.service'
 export class NotificationService {
 	constructor(
 		private notificationRepository: NotificationRepository,
+
 		@Inject(forwardRef(() => CourseService))
 		private courseService: CourseService,
+
 		@Inject(forwardRef(() => MyGatewayService))
 		private myGatewayService: MyGatewayService
 	) {}

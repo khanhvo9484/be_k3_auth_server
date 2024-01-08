@@ -46,7 +46,6 @@ export class CourseService {
 		private prisma: PrismaService,
 		private emailSenderService: EmailSenderService,
 
-		@Inject(forwardRef(() => GradeStructureService))
 		private gradeStructureService: GradeStructureService
 	) {}
 

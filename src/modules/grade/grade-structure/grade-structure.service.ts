@@ -24,7 +24,7 @@ import { generateId } from '@utils/id-helper'
 import { plainToClass } from 'class-transformer'
 import { CreateNotificationDto } from 'notification/resource/dto'
 import { NotificationType } from 'notification/resource/enum'
-import { CourseService } from 'modules/course/course.service'
+import { CourseUtilService } from 'modules/course-util/course-util.service'
 @Injectable()
 export class GradeStructureService {
 	constructor(
@@ -32,10 +32,9 @@ export class GradeStructureService {
 		private gradeStructureModel: Model<IGradeStructure>,
 		private gradeRepository: GradeStructureRepository,
 		private prismaService: PrismaService,
-		private notificationService: NotificationService
+		private notificationService: NotificationService,
 
-		// @Inject(forwardRef(() => CourseService))
-		// private courseService: CourseService
+		private courseUtilService: CourseUtilService
 	) {}
 
 	async createGradeStructure(
@@ -196,28 +195,30 @@ export class GradeStructureService {
 				request.courseId,
 				request.gradeComponentId
 			)
-			// const course = await this.courseService.getCourseById({
-			// 	userId: user.id,
-			// 	courseId: request.courseId
-			// })
-			// if (!result) {
-			// 	throw new BadRequestException('Grade structure not found')
-			// }
-			// const createNotificationDto = new CreateNotificationDto({
-			// 	type: NotificationType.NEW_GRADE_REVIEW,
-			// 	content: ` đã đăng tải điểm thành phần ${result.toJSON()} của khóa học ${
-			// 		course.name
-			// 	}`,
-			// 	title: 'New grade review request',
-			// 	targetId: result.id,
-			// 	actorId: user.id
-			// })
-			// const notificationResult =
-			// 	await this.notificationService.createNotificationForStudent({
-			// 		courseId: request.courseId,
-			// 		notification: createNotificationDto
-			// 	})
-			// console.log(notificationResult)
+			const course = await this.courseUtilService.getCourseById(
+				request.courseId
+			)
+			if (!result) {
+				throw new BadRequestException('Grade structure not found')
+			}
+			const createNotificationDto = new CreateNotificationDto({
+				type: NotificationType.NEW_GRADE_REVIEW,
+				content: ` đã đăng tải điểm thành phần ${result.toJSON()} của khóa học ${
+					course.name
+				}`,
+				title: 'Điểm thành phần mới',
+				targetId: result.id,
+				actorId: user.id
+			})
+			const notificationResult =
+				await this.notificationService.createNotificationForStudent({
+					courseId: request.courseId,
+					notification: createNotificationDto
+				})
+			await this.notificationService.createNotificationForStudent({
+				courseId: request.courseId,
+				notification: createNotificationDto
+			})
 
 			return result.toJSON()
 		} catch (error) {

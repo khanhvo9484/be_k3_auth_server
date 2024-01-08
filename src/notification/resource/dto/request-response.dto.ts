@@ -1,6 +1,5 @@
 import { IsNotEmpty, IsOptional } from 'class-validator'
 import { Exclude, Expose } from 'class-transformer'
-import { INotification } from '../schema'
 import { NotificationType } from '../enum'
 import { Notification } from '@prisma/client'
 import { generateId } from '@utils/id-helper'
