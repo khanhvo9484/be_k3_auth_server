@@ -11,6 +11,22 @@ export class StudentGradeController {
 		private excelService: ExcelService,
 		private studentGradeService: StudentGradeService
 	) {}
+
+	@Get('student-grade/:courseId/:studentId')
+	async getStudentGrade(
+		@Req() request: Request,
+		@Param() param: { courseId: string; studentId: string }
+	) {
+		const result = await this.studentGradeService.getStudentGrade(
+			param.courseId,
+			param.studentId
+		)
+		return {
+			message: 'get student grade success',
+			data: result
+		}
+	}
+
 	@Get('student-xlsx-template')
 	async getStudentXlsxTemplate(
 		@Req() request: Request,

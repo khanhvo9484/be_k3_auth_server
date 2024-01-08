@@ -9,6 +9,14 @@ export class StudentGradeRepository {
 		private studentGradeModel: Model<IStudentGrade>
 	) {}
 
+	async getStudentGrade(courseId: string, studentOfficialId: string) {
+		const result = await this.studentGradeModel.findOne({
+			courseId,
+			studentOfficialId
+		})
+		return result
+	}
+
 	async createManyStudentGrade(entity: CreateStudentGradeDto[]) {
 		const result = await this.studentGradeModel.insertMany(entity)
 		return result

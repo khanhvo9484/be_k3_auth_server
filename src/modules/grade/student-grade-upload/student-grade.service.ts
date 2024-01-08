@@ -1,3 +1,4 @@
+import { filter } from 'rxjs/operators'
 import { GradeSubComponent } from './../grade-structure/resource/dto/index'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ExcelService } from '@utils/excel/excel.service'
@@ -18,6 +19,7 @@ import { UsersService } from '@user/user.service'
 import { CourseService } from 'modules/course/course.service'
 import { UserResponse } from '@user/dto/user.dto'
 import { GradeStructureService } from '../grade-structure/grade-structure.service'
+import { GradeComponentStatus } from '../resource/enum'
 
 @Injectable()
 export class StudentGradeService {
@@ -28,6 +30,43 @@ export class StudentGradeService {
 		private courseService: CourseService,
 		private gradeStructureService: GradeStructureService
 	) {}
+
+	async getStudentGrade(courseId: string, studentId: string): Promise<any> {
+		try {
+			const result = await this.studentGradeRepository.getStudentGrade(
+				courseId,
+				studentId
+			)
+
+			if (!result) {
+				throw new BadRequestException('Student grade not found')
+			}
+			const gradeStructure =
+				await this.gradeStructureService.getGradeStructure(courseId)
+			const gradeComponent = gradeStructure.gradeComponent
+
+			const gradedComponentIds = gradeComponent
+				.filter((item) => item.status === GradeComponentStatus.IS_GRADED)
+				.map((item) => item.id)
+
+			const resultObject = result.toJSON()
+
+			const finalResult = {
+				...resultObject,
+				grade: {
+					...resultObject.grade,
+					gradeComponent: resultObject.grade.gradeComponent.filter((item) => {
+						return gradedComponentIds.includes(item['id'])
+					})
+				}
+			}
+
+			return finalResult
+		} catch (err) {
+			console.log(err)
+			throw err
+		}
+	}
 
 	async generateExcelFileWithColumns(
 		fileName: string,
