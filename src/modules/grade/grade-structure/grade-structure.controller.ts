@@ -13,6 +13,7 @@ import { GradeStructureService } from './grade-structure.service'
 import {
 	CreateGradeStructureRequest,
 	CreateGradeSubcomponent,
+	MarkGradeFinalRequest,
 	UpdateGradeStructureRequest,
 	UpdateGradeStructureRequestRewrite,
 	UpdateGradeSubComponentRequest
@@ -22,6 +23,19 @@ import { Public } from '@common/decorator'
 @Controller('grade-structure')
 export class GradeStructureController {
 	constructor(private gradeService: GradeStructureService) {}
+
+	@Public()
+	@Get('get/:courseId')
+	async getGradeStructure(
+		@Req() request: Request,
+		@Param() param: { courseId: string }
+	) {
+		const result = await this.gradeService.getGradeStructure(param.courseId)
+		return {
+			message: 'get grade structure success',
+			data: result
+		}
+	}
 
 	@Post('create')
 	async createGradeStructure(
@@ -99,15 +113,14 @@ export class GradeStructureController {
 		}
 	}
 
-	@Public()
-	@Get('get/:courseId')
-	async getGradeStructure(
+	@Put('mark-grade-final')
+	async markGradeFinal(
 		@Req() request: Request,
-		@Param() param: { courseId: string }
+		@Body() body: MarkGradeFinalRequest
 	) {
-		const result = await this.gradeService.getGradeStructure(param.courseId)
+		const result = await this.gradeService.markGradeFinal(body)
 		return {
-			message: 'get grade structure success',
+			message: 'mark grade final success',
 			data: result
 		}
 	}

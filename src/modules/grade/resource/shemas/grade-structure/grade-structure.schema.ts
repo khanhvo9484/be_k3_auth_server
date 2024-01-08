@@ -1,6 +1,7 @@
 import { Schema } from 'mongoose'
 import { GradeComponentSchema, IGradeComponent } from './grade-component.schema'
 import { generateId } from '@utils/id-helper'
+import { GradeStructureStatus } from '../../enum'
 export interface IGradeStructure extends Document {
 	_id: string
 	courseId: string
@@ -22,7 +23,11 @@ const GradeStructureSchema = new Schema<IGradeStructure>(
 
 		courseId: { type: String, required: true },
 		gradeComponent: [GradeComponentSchema],
-		status: { type: String, required: true }
+		status: {
+			type: String,
+			required: true,
+			default: GradeStructureStatus.IS_NOT_GRADED
+		}
 	},
 	{ _id: true }
 )

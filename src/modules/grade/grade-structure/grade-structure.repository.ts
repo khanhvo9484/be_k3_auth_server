@@ -8,6 +8,7 @@ import {
 	UpdateGradeStructureRequestRewrite,
 	UpdateGradeSubComponentRequest
 } from './resource/dto'
+import { GradeComponentStatus } from '../resource/enum'
 
 @Injectable()
 export class GradeStructureRepository {
@@ -165,5 +166,23 @@ export class GradeStructureRepository {
 		}
 
 		return null
+	}
+
+	async markGradeFinal(courseId: string, gradeComponentId: string) {
+		const result = await this.gradeStructureModel.findOneAndUpdate(
+			{
+				courseId: courseId,
+				'gradeComponent._id': gradeComponentId
+			},
+			{
+				$set: {
+					'gradeComponent.$.status': GradeComponentStatus.IS_GRADED
+				}
+			},
+			{
+				new: true
+			}
+		)
+		return result
 	}
 }

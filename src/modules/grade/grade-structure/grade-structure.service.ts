@@ -6,6 +6,7 @@ import {
 	CreateGradeStructureRequest,
 	CreateGradeSubcomponent,
 	GradeStructureResponse,
+	MarkGradeFinalRequest,
 	UpdateGradeStructureRequest,
 	UpdateGradeStructureRequestRewrite,
 	UpdateGradeSubComponentRequest
@@ -176,6 +177,21 @@ export class GradeStructureService {
 		}
 	}
 
+	async markGradeFinal(request: MarkGradeFinalRequest) {
+		try {
+			const result = await this.gradeRepository.markGradeFinal(
+				request.courseId,
+				request.gradeComponentId
+			)
+			if (!result) {
+				throw new BadRequestException('Grade structure not found')
+			}
+			return result.toJSON()
+		} catch (error) {
+			console.log(error)
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
 	async isCourseOwner(courseId: string, userId: string) {
 		try {
 			const result = await this.prismaService.user_Course.findFirst({

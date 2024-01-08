@@ -5,11 +5,10 @@ import {
 	WebSocketGateway,
 	WebSocketServer
 } from '@nestjs/websockets'
-import { Socket } from 'socket.io'
+
 import { Server } from 'socket.io'
 import { SocketClientInfo } from '@my-socket-io/resource/dto'
 import { NotificationService } from 'notification/notification.service'
-import { connect } from 'http2'
 
 const connectedUsers: SocketClientInfo[] = []
 
@@ -48,7 +47,7 @@ export class MyGatewayService implements OnModuleInit {
 
 	broadcastNotification(userList: { userId: string }[], notification: any) {
 		userList.forEach((userInList) => {
-			connectedUsers.map((user) => {
+			connectedUsers.forEach((user) => {
 				if (user.userId === userInList.userId) {
 					this.server
 						.to(user.socketId)

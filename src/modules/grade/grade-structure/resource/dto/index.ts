@@ -167,3 +167,11 @@ export class UpdateGradeSubComponentRequest {
 	@IsOptional()
 	status: string = GradeStructureStatus.IS_NOT_GRADED
 }
+
+export class MarkGradeFinalRequest {
+	@IsNotEmpty()
+	courseId: string
+
+	@IsNotEmpty()
+	gradeComponentId: string
+}

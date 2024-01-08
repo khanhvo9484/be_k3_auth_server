@@ -4,6 +4,7 @@ import {
 	GradeSubComponentSchema
 } from './grade-sub-component.schema'
 import { generateId } from '@utils/id-helper'
+import { GradeComponentStatus } from '../../enum'
 
 export interface IGradeComponent extends Document {
 	_id: string
@@ -26,7 +27,11 @@ const GradeComponentSchema = new Schema<IGradeComponent>(
 		},
 		name: { type: String, required: true },
 		percentage: { type: Number, required: true },
-		status: { type: String, required: true },
+		status: {
+			type: String,
+			required: true,
+			default: GradeComponentStatus.IS_NOT_GRADED
+		},
 		order: { type: Number, required: true },
 		gradeSubComponent: [GradeSubComponentSchema]
 	},
