@@ -44,10 +44,10 @@ export class CourseService {
 		private tokenFactoryService: TokenFactoryService,
 		private usersService: UsersService,
 		private prisma: PrismaService,
-		private emailSenderService: EmailSenderService
+		private emailSenderService: EmailSenderService,
 
-		// @Inject(forwardRef(() => GradeStructureService))
-		// private gradeStructureService: GradeStructureService
+		@Inject(forwardRef(() => GradeStructureService))
+		private gradeStructureService: GradeStructureService
 	) {}
 
 	async getAllCourse(

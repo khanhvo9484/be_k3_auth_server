@@ -5,9 +5,13 @@ import { plainToClass } from 'class-transformer'
 
 import { CourseService } from 'modules/course/course.service'
 import { GradeReviewRepository } from './grade-review.repository'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { IGradeReview } from '../resource/shemas'
-import { CreateGradeReviewRequest, GradeReviewResponse } from './resource/dto'
+import {
+	CreateCommentOnGradeReviewRequest,
+	CreateGradeReviewRequest,
+	GradeReviewResponse
+} from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { FileUploaderService } from '@utils/file-uploader/file-uploader.service'
 import { NotificationType } from 'notification/resource/enum'
@@ -16,11 +20,25 @@ import { PrismaService } from '@my-prisma/prisma.service'
 export class GradeReviewService {
 	constructor(
 		private gradeReviewRepository: GradeReviewRepository,
-		private courseService: CourseService,
+
+		// @Inject(forwardRef(() => CourseService))
+		// private courseService: CourseService,
+
 		private fileUploaderService: FileUploaderService,
 		private notificationService: NotificationService,
 		private prismaService: PrismaService
 	) {}
+
+	async getGradeReview(gradeReviewId: string) {
+		try {
+			const result =
+				await this.gradeReviewRepository.getGradeReviewById(gradeReviewId)
+			return result
+		} catch (error) {
+			console.log(error)
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
 
 	async getAllGradeReview(
 		user: CustomJwtPayload,
@@ -88,7 +106,7 @@ export class GradeReviewService {
 					actorId: studentId,
 					userId: result.course.teacherId
 				})
-				console.log(createNotificationDto)
+
 				const notifications =
 					await this.notificationService.createNotificationForTeacher({
 						courseId: courseId,
@@ -100,6 +118,36 @@ export class GradeReviewService {
 			})
 
 			return results
+		} catch (error) {
+			console.log(error)
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
+
+	async commentOnGradeReview(request: CreateCommentOnGradeReviewRequest) {
+		try {
+			const userId = request.userId
+			const gradeReviewId = request.gradeReviewId
+			const requestWithoutId = {
+				...request,
+				userId: undefined,
+				gradeReviewId: undefined
+			}
+			const result =
+				await this.gradeReviewRepository.createCommentOnGradeReview({
+					...requestWithoutId,
+					user: {
+						connect: {
+							id: request.userId
+						}
+					},
+					gradeReview: {
+						connect: {
+							id: request.gradeReviewId
+						}
+					}
+				})
+			return result
 		} catch (error) {
 			console.log(error)
 			throw new DatabaseExecutionException(error.message)

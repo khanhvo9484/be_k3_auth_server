@@ -1,4 +1,4 @@
-import { GradeReview } from '@prisma/client'
+import { GradeReview, GradeReviewComment } from '@prisma/client'
 import { generateId } from '@utils/id-helper'
 import {
 	Exclude,
@@ -83,4 +83,25 @@ export class CreateGradeReviewRequest {
 
 	@IsOptional()
 	status: string = GradeReviewStatus.PENDING
+}
+
+export class CreateCommentOnGradeReviewRequest implements GradeReviewComment {
+	@IsOptional()
+	id: string = generateId('GRC')
+
+	@IsNotEmpty()
+	userId: string
+
+	@IsNotEmpty()
+	gradeReviewId: string
+
+	@IsNotEmpty()
+	content: string
+
+	@IsOptional()
+	createdAt: Date
+	@IsOptional()
+	updatedAt: Date
+	@IsOptional()
+	deletedAt: Date
 }

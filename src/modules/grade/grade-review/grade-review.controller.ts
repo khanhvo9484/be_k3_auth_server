@@ -14,7 +14,10 @@ import { FileInterceptor } from '@nestjs/platform-express/multer'
 import { Request } from 'express'
 
 import { GradeReviewService } from './grade-review.service'
-import { CreateGradeReviewRequest } from './resource/dto'
+import {
+	CreateCommentOnGradeReviewRequest,
+	CreateGradeReviewRequest
+} from './resource/dto'
 
 @Controller('grade-review')
 export class GradeReviewController {
@@ -30,6 +33,25 @@ export class GradeReviewController {
 			const result = await this.fileUploaderService.uploadFile(file)
 			return {
 				message: 'upload file success',
+				data: result
+			}
+		} catch (error) {
+			console.log(error)
+			throw new Error(error)
+		}
+	}
+
+	@Get('get/:gradeReviewId')
+	async getGradeReview(
+		@Req() request: Request,
+		@Param() param: { gradeReviewId: string }
+	) {
+		try {
+			const result = await this.gradeReviewService.getGradeReview(
+				param.gradeReviewId
+			)
+			return {
+				message: 'get grade review success',
 				data: result
 			}
 		} catch (error) {
@@ -72,6 +94,23 @@ export class GradeReviewController {
 			const result = await this.gradeReviewService.createGradeReview(body, file)
 			return {
 				message: 'create grade review success',
+				data: result
+			}
+		} catch (error) {
+			console.log(error)
+			throw new Error(error)
+		}
+	}
+
+	@Post('comment-on-grade-review')
+	async commentOnGradeReview(
+		@Req() request: Request,
+		@Body() body: CreateCommentOnGradeReviewRequest
+	) {
+		try {
+			const result = await this.gradeReviewService.commentOnGradeReview(body)
+			return {
+				message: 'comment on grade review success',
 				data: result
 			}
 		} catch (error) {

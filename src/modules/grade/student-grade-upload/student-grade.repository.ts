@@ -61,7 +61,6 @@ export class StudentGradeRepository {
 	) {
 		const { courseId, studentOfficialId, gradeId } = params
 		const { grade } = gradeObject
-		console.log(grade)
 
 		const result = await this.studentGradeModel.findOneAndUpdate(
 			{

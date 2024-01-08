@@ -20,6 +20,22 @@ export class GradeReviewRepository {
 		return result
 	}
 
+	async getGradeReviewById(gradeReviewId: string) {
+		const result = await this.prismaService.gradeReview.findUnique({
+			where: {
+				id: gradeReviewId
+			},
+			include: {
+				user: true,
+				comments: {
+					include: {
+						user: true
+					}
+				}
+			}
+		})
+		return result
+	}
 	async getAllGradeReview(courseId: string) {
 		const result = await this.prismaService.gradeReview.findMany({
 			where: {
@@ -38,6 +54,19 @@ export class GradeReviewRepository {
 				include: {
 					course: true
 				}
+			})
+			return result
+		}
+	}
+
+	async createCommentOnGradeReview(
+		data: Prisma.GradeReviewCommentCreateInput,
+		tx?: any
+	) {
+		if (tx) return await tx.gradeReviewComment.create({ data })
+		else {
+			const result = await this.prismaService.gradeReviewComment.create({
+				data: data
 			})
 			return result
 		}

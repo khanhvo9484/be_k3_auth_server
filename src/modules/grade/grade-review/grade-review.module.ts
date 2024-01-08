@@ -8,6 +8,7 @@ import { MongooseDatabaseModule } from '../resource/mongoose/mongoose.module'
 @Module({
 	imports: [CourseModule, MongooseDatabaseModule],
 	providers: [GradeReviewService, GradeReviewRepository],
-	controllers: [GradeReviewController]
+	controllers: [GradeReviewController],
+	exports: [GradeReviewService]
 })
 export class GradeReviewModule {}
