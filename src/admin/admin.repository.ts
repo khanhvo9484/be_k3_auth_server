@@ -11,7 +11,11 @@ export class AdminRepository {
 	}
 
 	async getAllCourses() {
-		const result = await this.prismaService.course.findMany()
+		const result = await this.prismaService.course.findMany({
+			include: {
+				courseOwner: true
+			}
+		})
 		return result
 	}
 }
