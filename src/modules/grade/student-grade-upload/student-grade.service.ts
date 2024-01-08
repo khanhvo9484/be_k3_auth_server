@@ -515,20 +515,39 @@ export class StudentGradeService {
 	}) {
 		try {
 			const { courseId, studentOfficialId, gradeId, grade } = params
-			const result = await this.studentGradeRepository.updateStudentGrade(
-				{
-					courseId,
-					studentOfficialId,
-					gradeId
-				},
-				{
-					grade
+			if (gradeId.startsWith('GC')) {
+				const result =
+					await this.studentGradeRepository.updateStudentGradeGradeComponent(
+						{
+							courseId,
+							studentOfficialId,
+							gradeId
+						},
+						{
+							grade
+						}
+					)
+				if (!result) {
+					throw new BadRequestException('Update grade failed')
 				}
-			)
-			if (!result) {
-				throw new BadRequestException('Update grade failed')
+				return result
+			} else {
+				const result =
+					await this.studentGradeRepository.updateStudentGradeSubGradeComponent(
+						{
+							courseId,
+							studentOfficialId,
+							gradeId
+						},
+						{
+							grade
+						}
+					)
+				if (!result) {
+					throw new BadRequestException('Update grade failed')
+				}
+				return result
 			}
-			return result
 		} catch (err) {
 			console.log(err)
 			throw new DatabaseExecutionException(err.message)

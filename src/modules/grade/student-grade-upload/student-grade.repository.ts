@@ -26,7 +26,7 @@ export class StudentGradeRepository {
 		return result
 	}
 
-	async updateStudentGrade(
+	async updateStudentGradeSubGradeComponent(
 		params: { courseId: string; studentOfficialId: string; gradeId: string },
 		gradeObject: { grade: number }
 	) {
@@ -37,27 +37,49 @@ export class StudentGradeRepository {
 			{
 				courseId: courseId,
 				studentOfficialId: studentOfficialId,
-				$or: [
-					{ 'grade.gradeComponent._id': gradeId },
-					{ 'grade.gradeComponent.gradeSubComponent._id': gradeId }
-				]
+				'grade.gradeComponent.gradeSubComponent._id': gradeId
 			},
 			{
 				$set: {
-					'grade.gradeComponent.$[compElem].grade': grade, // Update totalGrade if the first condition matches
-					'grade.gradeComponent.$[compElem].gradeSubComponent.$[subCompElem].grade':
-						grade // Update grade if the second condition matches
+					'grade.gradeComponent.$[gc].gradeSubComponent.$[gsc].grade': grade //gradeSubComponent
 				}
 			},
 			{
 				arrayFilters: [
-					{ 'compElem._id': gradeId },
-					{ 'subCompElem._id': gradeId }
+					{ 'gc._id': { $exists: true } }, // Filter for non-empty gradeComponent
+					{ 'gsc._id': gradeId } // Filter for matching gradeSubComponent _id
 				],
 				new: true
 			}
 		)
-		console.log(result)
+
+		return result
+	}
+	async updateStudentGradeGradeComponent(
+		params: { courseId: string; studentOfficialId: string; gradeId: string },
+		gradeObject: { grade: number }
+	) {
+		const { courseId, studentOfficialId, gradeId } = params
+		const { grade } = gradeObject
+		console.log(grade)
+
+		const result = await this.studentGradeModel.findOneAndUpdate(
+			{
+				courseId: courseId,
+				studentOfficialId: studentOfficialId,
+				'grade.gradeComponent._id': gradeId
+			},
+			{
+				$set: {
+					'grade.gradeComponent.$[element].totalGrade': grade //gradeSubComponent
+				}
+			},
+			{
+				new: true,
+				arrayFilters: [{ 'element._id': gradeId }]
+			}
+		)
+
 		return result
 	}
 
