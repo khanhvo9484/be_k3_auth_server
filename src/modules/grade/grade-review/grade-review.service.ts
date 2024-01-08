@@ -16,14 +16,12 @@ import { DatabaseExecutionException } from '@common/exceptions'
 import { FileUploaderService } from '@utils/file-uploader/file-uploader.service'
 import { NotificationType } from 'notification/resource/enum'
 import { PrismaService } from '@my-prisma/prisma.service'
+import { CourseUtilService } from 'modules/course-util/course-util.service'
 @Injectable()
 export class GradeReviewService {
 	constructor(
 		private gradeReviewRepository: GradeReviewRepository,
-
-		// @Inject(forwardRef(() => CourseService))
-		// private courseService: CourseService,
-
+		private courseUtilService: CourseUtilService,
 		private fileUploaderService: FileUploaderService,
 		private notificationService: NotificationService,
 		private prismaService: PrismaService
@@ -133,6 +131,10 @@ export class GradeReviewService {
 				userId: undefined,
 				gradeReviewId: undefined
 			}
+			const role = await this.courseUtilService.getRoleInCourse(
+				request.courseId,
+				userId
+			)
 			const result =
 				await this.gradeReviewRepository.createCommentOnGradeReview({
 					...requestWithoutId,
@@ -147,6 +149,13 @@ export class GradeReviewService {
 						}
 					}
 				})
+			const createNotificationDto = new CreateNotificationDto({
+				type: NotificationType.NEW_GRADE_REVIEW_COMMENT,
+				content: `đã bình luận về đơn phúc khảo của bạn`,
+				title: 'Bình luận mới',
+				targetId: result.id,
+				actorId: userId
+			})
 			return result
 		} catch (error) {
 			console.log(error)

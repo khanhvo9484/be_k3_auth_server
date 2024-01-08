@@ -183,4 +183,17 @@ export class GradeStructureRepository {
 		)
 		return result
 	}
+	async setUnEditable(courseId: string) {
+		const result = await this.gradeStructureModel.updateOne(
+			{
+				courseId: courseId
+			},
+			{
+				$set: {
+					isEditable: false
+				}
+			}
+		)
+		return result
+	}
 }

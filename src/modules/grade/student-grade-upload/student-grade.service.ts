@@ -249,6 +249,8 @@ export class StudentGradeService {
 			const result = await this.studentGradeRepository.createManyStudentGrade(
 				listStudentsWithCourseId
 			)
+			const setUnEditableResult =
+				await this.gradeStructureService.setUnEditable(courseId)
 
 			if (!result) {
 				throw new DatabaseExecutionException('upload student list failed')

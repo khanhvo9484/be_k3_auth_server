@@ -104,4 +104,7 @@ export class CreateCommentOnGradeReviewRequest implements GradeReviewComment {
 	updatedAt: Date
 	@IsOptional()
 	deletedAt: Date
+
+	@IsNotEmpty()
+	courseId: string
 }

@@ -7,6 +7,7 @@ export interface IGradeStructure extends Document {
 	courseId: string
 	gradeComponent: IGradeComponent[]
 	status: string
+	isEditable: boolean
 }
 
 const GradeStructureSchema = new Schema<IGradeStructure>(
@@ -27,7 +28,8 @@ const GradeStructureSchema = new Schema<IGradeStructure>(
 			type: String,
 			required: true,
 			default: GradeStructureStatus.IS_NOT_GRADED
-		}
+		},
+		isEditable: { type: Boolean, default: true }
 	},
 	{ _id: true }
 )
