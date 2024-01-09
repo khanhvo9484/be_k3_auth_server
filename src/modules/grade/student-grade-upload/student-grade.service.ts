@@ -193,11 +193,11 @@ export class StudentGradeService {
 		try {
 			const result =
 				await this.studentGradeRepository.getStudentGradeByCourseId(courseId)
-			const gradeComponent =
+			const gradeStructure =
 				await this.gradeStructureService.getGradeStructure(courseId)
 
 			if (result.length === 0) {
-				throw new BadRequestException('Student list not found')
+				return gradeStructure
 			}
 			const finalResult = result.map((item) => {
 				return item.toJSON()
