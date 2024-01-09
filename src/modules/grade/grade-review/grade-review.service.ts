@@ -156,6 +156,10 @@ export class GradeReviewService {
 				targetId: result.id,
 				actorId: userId
 			})
+
+			const notification = await this.notificationService.create(
+				createNotificationDto
+			)
 			return result
 		} catch (error) {
 			console.log(error)

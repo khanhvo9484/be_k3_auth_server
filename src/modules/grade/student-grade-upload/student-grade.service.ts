@@ -444,7 +444,7 @@ export class StudentGradeService {
 										name: key,
 										_id: gradeSubComponent.find((subComponent) => {
 											return subComponent.name === key
-										})._id,
+										})['id'],
 										percentage: gradeSubComponent.find((subComponent) => {
 											return subComponent.name === key
 										}).percentage,
@@ -527,8 +527,11 @@ export class StudentGradeService {
 							grade
 						}
 					)
+
 				if (!result) {
-					throw new BadRequestException('Update grade failed')
+					throw new BadRequestException(
+						'Update grade failed, grade component not found'
+					)
 				}
 				return result
 			} else {
@@ -543,8 +546,11 @@ export class StudentGradeService {
 							grade
 						}
 					)
+
 				if (!result) {
-					throw new BadRequestException('Update grade failed')
+					throw new BadRequestException(
+						'Update grade failed, grade sub component not found'
+					)
 				}
 				return result
 			}
