@@ -114,19 +114,20 @@ export class AuthController {
 			data: {}
 		}
 	}
-}
-//   @Post('/verify-email')
-//   async verifyEmail(
-//     @Body() request: { token: string; email: string },
-//     @Res() res: Response,
-//   ) {
-//     const { token, email } = request;
-//     const result = await this.authService.activateAccount(email, token);
 
-//     return res
-//       .status(200)
-//       .json({ message: 'Verify email successfully', data: result });
-//   }
+	@Post('/forgot-password')
+	async forgotPassword(
+		@Body() request: { email: string },
+		@Res() res: Response
+	) {
+		const { email } = request
+		const result = await this.authService.sendEmailForgotPassword(email)
+
+		return res
+			.status(200)
+			.json({ message: 'Reset password successfully', data: result })
+	}
+}
 
 //   @Post('/forgot-password')
 //   async forgotPassword(

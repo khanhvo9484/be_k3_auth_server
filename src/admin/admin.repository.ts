@@ -13,6 +13,14 @@ export class AdminRepository {
 		})
 		return result
 	}
+	async getUser(userId: string) {
+		const result = await this.prismaService.user.findUnique({
+			where: {
+				id: userId
+			}
+		})
+		return result
+	}
 
 	async getAllCourses() {
 		const result = await this.prismaService.course.findMany({

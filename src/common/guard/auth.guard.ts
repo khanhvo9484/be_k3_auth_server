@@ -9,11 +9,13 @@ import { IS_PUBLIC_KEY } from '@common/decorator/public-route.decorator'
 import { Reflector } from '@nestjs/core'
 import { TokenFactoryService } from '@utils/jwt-helper/token-factory.service'
 import { TokenType } from '@utils/jwt-helper/resources/token-type.enum'
+import { AuthService } from 'auth/auth.service'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 	constructor(
 		private tokenFactoryService: TokenFactoryService,
+		private authService: AuthService,
 		private reflector: Reflector
 	) {}
 
@@ -32,12 +34,17 @@ export class AuthGuard implements CanActivate {
 			throw new UnauthorizedException('Token not found')
 		}
 
-		const payload = await this.tokenFactoryService.verify(
+		const payload = await this.tokenFactoryService.verify<CustomJwtPayload>(
 			token,
 			TokenType.ACCESS_TOKEN
 		)
+
 		if (!payload) {
 			throw new UnauthorizedException('Token not found')
+		}
+		const isValidate = await this.authService.validateUser(payload.email)
+		if (!isValidate) {
+			throw new UnauthorizedException('Token is not valid')
 		}
 
 		request.user = payload

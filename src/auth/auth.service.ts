@@ -144,7 +144,84 @@ export class AuthService {
 		return false
 	}
 
-	async blockUser(userId: string, email: string) {}
+	async blockUser(email: string) {
+		await this.cache.del('access_token_' + email)
+		await this.cache.del('refresh_token_' + email)
+		return true
+	}
+
+	async sendEmailForgotPassword(email: string) {
+		const resetPasswordToken = await this.tokenFactory
+			.createTokenInstance(TokenType.RESET_PASSWORD)
+			.sign({ email })
+	}
+
+	async activateAccount(email: string, token: string) {
+		await this.tokenFactory.decode(token, TokenType.VERIFY_EMAIL)
+		const result = await this.usersService.updateUser({
+			where: { email },
+			data: { isVerified: true }
+		})
+
+		// await this.token.verifyUserToken(
+		// 	email,
+		// 	token,
+		// 	TokenType.ACTIVATE_ACCOUNT
+		// )
+		// await this.usersService.updateUser({
+		// 	where: { email },
+		// 	data: { isVerified: true }
+		// })
+		// await this.tokensService.setTokenUsed(token)
+		// return {
+		// 	message: 'Account activated successfully'
+		// }
+	}
+
+	async resetPassword(email: string, password: string) {
+		if (!password) throw new BadRequestException('Password is required')
+		if (!email) throw new BadRequestException('Email is required')
+
+		const user = await this.usersService.findUser({
+			email: email
+		})
+		if (!user) {
+			throw new BadRequestException('Invalid email')
+		}
+		const hashPassword = await createHashPassword(password)
+		await this.usersService.updateUser({
+			where: { email },
+			data: { password: hashPassword }
+		})
+		return {
+			message: 'Reset password successfully'
+		}
+	}
+
+	// send reset password email ----------------------------------------------
+	// async forgotPassword(email: string) {
+	// 	const user = await this.usersService.findUser({
+	// 		email: email
+	// 	})
+	// 	if (!user) {
+	// 		throw new BadRequestException('Invalid email')
+	// 	}
+	// 	const resetPasswordToken = await this.userTokenService.createUserToken(
+	// 		{
+	// 			email: user.email,
+	// 			subject: TokenType.RESET_PASSWORD
+	// 		},
+	// 		user.id
+	// 	)
+	// 	await this.sendEmailService.sendResetPasswordEmail(
+	// 		email,
+	// 		resetPasswordToken
+	// 	)
+	// 	return {
+	// 		resetPasswordToken: resetPasswordToken
+	// 	}
+	// }
+	// end send reset password email ----------------------------------------------
 }
 // 	generateToken(payload: payloadType, tokenType: string) {
 // 		if (tokenType === 'access_token') {

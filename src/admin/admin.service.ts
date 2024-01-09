@@ -3,12 +3,14 @@ import { Injectable } from '@nestjs/common'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { AdminRepository } from './admin.repository'
 import { ExcelService } from '@utils/excel/excel.service'
+import { AuthService } from 'auth/auth.service'
 
 @Injectable()
 export class AdminService {
 	constructor(
 		private adminRepository: AdminRepository,
-		private excelService: ExcelService
+		private excelService: ExcelService,
+		private authService: AuthService
 	) {}
 
 	async getAllUsers() {
@@ -33,7 +35,9 @@ export class AdminService {
 
 	async banUser(userId: string) {
 		try {
+			const user = await this.adminRepository.getUser(userId)
 			const result = await this.adminRepository.blockUser(userId)
+			const deleteCache = await this.authService.blockUser(user.email)
 			return result
 		} catch (err) {
 			console.log(err)
