@@ -121,49 +121,4 @@ export class GradeReviewService {
 			throw new DatabaseExecutionException(error.message)
 		}
 	}
-
-	async commentOnGradeReview(request: CreateCommentOnGradeReviewRequest) {
-		try {
-			const userId = request.userId
-			const gradeReviewId = request.gradeReviewId
-			const requestWithoutId = {
-				...request,
-				userId: undefined,
-				gradeReviewId: undefined
-			}
-			const role = await this.courseUtilService.getRoleInCourse(
-				request.courseId,
-				userId
-			)
-			const result =
-				await this.gradeReviewRepository.createCommentOnGradeReview({
-					...requestWithoutId,
-					user: {
-						connect: {
-							id: request.userId
-						}
-					},
-					gradeReview: {
-						connect: {
-							id: request.gradeReviewId
-						}
-					}
-				})
-			const createNotificationDto = new CreateNotificationDto({
-				type: NotificationType.NEW_GRADE_REVIEW_COMMENT,
-				content: `đã bình luận về đơn phúc khảo của bạn`,
-				title: 'Bình luận mới',
-				targetId: result.id,
-				actorId: userId
-			})
-
-			const notification = await this.notificationService.create(
-				createNotificationDto
-			)
-			return result
-		} catch (error) {
-			console.log(error)
-			throw new DatabaseExecutionException(error.message)
-		}
-	}
 }

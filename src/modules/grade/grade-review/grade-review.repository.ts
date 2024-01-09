@@ -45,6 +45,26 @@ export class GradeReviewRepository {
 		return result
 	}
 
+	async getAllGradeReviewInvolve(gradeReviewId: string) {
+		const result = await this.prismaService.gradeReviewInvolve.findMany({
+			where: {
+				gradeReviewId: gradeReviewId
+			},
+			include: {
+				user: true
+			}
+		})
+		return result
+	}
+	async getIfUserInvolveInGradeReview(gradeReviewId: string, userId: string) {
+		const result = await this.prismaService.gradeReviewInvolve.findFirst({
+			where: {
+				gradeReviewId: gradeReviewId,
+				userId: userId
+			}
+		})
+		return result
+	}
 	async createGradeReview(data: Prisma.GradeReviewCreateInput, tx?: any) {
 		if (tx)
 			return await tx.gradeReview.create({ data, include: { course: true } })
@@ -66,6 +86,22 @@ export class GradeReviewRepository {
 		if (tx) return await tx.gradeReviewComment.create({ data })
 		else {
 			const result = await this.prismaService.gradeReviewComment.create({
+				data: data
+			})
+			return result
+		}
+	}
+
+	async createGradeReviewInvolve(
+		data: Prisma.GradeReviewInvolveCreateInput,
+		tx?: any
+	) {
+		if (tx)
+			return await tx.gradeReviewInvolve.create({
+				data: data
+			})
+		else {
+			const result = await this.prismaService.gradeReviewInvolve.create({
 				data: data
 			})
 			return result

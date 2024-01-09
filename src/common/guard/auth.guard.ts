@@ -4,11 +4,9 @@ import {
 	Injectable,
 	UnauthorizedException
 } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
 import { IS_PUBLIC_KEY } from '@common/decorator/public-route.decorator'
 import { Reflector } from '@nestjs/core'
-import { JWT_ACCESS_TOKEN_PUBLIC_KEY } from 'enviroment'
 import { TokenFactoryService } from '@utils/jwt-helper/token-factory.service'
 import { TokenType } from '@utils/jwt-helper/resources/token-type.enum'
 

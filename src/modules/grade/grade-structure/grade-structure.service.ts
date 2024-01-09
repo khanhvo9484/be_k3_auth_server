@@ -203,18 +203,12 @@ export class GradeStructureService {
 			}
 			const createNotificationDto = new CreateNotificationDto({
 				type: NotificationType.NEW_GRADE_REVIEW,
-				content: ` đã đăng tải điểm thành phần ${result.toJSON()} của khóa học ${
-					course.name
-				}`,
+				content: ` đã đăng tải điểm thành phần của khóa học ${course.name}`,
 				title: 'Điểm thành phần mới',
 				targetId: result.id,
 				actorId: user.id
 			})
-			const notificationResult =
-				await this.notificationService.createNotificationForStudent({
-					courseId: request.courseId,
-					notification: createNotificationDto
-				})
+
 			await this.notificationService.createNotificationForStudent({
 				courseId: request.courseId,
 				notification: createNotificationDto

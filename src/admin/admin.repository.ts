@@ -6,7 +6,11 @@ export class AdminRepository {
 	constructor(private prismaService: PrismaService) {}
 
 	async getAllUsers() {
-		const result = await this.prismaService.user.findMany()
+		const result = await this.prismaService.user.findMany({
+			where: {
+				role: 'user'
+			}
+		})
 		return result
 	}
 
@@ -14,6 +18,18 @@ export class AdminRepository {
 		const result = await this.prismaService.course.findMany({
 			include: {
 				courseOwner: true
+			}
+		})
+		return result
+	}
+
+	async blockUser(userId: string) {
+		const result = await this.prismaService.user.update({
+			where: {
+				id: userId
+			},
+			data: {
+				isBlocked: true
 			}
 		})
 		return result

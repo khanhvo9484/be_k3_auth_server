@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Req } from '@nestjs/common'
+import { Controller, Get, HttpCode, Req, Post } from '@nestjs/common'
 import { AdminService } from './admin.service'
 import { plainToClass } from 'class-transformer'
 import { UserFullInfoReponse } from './resource/dto'
@@ -22,5 +22,22 @@ export class AdminController {
 	async getAllCourses(@Req() request: Request) {
 		const result = await this.adminService.getAllCourses()
 		return { message: 'get all courses successfully', data: result }
+	}
+
+	@Get('xlsx-template-mapping-id')
+	@HttpCode(200)
+	async getXlsxTemplateMappingId(@Req() request: Request) {
+		const result = await this.adminService.getXlsxTemplateMappingId()
+		return {
+			message: 'get xlsx template mapping id successfully',
+			data: result
+		}
+	}
+
+	@Post('ban-user')
+	@HttpCode(200)
+	async banUser(@Req() request: { userId: string }) {
+		const result = await this.adminService.banUser(request.userId)
+		return { message: 'ban user successfully', data: result }
 	}
 }

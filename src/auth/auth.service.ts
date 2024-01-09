@@ -135,6 +135,16 @@ export class AuthService {
 			refresh_token: newRefreshToken
 		}
 	}
+
+	async validateUser(email: string) {
+		const accessToken = await this.cache.get('access_token_' + email)
+		if (accessToken) {
+			return true
+		}
+		return false
+	}
+
+	async blockUser(userId: string, email: string) {}
 }
 // 	generateToken(payload: payloadType, tokenType: string) {
 // 		if (tokenType === 'access_token') {

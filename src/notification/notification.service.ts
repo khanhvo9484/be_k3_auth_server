@@ -19,6 +19,10 @@ export class NotificationService {
 	async create(notification: CreateNotificationDto) {
 		try {
 			const result = await this.notificationRepository.create(notification)
+			this.myGatewayService.broadcastNotification(
+				[{ userId: result.userId }],
+				result
+			)
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException(error.message)
@@ -128,5 +132,38 @@ export class NotificationService {
 				...params,
 				role: 'student'
 			})
+	}
+
+	async createNotificationForInvolvers(params: {
+		involvers: string[]
+		notification: CreateNotificationDto
+		tx?: any
+	}): Promise<any> {
+		try {
+			const { involvers, notification, tx } = params
+
+			const data = involvers.map((involverId) => {
+				return {
+					...notification,
+					userId: involverId
+				}
+			})
+			let returnData = null
+			if (tx) {
+				returnData = await this.notificationRepository.createMany(data, tx)
+			} else {
+				returnData = await this.notificationRepository.createMany(data)
+			}
+
+			const listUserIds = involvers.map((memberId) => {
+				return { userId: memberId }
+			})
+
+			this.myGatewayService.broadcastNotification(listUserIds, notification)
+
+			return returnData
+		} catch (error) {
+			throw new DatabaseExecutionException(error.message)
+		}
 	}
 }

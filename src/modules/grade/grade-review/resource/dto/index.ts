@@ -65,6 +65,13 @@ export class CreateGradeReviewRequest {
 
 	@IsNotEmpty()
 	@IsString()
+	gradeName: string
+
+	@IsOptional()
+	percentage: number
+
+	@IsNotEmpty()
+	@IsString()
 	courseId: string
 
 	@IsNotEmpty()
@@ -91,6 +98,9 @@ export class CreateCommentOnGradeReviewRequest implements GradeReviewComment {
 
 	@IsNotEmpty()
 	userId: string
+
+	@IsNotEmpty()
+	ownerId: string
 
 	@IsNotEmpty()
 	gradeReviewId: string

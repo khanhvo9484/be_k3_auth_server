@@ -18,12 +18,14 @@ import {
 	CreateCommentOnGradeReviewRequest,
 	CreateGradeReviewRequest
 } from './resource/dto'
+import { GradeReviewCommentService } from './grade-review-comment.service'
 
 @Controller('grade-review')
 export class GradeReviewController {
 	constructor(
 		private gradeReviewService: GradeReviewService,
-		private fileUploaderService: FileUploaderService
+		private fileUploaderService: FileUploaderService,
+		private gradeReviewCommentService: GradeReviewCommentService
 	) {}
 
 	@Post('upload')
@@ -108,7 +110,8 @@ export class GradeReviewController {
 		@Body() body: CreateCommentOnGradeReviewRequest
 	) {
 		try {
-			const result = await this.gradeReviewService.commentOnGradeReview(body)
+			const result =
+				await this.gradeReviewCommentService.commentOnGradeReview(body)
 			return {
 				message: 'comment on grade review success',
 				data: result

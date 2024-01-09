@@ -32,10 +32,11 @@ model User {
   isBlocked         Boolean       @default(false)
   studentOfficialId String?
 
-  gradeReviews  GradeReview[]
-  comments      GradeReviewComment[]
-  notifications Notification[]       @relation("User")
-  actions       Notification[]       @relation("Actor")
+  gradeReviews        GradeReview[]
+  comments            GradeReviewComment[]
+  notifications       Notification[]       @relation("User")
+  actions             Notification[]       @relation("Actor")
+  gradeReviewInvolves GradeReviewInvolve[]
 }
 
 model Course {
@@ -115,6 +116,8 @@ model GradeReview {
   studentId     String
   courseId      String
   gradeId       String
+  gradeName     String?              @default("Grade")
+  percentage    Int?                 @default(0)
   currentGrade  Int
   expectedGrade Int
   explaination  String?
@@ -126,6 +129,7 @@ model GradeReview {
   user          User                 @relation(fields: [studentId], references: [id])
   course        Course               @relation(fields: [courseId], references: [id])
   comments      GradeReviewComment[]
+  involves      GradeReviewInvolve[]
 }
 
 model GradeReviewComment {
@@ -139,4 +143,16 @@ model GradeReviewComment {
   deletedAt   DateTime?
   user        User        @relation(fields: [userId], references: [id])
   gradeReview GradeReview @relation(fields: [gradeReviewId], references: [id])
+}
+
+model GradeReviewInvolve {
+  userId        String
+  gradeReviewId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  user          User        @relation(fields: [userId], references: [id])
+  gradeReview   GradeReview @relation(fields: [gradeReviewId], references: [id])
+
+  @@id([userId, gradeReviewId])
 }
