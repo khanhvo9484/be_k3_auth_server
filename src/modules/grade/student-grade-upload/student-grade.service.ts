@@ -231,7 +231,7 @@ export class StudentGradeService {
 									(gradeSubComponent) => {
 										return {
 											name: gradeSubComponent.name,
-											_id: gradeSubComponent._id,
+											_id: gradeSubComponent['id'],
 											grade: null,
 											percentage: gradeSubComponent.percentage
 										}
