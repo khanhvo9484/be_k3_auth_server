@@ -218,11 +218,11 @@ export class CourseService {
 					}
 				)
 
-				// const createdGradeStructure =
-				// 	await this.gradeStructureService.createGradeStructure(
-				// 		createGradeStructureRequest,
-				// 		user
-				// 	)
+				const createdGradeStructure =
+					await this.gradeStructureService.createGradeStructure(
+						createGradeStructureRequest,
+						user
+					)
 				return createdCourse
 			})
 

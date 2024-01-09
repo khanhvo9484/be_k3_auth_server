@@ -193,11 +193,9 @@ export class StudentGradeService {
 		try {
 			const result =
 				await this.studentGradeRepository.getStudentGradeByCourseId(courseId)
-			const gradeStructure =
-				await this.gradeStructureService.getGradeStructure(courseId)
 
 			if (result.length === 0) {
-				return gradeStructure
+				return []
 			}
 			const finalResult = result.map((item) => {
 				return item.toJSON()
