@@ -235,54 +235,64 @@ export class CourseService {
 	}
 
 	async sendInvitation(createInvitationRequest: CreateInvitationRequest) {
-		const tokenPayload = createInvitationRequest
-		const token = this.tokenFactoryService.sign(
-			tokenPayload as InviteToCourseJwtPayload,
-			TokenType.INVITE_TO_COURSE
-		)
-		const inviterUser = await this.prisma.user.findUnique({
-			where: { id: createInvitationRequest.inviterId }
-		})
-		const course = await this.prisma.user.findUnique({
-			where: { id: createInvitationRequest.courseId }
-		})
-		const substitutionData: InviteToCourseSubstitution = {
-			invitation_link: FE_INVITE_TO_COURSE_URL + '?token=' + token,
-			protocol: PROTOCOL,
-			inviter_email: inviterUser.email || 'no email',
-			inviter_name: inviterUser.name || 'no name',
-			course_name: course.name || 'no name',
-			role_in_course:
-				createInvitationRequest.roleInCourse === 'teacher'
-					? 'giáo viên'
-					: 'học sinh'
-		}
-		const result = await this.courseRepository.createInvitation({
-			id: createInvitationRequest.id,
-			inviteeEmail: createInvitationRequest.inviteeEmail,
-			inviter: {
-				connect: {
-					id: createInvitationRequest.inviterId
-				}
-			},
-			status: 'pending',
-			course: {
-				connect: {
-					id: createInvitationRequest.courseId
-				}
-			},
-			roleInCourse: createInvitationRequest.roleInCourse
-		})
-		const sendEmailResult =
-			await this.emailSenderService.sendWithTemplate<InviteToCourseEmailSenderPayload>(
-				{
-					to: createInvitationRequest.inviteeEmail,
-					templateId: EmailTempateId.INVITE_TO_COURSE,
-					substitutionData: substitutionData
-				}
+		try {
+			const tokenPayload = createInvitationRequest
+			const token = this.tokenFactoryService.sign(
+				tokenPayload as InviteToCourseJwtPayload,
+				TokenType.INVITE_TO_COURSE
 			)
+			const inviterUser = await this.prisma.user.findUnique({
+				where: { id: createInvitationRequest.inviterId }
+			})
+			const course = await this.prisma.course.findUnique({
+				where: { id: createInvitationRequest.courseId }
+			})
 
-		return result
+			if (!inviterUser || !course) {
+				throw new BadRequestException('User or course not found')
+			}
+
+			const substitutionData: InviteToCourseSubstitution = {
+				invitation_link: FE_INVITE_TO_COURSE_URL + '?token=' + token,
+				protocol: PROTOCOL,
+				inviter_email: inviterUser?.email || 'no email',
+				inviter_name: inviterUser?.name || 'no name',
+				course_name: course?.name || 'no name',
+				role_in_course:
+					createInvitationRequest.roleInCourse === 'teacher'
+						? 'giáo viên'
+						: 'học sinh'
+			}
+			const result = await this.courseRepository.createInvitation({
+				id: createInvitationRequest.id,
+				inviteeEmail: createInvitationRequest.inviteeEmail,
+				inviter: {
+					connect: {
+						id: createInvitationRequest.inviterId
+					}
+				},
+				status: 'pending',
+				course: {
+					connect: {
+						id: createInvitationRequest.courseId
+					}
+				},
+				roleInCourse: createInvitationRequest.roleInCourse
+			})
+			const sendEmailResult =
+				await this.emailSenderService.sendWithTemplate<InviteToCourseEmailSenderPayload>(
+					{
+						to: createInvitationRequest.inviteeEmail,
+						templateId: EmailTempateId.INVITE_TO_COURSE,
+						substitutionData: substitutionData
+					}
+				)
+
+			return result
+		} catch (error) {
+			console.error(error)
+			throw new DatabaseExecutionException(error.message)
+		}
 	}
 
 	async joinCourseByToken(inviteToken: string) {
