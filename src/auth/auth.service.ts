@@ -165,7 +165,7 @@ export class AuthService {
 		return false
 	}
 
-	async blockUser(email: string) {
+	async deleteUserSession(email: string) {
 		await this.cache.del('access_token_' + email)
 		await this.cache.del('refresh_token_' + email)
 		return true

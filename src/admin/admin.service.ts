@@ -37,7 +37,7 @@ export class AdminService {
 		try {
 			const user = await this.adminRepository.getUser(userId)
 			const result = await this.adminRepository.blockUser(userId)
-			const deleteCache = await this.authService.blockUser(user.email)
+			const deleteCache = await this.authService.deleteUserSession(user.email)
 			return result
 		} catch (err) {
 			console.log(err)
