@@ -23,7 +23,7 @@ const GradeStructureSchema = new Schema<IGradeStructure>(
 		},
 
 		courseId: { type: String, required: true },
-		gradeComponent: [GradeComponentSchema],
+		gradeComponent: [{ type: GradeComponentSchema, index: false }],
 		status: {
 			type: String,
 			required: true,
