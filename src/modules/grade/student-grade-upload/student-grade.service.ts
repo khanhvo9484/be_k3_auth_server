@@ -20,6 +20,7 @@ import { CourseService } from 'modules/course/course.service'
 import { UserResponse } from '@user/dto/user.dto'
 import { GradeStructureService } from '../grade-structure/grade-structure.service'
 import { GradeComponentStatus } from '../resource/enum'
+import { AuthService } from 'auth/auth.service'
 
 @Injectable()
 export class StudentGradeService {
@@ -28,7 +29,8 @@ export class StudentGradeService {
 		private studentGradeRepository: StudentGradeRepository,
 		private userService: UsersService,
 		private courseService: CourseService,
-		private gradeStructureService: GradeStructureService
+		private gradeStructureService: GradeStructureService,
+		private authService: AuthService
 	) {}
 
 	async getStudentGrade(courseId: string, studentId: string): Promise<any> {
@@ -312,6 +314,11 @@ export class StudentGradeService {
 							studentOfficialId: item.officialId.toString()
 						}
 					})
+				})
+			)
+			const deleteUserSession = await Promise.all(
+				studentListInCourseWithOfficialId.map(async (item) => {
+					return await this.authService.deleteUserSession(item.email)
 				})
 			)
 			return plainToClass(UserResponse, updateResult)

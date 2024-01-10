@@ -45,6 +45,16 @@ export class AdminService {
 		}
 	}
 
+	async unBlockUser(userId: string) {
+		try {
+			const result = await this.adminRepository.unBlockUser(userId)
+			return result
+		} catch (err) {
+			console.log(err)
+			throw new DatabaseExecutionException(err.message)
+		}
+	}
+
 	async getXlsxTemplateMappingId() {
 		try {
 			const users = await this.adminRepository.getAllUsers()

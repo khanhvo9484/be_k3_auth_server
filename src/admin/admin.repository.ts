@@ -42,4 +42,15 @@ export class AdminRepository {
 		})
 		return result
 	}
+	async unBlockUser(userId: string) {
+		const result = await this.prismaService.user.update({
+			where: {
+				id: userId
+			},
+			data: {
+				isBlocked: false
+			}
+		})
+		return result
+	}
 }

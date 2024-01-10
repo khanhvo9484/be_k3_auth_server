@@ -6,12 +6,14 @@ import { MongooseDatabaseModule } from '../resource/mongoose/mongoose.module'
 import { UsersModule } from '@user/user.module'
 import { CourseModule } from 'modules/course/course.module'
 import { GradeStructureModule } from '../grade-structure/grade-structure.module'
+import { AuthModule } from 'auth/auth.module'
 @Module({
 	imports: [
 		MongooseDatabaseModule,
 		UsersModule,
 		CourseModule,
-		GradeStructureModule
+		GradeStructureModule,
+		AuthModule
 	],
 	controllers: [StudentGradeController],
 	providers: [StudentGradeService, StudentGradeRepository],
