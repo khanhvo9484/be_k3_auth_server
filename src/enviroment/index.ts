@@ -38,7 +38,7 @@ export const JWT_REFRESH_TOKEN_PRIVATE_KEY =
 export const JWT_REFRESH_TOKEN_PUBLIC_KEY =
 	process.env.JWT_REFRESH_TOKEN_PUBLIC_KEY
 
-export const PROTOCOL = process.env.PROTOCOL
+export const PROTOCOL = process.env.PROTOCOL || 'http'
 export const FRONT_END_DOMAIN = process.env.FRONT_END_HOST || 'localhost:4000'
 export const BACK_END_DOMAIN = process.env.BACK_END_HOST || 'localhost:3000'
 export const FRONT_END_URL =

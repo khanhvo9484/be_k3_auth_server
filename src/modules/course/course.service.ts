@@ -18,14 +18,14 @@ import { DatabaseExecutionException } from '@common/exceptions'
 import {
 	CreateCourseRequest,
 	CreateInvitationRequest,
-	InviteToCoursePayload,
 	JoinCourseRequest,
-	UpdateCourseRequest
+	UpdateCourseRequest,
+	InviteToCoursePayload
 } from './dto/course.dto'
+import { InviteToCourseEmailSenderPayload } from '@utils/email-sender/resources/email.interface'
 import { TokenType } from '@utils/jwt-helper/resources/token-type.enum'
 import { InviteToCourseToken } from '@utils/jwt-helper/resources/invite-to-course-token'
 import { PrismaService } from '@my-prisma/prisma.service'
-import { SparkPostSender } from '@utils/email-sender/sparkpost'
 import { EmailSenderService } from '@utils/email-sender/email-sender.service'
 import {
 	FE_INVITE_TO_COURSE_URL,
@@ -36,6 +36,7 @@ import { plainToClass } from 'class-transformer'
 import { UserResponse } from '@user/dto/user.dto'
 import { GradeStructureService } from '../grade/grade-structure/grade-structure.service'
 import { CreateGradeStructureRequest } from 'modules/grade/resource/dto'
+import { InviteToCourseJwtPayload } from '@utils/jwt-helper/resources/token.interface'
 
 @Injectable()
 export class CourseService {
@@ -236,7 +237,7 @@ export class CourseService {
 	async sendInvitation(createInvitationRequest: CreateInvitationRequest) {
 		const tokenPayload = createInvitationRequest
 		const token = this.tokenFactoryService.sign(
-			tokenPayload,
+			tokenPayload as InviteToCourseJwtPayload,
 			TokenType.INVITE_TO_COURSE
 		)
 		const substitutionData: InviteToCourseSubstitution = {
@@ -266,11 +267,14 @@ export class CourseService {
 			},
 			roleInCourse: createInvitationRequest.roleInCourse
 		})
-		const sendEmailResult = await this.emailSenderService.sendWithTemplate({
-			to: createInvitationRequest.inviteeEmail,
-			templateId: EmailTempateId.INVITE_TO_COURSE,
-			substitutionData: substitutionData
-		})
+		const sendEmailResult =
+			await this.emailSenderService.sendWithTemplate<InviteToCourseEmailSenderPayload>(
+				{
+					to: createInvitationRequest.inviteeEmail,
+					templateId: EmailTempateId.INVITE_TO_COURSE,
+					substitutionData: substitutionData
+				}
+			)
 
 		return result
 	}

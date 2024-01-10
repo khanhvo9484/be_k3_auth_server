@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common'
+import { DynamicModule, Global, Module } from '@nestjs/common'
 import { EmailSenderService } from './email-sender.service'
 import { SparkPostSender } from './sparkpost'
 

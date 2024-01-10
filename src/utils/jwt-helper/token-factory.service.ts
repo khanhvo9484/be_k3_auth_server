@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { IJwtModuleOptions, IToken } from './resources/token.interface'
+import {
+	IJwtModuleOptions,
+	IToken,
+	InviteToCourseJwtPayload,
+	ResetJwtPasswordPayload
+} from './resources/token.interface'
 import { AccessToken } from './resources/access-token'
 import { RefreshToken } from './resources/refresh-token'
 import { TokenType } from './resources/token-type.enum'
@@ -72,7 +77,13 @@ export class TokenFactoryService {
 		this.createTokenInstance(type)
 		return this.token.verify(token)
 	}
-	sign(payload: unknown, type: TokenType): string {
+	sign(
+		payload:
+			| CustomJwtPayload
+			| ResetJwtPasswordPayload
+			| InviteToCourseJwtPayload,
+		type: TokenType
+	): string {
 		this.createTokenInstance(type)
 		return this.token.sign(payload)
 	}

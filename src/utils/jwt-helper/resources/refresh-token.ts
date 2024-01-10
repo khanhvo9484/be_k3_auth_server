@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { IToken } from './token.interface'
+import {
+	IToken,
+	InviteToCourseJwtPayload,
+	ResetJwtPasswordPayload
+} from './token.interface'
 import { JwtService } from '@nestjs/jwt'
 import * as fs from 'fs'
 
@@ -30,21 +34,27 @@ export class RefreshToken implements IToken {
 			return null
 		}
 	}
-	sign(payload: unknown): string {
+	sign(
+		payload:
+			| CustomJwtPayload
+			| ResetJwtPasswordPayload
+			| InviteToCourseJwtPayload
+	): string {
 		if (!payload) {
 			return null
 		}
-
-		if ((payload as CustomJwtPayload).id !== undefined) {
+		try {
 			return this.jwtService.sign(payload as CustomJwtPayload, {
 				secret: this.privateKey,
 				algorithm: 'RS256',
 				expiresIn: this.expiresIn || 3600
 			})
-		} else {
-			throw new Error('Invalid payload type')
+		} catch (error) {
+			console.log(error)
+			throw new Error(error.message)
 		}
 	}
+
 	async decode<T>(token: string): Promise<T> {
 		try {
 			return await this.jwtService.decode(token, {

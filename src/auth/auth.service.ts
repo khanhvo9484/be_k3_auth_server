@@ -17,13 +17,30 @@ import {
 	JWT_ACCESS_TOKEN_EXPIRATION_TIME,
 	JWT_REFRESH_TOKEN_EXPIRATION_TIME
 } from 'enviroment'
+import { EmailSenderService } from '@utils/email-sender/email-sender.service'
+import {
+	EmailTemplateType,
+	ResetPasswordPayload,
+	VerifyEmailPayload
+} from '@utils/email-sender/resources/email.interface'
+import {
+	ResetJwtPasswordPayload,
+	VerifyEmailJwtPayload
+} from '@utils/jwt-helper/resources/token.interface'
+import {
+	FE_RESET_PASSWORD_URL,
+	FE_VERIFICATION_URL,
+	PROTOCOL
+} from 'enviroment'
+import { buildResetPasswordLink } from '@utils/link-bulder'
 @Injectable()
 export class AuthService {
 	constructor(
 		private usersService: UsersService,
 		@Inject(CACHE_MANAGER) private cache: Cache,
 		private tokenFactory: TokenFactoryService,
-		private manageTokenInCacheService: ManageTokenInCacheService
+		private manageTokenInCacheService: ManageTokenInCacheService,
+		private emailSenderService: EmailSenderService
 	) {}
 	async signUp(request: CreateUserRequest) {
 		const password = request.password
@@ -151,31 +168,34 @@ export class AuthService {
 	}
 
 	async sendEmailForgotPassword(email: string) {
-		const resetPasswordToken = await this.tokenFactory
-			.createTokenInstance(TokenType.RESET_PASSWORD)
-			.sign({ email })
-	}
+		try {
+			const resetPasswordPayload: ResetJwtPasswordPayload = {
+				email: email
+			}
+			const resetPasswordToken = this.tokenFactory
+				.createTokenInstance(TokenType.RESET_PASSWORD)
+				.sign(resetPasswordPayload)
 
-	async activateAccount(email: string, token: string) {
-		await this.tokenFactory.decode(token, TokenType.VERIFY_EMAIL)
-		const result = await this.usersService.updateUser({
-			where: { email },
-			data: { isVerified: true }
-		})
+			const resetPasswordLink = buildResetPasswordLink(
+				FE_RESET_PASSWORD_URL,
+				resetPasswordToken,
+				email
+			)
+			const result =
+				await this.emailSenderService.sendWithTemplate<ResetPasswordPayload>({
+					to: email,
+					templateId: EmailTemplateType.RESET_PASSWORD,
+					substitutionData: {
+						reset_password_link: resetPasswordLink,
+						protocol: PROTOCOL
+					}
+				})
 
-		// await this.token.verifyUserToken(
-		// 	email,
-		// 	token,
-		// 	TokenType.ACTIVATE_ACCOUNT
-		// )
-		// await this.usersService.updateUser({
-		// 	where: { email },
-		// 	data: { isVerified: true }
-		// })
-		// await this.tokensService.setTokenUsed(token)
-		// return {
-		// 	message: 'Account activated successfully'
-		// }
+			return result
+		} catch (err) {
+			console.log(err)
+			throw new Error(err.message)
+		}
 	}
 
 	async resetPassword(email: string, password: string) {
@@ -198,31 +218,69 @@ export class AuthService {
 		}
 	}
 
-	// send reset password email ----------------------------------------------
-	// async forgotPassword(email: string) {
-	// 	const user = await this.usersService.findUser({
-	// 		email: email
-	// 	})
-	// 	if (!user) {
-	// 		throw new BadRequestException('Invalid email')
-	// 	}
-	// 	const resetPasswordToken = await this.userTokenService.createUserToken(
-	// 		{
-	// 			email: user.email,
-	// 			subject: TokenType.RESET_PASSWORD
-	// 		},
-	// 		user.id
-	// 	)
-	// 	await this.sendEmailService.sendResetPasswordEmail(
-	// 		email,
-	// 		resetPasswordToken
-	// 	)
-	// 	return {
-	// 		resetPasswordToken: resetPasswordToken
-	// 	}
-	// }
-	// end send reset password email ----------------------------------------------
+	// verify reset password ----------------------------------------------
+	async verifyResetPassword(email: string, token: string) {
+		const payload = await this.tokenFactory
+			.createTokenInstance(TokenType.RESET_PASSWORD)
+			.verify<ResetJwtPasswordPayload>(token)
+		if (!payload) {
+			throw new BadRequestException('Invalid token')
+		}
+		return {
+			data: payload,
+			message: 'Verify reset password successfully'
+		}
+	}
+	// end verify reset password ----------------------------------------------
+
+	async activateAccount(email: string, token: string) {
+		try {
+			const payload = await this.tokenFactory
+				.createTokenInstance(TokenType.VERIFY_EMAIL)
+				.decode<VerifyEmailJwtPayload>(token)
+			const result = await this.usersService.updateUser({
+				where: { email },
+				data: { isVerified: true }
+			})
+			return result
+		} catch (err) {
+			console.log(err)
+			throw new BadRequestException('Invalid token')
+		}
+	}
+
+	async sendVerifyEmail(email: string) {
+		try {
+			const payload: VerifyEmailJwtPayload = {
+				email: email
+			}
+			const verifyEmailToken = this.tokenFactory
+				.createTokenInstance(TokenType.VERIFY_EMAIL)
+				.sign(payload)
+
+			const verifyEmailLink = buildResetPasswordLink(
+				FE_RESET_PASSWORD_URL,
+				verifyEmailToken,
+				email
+			)
+			const result =
+				await this.emailSenderService.sendWithTemplate<VerifyEmailPayload>({
+					to: email,
+					templateId: EmailTemplateType.VERIFY_EMAIL,
+					substitutionData: {
+						verify_link: verifyEmailLink,
+						protocol: PROTOCOL
+					}
+				})
+
+			return result
+		} catch (err) {
+			console.log(err)
+			throw new Error(err.message)
+		}
+	}
 }
+
 // 	generateToken(payload: payloadType, tokenType: string) {
 // 		if (tokenType === 'access_token') {
 // 			return this.jwtService.sign(payload, {
@@ -249,13 +307,6 @@ export class AuthService {
 // 			})
 // 		}
 // 	}
-
-// 	async signUp(request: CreateUserRequest) {
-// 		const password = request.password
-
-// 		const salt = await bcrypt.genSalt()
-// 		const hashPassword = await bcrypt.hash(password, salt)
-// 		request.password = hashPassword
 
 // 		const result = await this.usersService.createUser(request)
 // 		const verificationToken = await this.userTokenService.createUserToken(
