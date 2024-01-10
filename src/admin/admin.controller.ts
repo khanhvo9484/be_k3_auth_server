@@ -2,11 +2,13 @@ import { Controller, Get, HttpCode, Req, Post } from '@nestjs/common'
 import { AdminService } from './admin.service'
 import { plainToClass } from 'class-transformer'
 import { UserFullInfoReponse } from './resource/dto'
-
+import { Roles } from '@common/decorator/roles.decorator'
+import { Role } from '@common/decorator/role.enum'
 @Controller('admin')
 export class AdminController {
 	constructor(private adminService: AdminService) {}
 
+	@Roles(Role.Admin)
 	@Get('users/all')
 	@HttpCode(200)
 	async getAllUsers(@Req() request: Request) {

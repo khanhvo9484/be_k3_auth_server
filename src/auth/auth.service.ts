@@ -53,8 +53,12 @@ export class AuthService {
 		const user = await this.usersService.findUser({
 			email: request.email
 		})
+
 		if (!user) {
 			throw new BadRequestException('Invalid email or password')
+		}
+		if (user.isBlocked) {
+			throw new BadRequestException('User is blocked')
 		}
 		const match = await comparePassword(request.password, user.password)
 		if (!match) {

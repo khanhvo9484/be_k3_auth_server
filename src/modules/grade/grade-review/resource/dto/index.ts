@@ -118,3 +118,26 @@ export class CreateCommentOnGradeReviewRequest implements GradeReviewComment {
 	@IsNotEmpty()
 	courseId: string
 }
+
+export class AcceptGradeReviewRequest {
+	@IsNotEmpty()
+	@IsString()
+	gradeReviewId: string
+
+	@IsNotEmpty()
+	finalGrade: number
+
+	@IsNotEmpty()
+	reviewerId: string
+}
+
+export class RejectGradeReviewRequest {
+	@IsNotEmpty()
+	gradeReviewId: string
+
+	@IsOptional()
+	explaination: string
+
+	@IsNotEmpty()
+	reviewerId: string
+}

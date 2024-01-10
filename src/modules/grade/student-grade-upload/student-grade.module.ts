@@ -14,6 +14,7 @@ import { GradeStructureModule } from '../grade-structure/grade-structure.module'
 		GradeStructureModule
 	],
 	controllers: [StudentGradeController],
-	providers: [StudentGradeService, StudentGradeRepository]
+	providers: [StudentGradeService, StudentGradeRepository],
+	exports: [StudentGradeService]
 })
 export class StudentGradeModule {}

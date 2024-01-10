@@ -1,22 +1,23 @@
-import { Prisma } from '@prisma/client'
 import { CreateNotificationDto } from './../../../notification/resource/dto/request-response.dto'
 import { NotificationService } from './../../../notification/notification.service'
-import { plainToClass } from 'class-transformer'
 
 import { CourseService } from 'modules/course/course.service'
 import { GradeReviewRepository } from './grade-review.repository'
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
-import { IGradeReview } from '../resource/shemas'
 import {
+	AcceptGradeReviewRequest,
 	CreateCommentOnGradeReviewRequest,
 	CreateGradeReviewRequest,
-	GradeReviewResponse
+	GradeReviewResponse,
+	RejectGradeReviewRequest
 } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { FileUploaderService } from '@utils/file-uploader/file-uploader.service'
 import { NotificationType } from 'notification/resource/enum'
 import { PrismaService } from '@my-prisma/prisma.service'
 import { CourseUtilService } from 'modules/course-util/course-util.service'
+import { GradeReviewStatus } from '../resource/enum'
+import { StudentGradeService } from '../student-grade-upload/student-grade.service'
 @Injectable()
 export class GradeReviewService {
 	constructor(
@@ -24,7 +25,8 @@ export class GradeReviewService {
 		private courseUtilService: CourseUtilService,
 		private fileUploaderService: FileUploaderService,
 		private notificationService: NotificationService,
-		private prismaService: PrismaService
+		private prismaService: PrismaService,
+		private studentGradeService: StudentGradeService
 	) {}
 
 	async getGradeReview(gradeReviewId: string) {
@@ -116,6 +118,80 @@ export class GradeReviewService {
 			})
 
 			return results
+		} catch (error) {
+			console.log(error)
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
+
+	async acceptGradeReview(request: AcceptGradeReviewRequest) {
+		try {
+			const result = await this.gradeReviewRepository.setStatusForGradeReview(
+				request.gradeReviewId,
+				GradeReviewStatus.APPROVED
+			)
+			const student = await this.prismaService.user.findUnique({
+				where: {
+					id: result.studentId
+				}
+			})
+			const finals = await this.prismaService.gradeReviewFinal.create({
+				data: {
+					gradeReview: {
+						connect: {
+							id: request.gradeReviewId
+						}
+					},
+					reviewer: {
+						connect: {
+							id: request.reviewerId
+						}
+					},
+					finalGrade: request.finalGrade
+				}
+			})
+			const updateResult = await this.studentGradeService.updateStudentGrade({
+				courseId: result.courseId,
+				studentOfficialId: student.studentOfficialId,
+				grade: request.finalGrade,
+				gradeId: result.gradeId
+			})
+			if (!result) {
+				throw new Error('not found')
+			} else {
+				return result
+			}
+		} catch (error) {
+			console.log(error)
+			throw new DatabaseExecutionException(error.message)
+		}
+	}
+
+	async rejectGradeReview(request: RejectGradeReviewRequest) {
+		try {
+			const result = await this.gradeReviewRepository.setStatusForGradeReview(
+				request.gradeReviewId,
+				GradeReviewStatus.REJECTED
+			)
+			const final = await this.prismaService.gradeReviewFinal.create({
+				data: {
+					gradeReview: {
+						connect: {
+							id: request.gradeReviewId
+						}
+					},
+					reviewer: {
+						connect: {
+							id: request.reviewerId
+						}
+					}
+				}
+			})
+			if (!result) {
+				throw new Error('not found')
+			} else {
+				return result
+			}
 		} catch (error) {
 			console.log(error)
 			throw new DatabaseExecutionException(error.message)

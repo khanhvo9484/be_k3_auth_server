@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { CreateGradeReviewRequest } from './resource/dto'
 import { PrismaService } from '@my-prisma/prisma.service'
-import { Prisma } from '@prisma/client'
+import { GradeReview, Prisma } from '@prisma/client'
 @Injectable()
 export class GradeReviewRepository {
 	constructor(private prismaService: PrismaService) {}
@@ -31,7 +31,8 @@ export class GradeReviewRepository {
 					include: {
 						user: true
 					}
-				}
+				},
+				final: true
 			}
 		})
 		return result
@@ -103,6 +104,33 @@ export class GradeReviewRepository {
 		else {
 			const result = await this.prismaService.gradeReviewInvolve.create({
 				data: data
+			})
+			return result
+		}
+	}
+
+	async setStatusForGradeReview(
+		id: string,
+		status: string,
+		tx?: any
+	): Promise<GradeReview> {
+		if (tx)
+			return await tx.gradeReview.update({
+				where: {
+					id: id
+				},
+				data: {
+					status: status
+				}
+			})
+		else {
+			const result = await this.prismaService.gradeReview.update({
+				where: {
+					id: id
+				},
+				data: {
+					status: status
+				}
 			})
 			return result
 		}

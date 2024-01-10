@@ -240,12 +240,18 @@ export class CourseService {
 			tokenPayload as InviteToCourseJwtPayload,
 			TokenType.INVITE_TO_COURSE
 		)
+		const inviterUser = await this.prisma.user.findUnique({
+			where: { id: createInvitationRequest.inviterId }
+		})
+		const course = await this.prisma.user.findUnique({
+			where: { id: createInvitationRequest.courseId }
+		})
 		const substitutionData: InviteToCourseSubstitution = {
 			invitation_link: FE_INVITE_TO_COURSE_URL + '?token=' + token,
 			protocol: PROTOCOL,
-			inviter_email: createInvitationRequest.inviterId,
-			inviter_name: createInvitationRequest.inviterId,
-			course_name: createInvitationRequest.courseId,
+			inviter_email: inviterUser.email || 'no email',
+			inviter_name: inviterUser.name || 'no name',
+			course_name: course.name || 'no name',
 			role_in_course:
 				createInvitationRequest.roleInCourse === 'teacher'
 					? 'giáo viên'

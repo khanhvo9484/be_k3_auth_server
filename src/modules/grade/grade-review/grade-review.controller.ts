@@ -15,8 +15,10 @@ import { Request } from 'express'
 
 import { GradeReviewService } from './grade-review.service'
 import {
+	AcceptGradeReviewRequest,
 	CreateCommentOnGradeReviewRequest,
-	CreateGradeReviewRequest
+	CreateGradeReviewRequest,
+	RejectGradeReviewRequest
 } from './resource/dto'
 import { GradeReviewCommentService } from './grade-review-comment.service'
 
@@ -114,6 +116,40 @@ export class GradeReviewController {
 				await this.gradeReviewCommentService.commentOnGradeReview(body)
 			return {
 				message: 'comment on grade review success',
+				data: result
+			}
+		} catch (error) {
+			console.log(error)
+			throw new Error(error)
+		}
+	}
+
+	@Post('accept-grade-review')
+	async acceptGradeReview(
+		@Req() request: Request,
+		@Body() body: AcceptGradeReviewRequest
+	) {
+		try {
+			const result = await this.gradeReviewService.acceptGradeReview(body)
+			return {
+				message: 'accept grade review success',
+				data: result
+			}
+		} catch (error) {
+			console.log(error)
+			throw new Error(error)
+		}
+	}
+
+	@Post('reject-grade-review')
+	async rejectGradeReview(
+		@Req() request: Request,
+		@Body() body: RejectGradeReviewRequest
+	) {
+		try {
+			const result = await this.gradeReviewService.rejectGradeReview(body)
+			return {
+				message: 'reject grade review success',
 				data: result
 			}
 		} catch (error) {

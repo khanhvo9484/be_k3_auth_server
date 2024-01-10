@@ -37,6 +37,7 @@ model User {
   notifications       Notification[]       @relation("User")
   actions             Notification[]       @relation("Actor")
   gradeReviewInvolves GradeReviewInvolve[]
+  gradeReviewFinals   GradeReviewFinal[]
 }
 
 model Course {
@@ -118,8 +119,8 @@ model GradeReview {
   gradeId       String
   gradeName     String?              @default("Grade")
   percentage    Int?                 @default(0)
-  currentGrade  Int
-  expectedGrade Int
+  currentGrade  Float
+  expectedGrade Float
   explaination  String?
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
@@ -130,6 +131,7 @@ model GradeReview {
   course        Course               @relation(fields: [courseId], references: [id])
   comments      GradeReviewComment[]
   involves      GradeReviewInvolve[]
+  final         GradeReviewFinal[]
 }
 
 model GradeReviewComment {
@@ -155,4 +157,18 @@ model GradeReviewInvolve {
   gradeReview   GradeReview @relation(fields: [gradeReviewId], references: [id])
 
   @@id([userId, gradeReviewId])
+}
+
+model GradeReviewFinal {
+  reviewerId    String
+  gradeReviewId String
+  finalGrade    Float?
+  explaination  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  reviewer      User        @relation(fields: [reviewerId], references: [id])
+  gradeReview   GradeReview @relation(fields: [gradeReviewId], references: [id])
+
+  @@id([reviewerId, gradeReviewId])
 }
