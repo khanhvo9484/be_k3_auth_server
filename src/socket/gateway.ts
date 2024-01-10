@@ -57,6 +57,25 @@ export class MyGatewayService implements OnModuleInit {
 		})
 	}
 
+	@SubscribeMessage('joinPost')
+	handleJoinPost(
+		client: any,
+		payload: any,
+		@MessageBody() messageBody: { postId: string }
+	) {
+		// Join the specified room
+		client.join(messageBody.postId)
+
+		// You can emit an event or perform other actions as needed
+		this.server
+			.to(client.id)
+			.emit('joinedPost', `Joined post: ${messageBody.postId}`)
+	}
+
+	broadcastInPost(postId: string, data: any) {
+		this.server.to(postId).emit('onReceiveNewComment', data)
+	}
+
 	onModuleInit() {
 		this.server.on('connection', (socket) => {
 			const query = socket.handshake.query
@@ -82,6 +101,11 @@ export class MyGatewayService implements OnModuleInit {
 					`A user has disconnected: (${connectedUsers.length}) `,
 					user
 				)
+			})
+
+			socket.on('joinPost', (payload: { postId: string }) => {
+				// Call the handleJoinRoom method to join the room
+				this.handleJoinPost(socket, payload, { postId: payload.postId })
 			})
 		})
 	}
