@@ -39,8 +39,8 @@ export class AdminController {
 
 	@Post('block-user')
 	@HttpCode(200)
-	async banUser(@Req() request: { userId: string }) {
-		const result = await this.adminService.banUser(request.userId)
+	async banUser(@Req() request: Request, @Body() body: { userId: string }) {
+		const result = await this.adminService.banUser(body.userId)
 		return { message: 'ban user successfully', data: result }
 	}
 
