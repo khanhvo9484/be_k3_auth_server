@@ -1,5 +1,5 @@
 # Use Node.js LTS as the base image
-FROM node:16
+FROM node:20
 
 # Create app directory
 RUN mkdir -p /usr/src/app
