@@ -15,6 +15,7 @@ COPY . /usr/src/app
 
 RUN npm run generate
 
+RUN npm run build:prod
 # Expose the port your app runs on
 EXPOSE 3000
 

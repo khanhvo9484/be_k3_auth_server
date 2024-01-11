@@ -1,13 +1,36 @@
+const path = require('path')
 const nodeExternals = require('webpack-node-externals')
-
-module.exports = function (options, webpack) {
+const TerserWebpackPlugin = require('terser-webpack-plugin')
+const CompressionWebpackPlugin = require('compression-webpack-plugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+module.exports = function (options) {
 	return {
 		...options,
+		mode: 'production',
 		entry: options.entry,
-		externals: [nodeExternals()],
+		externals: [
+			nodeExternals({
+				// Add an allowlist for modules that should be bundled
+				allowlist: []
+			})
+		],
+		output: {
+			filename: 'bundle.js',
+			path: path.resolve(__dirname, 'dist')
+			// Other output options...
+		},
+		optimization: {
+			minimizer: [new TerserWebpackPlugin()]
+		},
 		plugins: [
-			...options.plugins
-			// Other production plugins can be added here
+			...options.plugins,
+			new CompressionWebpackPlugin(),
+			// Other plugins...
+			new ForkTsCheckerWebpackPlugin({
+				typescript: {
+					memoryLimit: 4096
+				}
+			})
 		]
 	}
 }
