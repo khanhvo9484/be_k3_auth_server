@@ -7,21 +7,26 @@ import { GradeReviewRepository } from './grade-review.repository'
 import { CreateNotificationDto } from 'notification/resource/dto'
 import { NotificationType } from 'notification/resource/enum'
 import { DatabaseExecutionException } from '@common/exceptions'
+import { MyGatewayService } from '@my-socket-io/gateway'
 @Injectable()
 export class GradeReviewCommentService {
 	constructor(
 		private prismaService: PrismaService,
 		private notificationService: NotificationService,
 		private courseUtilService: CourseUtilService,
-		private gradeReviewRepository: GradeReviewRepository
+		private gradeReviewRepository: GradeReviewRepository,
+		private gatewayService: MyGatewayService
 	) {}
 	async commentOnGradeReview(request: CreateCommentOnGradeReviewRequest) {
 		try {
 			const userId = request.userId
+			const ownerId = request.ownerId
 			const requestWithoutId = {
 				...request,
 				userId: undefined,
-				gradeReviewId: undefined
+				gradeReviewId: undefined,
+				ownerId: undefined,
+				courseId: undefined
 			}
 
 			const result =
@@ -39,7 +44,7 @@ export class GradeReviewCommentService {
 					}
 				})
 
-			if (request.ownerId !== userId) {
+			if (ownerId !== userId) {
 				const createNotificationDto = new CreateNotificationDto({
 					type: NotificationType.NEW_GRADE_REVIEW_COMMENT,
 					content: `đã bình luận về đơn phúc khảo của bạn`,
@@ -68,9 +73,13 @@ export class GradeReviewCommentService {
 					})
 				}
 
-				const notification = await this.notificationService.create(
-					createNotificationDto
-				)
+				const notification = await this.notificationService.create({
+					...createNotificationDto,
+					user: { connect: { id: ownerId } },
+					actor: { connect: { id: userId } },
+					actorId: undefined
+				})
+				this.gatewayService.broadcastInPost(request.gradeReviewId, result)
 			} else {
 				const createNotificationDto = new CreateNotificationDto({
 					type: NotificationType.NEW_GRADE_REVIEW_COMMENT,
@@ -91,6 +100,7 @@ export class GradeReviewCommentService {
 						involvers: involverIds,
 						notification: createNotificationDto
 					})
+				this.gatewayService.broadcastInPost(request.gradeReviewId, result)
 			}
 
 			return result

@@ -70,6 +70,10 @@ class UpdateUserRequest {
 	@IsOptional()
 	@IsString()
 	phoneNumber: string
+
+	@IsOptional()
+	@IsString()
+	studentOfficialId: string
 }
 
 class UpdateUserByAdminRequest implements User {

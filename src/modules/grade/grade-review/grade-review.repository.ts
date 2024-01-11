@@ -15,6 +15,13 @@ export class GradeReviewRepository {
 			where: {
 				courseId: courseId,
 				studentId: studentId
+			},
+			include: {
+				user: true,
+				final: true
+			},
+			orderBy: {
+				createdAt: 'desc'
 			}
 		})
 		return result
@@ -30,9 +37,16 @@ export class GradeReviewRepository {
 				comments: {
 					include: {
 						user: true
+					},
+					orderBy: {
+						createdAt: 'asc'
 					}
 				},
-				final: true
+				final: {
+					include: {
+						reviewer: true
+					}
+				}
 			}
 		})
 		return result
@@ -41,6 +55,13 @@ export class GradeReviewRepository {
 		const result = await this.prismaService.gradeReview.findMany({
 			where: {
 				courseId: courseId
+			},
+			include: {
+				user: true,
+				final: true
+			},
+			orderBy: {
+				createdAt: 'desc'
 			}
 		})
 		return result
@@ -87,7 +108,11 @@ export class GradeReviewRepository {
 		if (tx) return await tx.gradeReviewComment.create({ data })
 		else {
 			const result = await this.prismaService.gradeReviewComment.create({
-				data: data
+				data: data,
+				include: {
+					user: true,
+					gradeReview: true
+				}
 			})
 			return result
 		}

@@ -126,40 +126,57 @@ export class GradeReviewService {
 
 	async acceptGradeReview(request: AcceptGradeReviewRequest) {
 		try {
-			const result = await this.gradeReviewRepository.setStatusForGradeReview(
-				request.gradeReviewId,
-				GradeReviewStatus.APPROVED
-			)
+			const gradeReview = await this.prismaService.gradeReview.findUnique({
+				where: {
+					id: request.gradeReviewId
+				}
+			})
 			const student = await this.prismaService.user.findUnique({
 				where: {
-					id: result.studentId
+					id: gradeReview.studentId
 				}
 			})
-			const finals = await this.prismaService.gradeReviewFinal.create({
-				data: {
-					gradeReview: {
-						connect: {
-							id: request.gradeReviewId
-						}
-					},
-					reviewer: {
-						connect: {
-							id: request.reviewerId
-						}
-					},
-					finalGrade: request.finalGrade
-				}
-			})
-			const updateResult = await this.studentGradeService.updateStudentGrade({
-				courseId: result.courseId,
+
+			const data = {
+				courseId: gradeReview.courseId,
 				studentOfficialId: student.studentOfficialId,
 				grade: request.finalGrade,
-				gradeId: result.gradeId
-			})
-			if (!result) {
-				throw new Error('not found')
+				gradeId: gradeReview.gradeId
+			}
+			console.log(data)
+			const updateResult =
+				await this.studentGradeService.updateStudentGrade(data)
+			console.log(updateResult)
+			if (!updateResult) {
+				throw new Error('the grade component is not found')
 			} else {
-				return result
+				const finalResult = await this.prismaService.$transaction(
+					async (prisma) => {
+						const result =
+							await this.gradeReviewRepository.setStatusForGradeReview(
+								request.gradeReviewId,
+								GradeReviewStatus.APPROVED,
+								prisma
+							)
+
+						const finals = await prisma.gradeReviewFinal.create({
+							data: {
+								gradeReview: {
+									connect: {
+										id: request.gradeReviewId
+									}
+								},
+								reviewer: {
+									connect: {
+										id: request.reviewerId
+									}
+								},
+								finalGrade: request.finalGrade
+							}
+						})
+						return finals
+					}
+				)
 			}
 		} catch (error) {
 			console.log(error)
@@ -169,24 +186,29 @@ export class GradeReviewService {
 
 	async rejectGradeReview(request: RejectGradeReviewRequest) {
 		try {
-			const result = await this.gradeReviewRepository.setStatusForGradeReview(
-				request.gradeReviewId,
-				GradeReviewStatus.REJECTED
-			)
-			const final = await this.prismaService.gradeReviewFinal.create({
-				data: {
-					gradeReview: {
-						connect: {
-							id: request.gradeReviewId
-						}
-					},
-					reviewer: {
-						connect: {
-							id: request.reviewerId
+			const result = await this.prismaService.$transaction(async (prisma) => {
+				const result = await this.gradeReviewRepository.setStatusForGradeReview(
+					request.gradeReviewId,
+					GradeReviewStatus.REJECTED,
+					prisma
+				)
+				const final = await prisma.gradeReviewFinal.create({
+					data: {
+						gradeReview: {
+							connect: {
+								id: request.gradeReviewId
+							}
+						},
+						reviewer: {
+							connect: {
+								id: request.reviewerId
+							}
 						}
 					}
-				}
+				})
+				return result
 			})
+
 			if (!result) {
 				throw new Error('not found')
 			} else {

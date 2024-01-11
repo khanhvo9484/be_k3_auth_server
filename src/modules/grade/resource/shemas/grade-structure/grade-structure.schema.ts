@@ -17,8 +17,7 @@ const GradeStructureSchema = new Schema<IGradeStructure>(
 			default: () => {
 				return generateId('GS')
 			},
-			index: true,
-			unique: true,
+			index: false,
 			required: true
 		},
 

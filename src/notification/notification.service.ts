@@ -4,6 +4,7 @@ import { NotificationRepository } from './notification.repository'
 import { CreateNotificationDto } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { CourseService } from 'modules/course/course.service'
+import { generateId } from '@utils/id-helper'
 @Injectable()
 export class NotificationService {
 	constructor(
@@ -72,9 +73,11 @@ export class NotificationService {
 			const data = memberList.map((member) => {
 				return {
 					...notification,
+					id: generateId('NT'),
 					userId: member.id
 				}
 			})
+
 			let returnData = null
 			if (params.tx) {
 				returnData = await this.notificationRepository.createMany(

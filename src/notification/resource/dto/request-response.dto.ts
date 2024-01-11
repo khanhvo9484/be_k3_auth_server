@@ -36,11 +36,11 @@ export class CreateNotificationDto implements Notification {
 
 	@Expose()
 	@IsOptional()
-	user: null
+	user: object
 
 	@Expose()
 	@IsOptional()
-	actor: null
+	actor: object
 
 	@Expose()
 	createdAt: Date

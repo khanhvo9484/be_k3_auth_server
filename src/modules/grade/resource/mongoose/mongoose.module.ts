@@ -1,31 +1,16 @@
 import { Module } from '@nestjs/common'
 import { mongoProviders } from './mongoose.provider'
-import {
-	gradeStructureProvider,
-	gradeComponentProvider,
-	studentGradeProvider,
-	gradeSubComponentProvider,
-	gradeReviewProvider,
-	gradeReviewCommentProvider
-} from '../providers'
+import { gradeStructureProvider, studentGradeProvider } from '../providers'
 @Module({
 	providers: [
 		...mongoProviders,
 		...gradeStructureProvider,
-		// ...gradeComponentProvider,
-		...studentGradeProvider,
-		// ...gradeSubComponentProvider
-		...gradeReviewProvider,
-		...gradeReviewCommentProvider
+		...studentGradeProvider
 	],
 	exports: [
 		...mongoProviders,
 		...gradeStructureProvider,
-		// ...gradeComponentProvider,
-		...studentGradeProvider,
-		// ...gradeSubComponentProvider
-		...gradeReviewProvider,
-		...gradeReviewCommentProvider
+		...studentGradeProvider
 	]
 })
 export class MongooseDatabaseModule {}

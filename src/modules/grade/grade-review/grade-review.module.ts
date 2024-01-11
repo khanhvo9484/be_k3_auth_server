@@ -6,9 +6,14 @@ import { GradeReviewService } from './grade-review.service'
 import { MongooseDatabaseModule } from '../resource/mongoose/mongoose.module'
 import { CourseUtilModule } from 'modules/course-util/course-ulti.module'
 import { GradeReviewCommentService } from './grade-review-comment.service'
-
+import { GatewayModule } from '@my-socket-io/gateway.module'
 @Module({
-	imports: [MongooseDatabaseModule, CourseUtilModule, StudentGradeModule],
+	imports: [
+		MongooseDatabaseModule,
+		CourseUtilModule,
+		StudentGradeModule,
+		GatewayModule
+	],
 	providers: [
 		GradeReviewService,
 		GradeReviewRepository,
