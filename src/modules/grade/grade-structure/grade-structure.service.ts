@@ -202,7 +202,7 @@ export class GradeStructureService {
 				throw new BadRequestException('Grade structure not found')
 			}
 			const createNotificationDto = new CreateNotificationDto({
-				type: NotificationType.NEW_GRADE_REVIEW,
+				type: NotificationType.NEW_GRADE_FINALIZE,
 				content: ` đã đăng tải điểm thành phần của khóa học ${course.name}`,
 				title: 'Điểm thành phần mới',
 				targetId: result.id,
