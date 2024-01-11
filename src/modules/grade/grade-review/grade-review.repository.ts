@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { CreateGradeReviewRequest } from './resource/dto'
 import { PrismaService } from '@my-prisma/prisma.service'
-import { GradeReview, Prisma } from '@prisma/client'
+import { GradeReview, GradeReviewComment, Prisma } from '@prisma/client'
 @Injectable()
 export class GradeReviewRepository {
 	constructor(private prismaService: PrismaService) {}
