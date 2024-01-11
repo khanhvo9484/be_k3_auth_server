@@ -1,9 +1,10 @@
-import { Controller, Get, HttpCode, Req, Post } from '@nestjs/common'
+import { Controller, Get, HttpCode, Req, Post, Body } from '@nestjs/common'
 import { AdminService } from './admin.service'
 import { plainToClass } from 'class-transformer'
 import { UserFullInfoReponse } from './resource/dto'
 import { Roles } from '@common/decorator/roles.decorator'
 import { Role } from '@common/decorator/role.enum'
+import { Request, Response } from 'express'
 @Controller('admin')
 export class AdminController {
 	constructor(private adminService: AdminService) {}
@@ -45,8 +46,8 @@ export class AdminController {
 
 	@Post('unblock-user')
 	@HttpCode(200)
-	async unblockUser(@Req() request: { userId: string }) {
-		const result = await this.adminService.unBlockUser(request.userId)
+	async unblockUser(@Req() request: Request, @Body() body: { userId: string }) {
+		const result = await this.adminService.unBlockUser(body.userId)
 		return { message: 'unblock user successfully', data: result }
 	}
 }

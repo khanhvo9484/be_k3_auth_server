@@ -47,6 +47,7 @@ export class AdminService {
 
 	async unBlockUser(userId: string) {
 		try {
+			console.log(userId)
 			const result = await this.adminRepository.unBlockUser(userId)
 			return result
 		} catch (err) {
