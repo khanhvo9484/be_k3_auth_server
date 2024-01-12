@@ -94,7 +94,8 @@ export class GradeReviewRepository {
 			const result = await this.prismaService.gradeReview.create({
 				data: data,
 				include: {
-					course: true
+					course: true,
+					user: true
 				}
 			})
 			return result
@@ -105,10 +106,17 @@ export class GradeReviewRepository {
 		data: Prisma.GradeReviewCommentCreateInput,
 		tx?: any
 	) {
-		if (tx) return await tx.gradeReviewComment.create({ data })
+		if (tx)
+			return await tx.gradeReviewComment.create({
+				data,
+				include: {
+					user: true,
+					gradeReview: true
+				}
+			})
 		else {
 			const result = await this.prismaService.gradeReviewComment.create({
-				data: data,
+				data: { ...data },
 				include: {
 					user: true,
 					gradeReview: true
@@ -124,7 +132,7 @@ export class GradeReviewRepository {
 	) {
 		if (tx)
 			return await tx.gradeReviewInvolve.create({
-				data: data
+				data: { ...data }
 			})
 		else {
 			const result = await this.prismaService.gradeReviewInvolve.create({

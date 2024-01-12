@@ -43,6 +43,7 @@ export class GradeReviewCommentService {
 						}
 					}
 				})
+			// console.log(result)
 
 			if (ownerId !== userId) {
 				const createNotificationDto = new CreateNotificationDto({
@@ -51,7 +52,8 @@ export class GradeReviewCommentService {
 					title: 'Bình luận mới',
 					courseId: request.courseId,
 					targetId: result?.gradeReview?.id,
-					actorId: userId
+					actorId: userId,
+					actor: result?.user || undefined
 				})
 
 				const isInvolve =
@@ -88,7 +90,8 @@ export class GradeReviewCommentService {
 					title: 'Bình luận mới',
 					courseId: request.courseId,
 					targetId: result?.gradeReview?.id,
-					actorId: userId
+					actorId: userId,
+					actor: result?.user || undefined
 				})
 
 				const involvers =

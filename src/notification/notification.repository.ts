@@ -9,11 +9,19 @@ export class NotificationRepository {
 	async create(data: Prisma.NotificationCreateInput, tx?: any) {
 		if (tx)
 			return await tx.notification.create({
-				data
+				data,
+				include: {
+					actor: true,
+					user: true
+				}
 			})
 
 		const result = await this.prismaService.notification.create({
-			data
+			data,
+			include: {
+				actor: true,
+				user: true
+			}
 		})
 		return result
 	}

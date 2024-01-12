@@ -198,6 +198,11 @@ export class GradeStructureService {
 			const course = await this.courseUtilService.getCourseById(
 				request.courseId
 			)
+			const userRsult = await this.prismaService.user.findFirst({
+				where: {
+					id: user.id
+				}
+			})
 			if (!result) {
 				throw new BadRequestException('Grade structure not found')
 			}
@@ -207,7 +212,8 @@ export class GradeStructureService {
 				title: 'Điểm thành phần mới',
 				courseId: request.courseId,
 				targetId: result.id,
-				actorId: user.id
+				actorId: user.id,
+				actor: userRsult
 			})
 
 			await this.notificationService.createNotificationForStudent({

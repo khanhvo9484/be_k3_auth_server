@@ -59,7 +59,7 @@ export class NotificationService {
 
 	async createNotificationForRole(params: {
 		courseId: string
-		notification: CreateNotificationDto
+		notification: any
 		role: string
 		tx?: any
 	}) {
@@ -74,7 +74,8 @@ export class NotificationService {
 				return {
 					...notification,
 					id: generateId('NT'),
-					userId: member.id
+					userId: member.id,
+					actor: undefined
 				}
 			})
 
@@ -103,7 +104,7 @@ export class NotificationService {
 	//Template method
 	async createNotificationForTeacher(params: {
 		courseId: string
-		notification: CreateNotificationDto
+		notification: any
 		tx?: any
 	}) {
 		if (params.tx)
@@ -121,7 +122,7 @@ export class NotificationService {
 
 	async createNotificationForStudent(params: {
 		courseId: string
-		notification: CreateNotificationDto
+		notification: any
 		tx?: any
 	}) {
 		if (params.tx)
@@ -139,7 +140,7 @@ export class NotificationService {
 
 	async createNotificationForInvolvers(params: {
 		involvers: string[]
-		notification: CreateNotificationDto
+		notification: any
 		tx?: any
 	}): Promise<any> {
 		try {
@@ -148,7 +149,8 @@ export class NotificationService {
 			const data = involvers.map((involverId) => {
 				return {
 					...notification,
-					userId: involverId
+					userId: involverId,
+					actor: undefined
 				}
 			})
 			let returnData = null

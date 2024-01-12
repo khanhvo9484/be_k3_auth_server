@@ -102,38 +102,43 @@ export class CourseService {
 			if (!userInCourse) {
 				throw new BadRequestException('You are not in this course')
 			}
-			const result = await this.prisma.$transaction(async (prisma) => {
-				const memberListResult = await this.courseRepository.getAllCourseMember(
-					{
-						courseId: courseId
-					}
-				)
-				const students = memberListResult.students.map((item) => {
-					return {
-						...plainToClass(UserResponse, item),
-						roleInCourse: 'student'
-					}
-				})
-				const teachers = memberListResult.teachers.map((item) => {
-					return {
-						...plainToClass(UserResponse, item),
-						roleInCourse: 'teacher'
-					}
-				})
-				const memberList = { teachers, students }
-				const invitationList = await this.courseRepository.getAllInvitation({
-					courseId: courseId,
-					status: 'pending'
-				})
-				// const invitationList = invitationListResult.map((item) => {
-				// 	return {
-				// 		...item,
-				// 		roleInCourse: item.roleInCourse
-				// 	}
-				// })
-				const mergedList = { memberList, invitationList }
-				return mergedList
-			})
+			const result = await this.prisma.$transaction(
+				async (prisma) => {
+					const memberListResult =
+						await this.courseRepository.getAllCourseMember({
+							courseId: courseId
+						})
+					const students = memberListResult.students.map((item) => {
+						return {
+							...plainToClass(UserResponse, item),
+							roleInCourse: 'student'
+						}
+					})
+					const teachers = memberListResult.teachers.map((item) => {
+						return {
+							...plainToClass(UserResponse, item),
+							roleInCourse: 'teacher'
+						}
+					})
+					const memberList = { teachers, students }
+					const invitationList = await this.courseRepository.getAllInvitation({
+						courseId: courseId,
+						status: 'pending'
+					})
+					// const invitationList = invitationListResult.map((item) => {
+					// 	return {
+					// 		...item,
+					// 		roleInCourse: item.roleInCourse
+					// 	}
+					// })
+					const mergedList = { memberList, invitationList }
+					return mergedList
+				},
+				{
+					maxWait: 30000, // default: 2000
+					timeout: 30000 // default: 5000
+				}
+			)
 
 			return result
 		} catch (error) {
@@ -144,17 +149,22 @@ export class CourseService {
 
 	async getAllCourseStudentIds(courseId: string) {
 		try {
-			const result = await this.prisma.$transaction(async (prisma) => {
-				const memberListResult = await this.courseRepository.getAllCourseMember(
-					{
-						courseId: courseId
-					}
-				)
-				const students = memberListResult.students.map((item) => {
-					return { id: item.id, email: item.email }
-				})
-				return students
-			})
+			const result = await this.prisma.$transaction(
+				async (prisma) => {
+					const memberListResult =
+						await this.courseRepository.getAllCourseMember({
+							courseId: courseId
+						})
+					const students = memberListResult.students.map((item) => {
+						return { id: item.id, email: item.email }
+					})
+					return students
+				},
+				{
+					maxWait: 30000, // default: 2000
+					timeout: 30000 // default: 5000
+				}
+			)
 
 			return result
 		} catch (error) {
@@ -184,48 +194,54 @@ export class CourseService {
 		user: CustomJwtPayload
 	): Promise<Course> {
 		try {
-			const result = await this.prisma.$transaction(async (prisma) => {
-				const createdCourse = await this.courseRepository.createCourse({
-					id: createCourseRequest.id,
-					name: createCourseRequest.name,
-					description: createCourseRequest.description,
-					inviteCode: createCourseRequest.inviteCode,
-					courseOwner: {
-						connect: {
-							id: createCourseRequest.courseOwnerId
+			const result = await this.prisma.$transaction(
+				async (prisma) => {
+					const createdCourse = await this.courseRepository.createCourse({
+						id: createCourseRequest.id,
+						name: createCourseRequest.name,
+						description: createCourseRequest.description,
+						inviteCode: createCourseRequest.inviteCode,
+						courseOwner: {
+							connect: {
+								id: createCourseRequest.courseOwnerId
+							}
 						}
-					}
-				})
+					})
 
-				const createdEnrollment = await this.courseRepository.joinCourse({
-					roleInCourse: 'teacher',
-					course: {
-						connect: {
-							id: createdCourse.id
+					const createdEnrollment = await this.courseRepository.joinCourse({
+						roleInCourse: 'teacher',
+						course: {
+							connect: {
+								id: createdCourse.id
+							}
+						},
+						user: {
+							connect: {
+								id: createCourseRequest.courseOwnerId
+							}
 						}
-					},
-					user: {
-						connect: {
-							id: createCourseRequest.courseOwnerId
+					})
+
+					const createGradeStructureRequest = plainToClass(
+						CreateGradeStructureRequest,
+						{
+							courseId: createdCourse.id,
+							gradeComponent: []
 						}
-					}
-				})
-
-				const createGradeStructureRequest = plainToClass(
-					CreateGradeStructureRequest,
-					{
-						courseId: createdCourse.id,
-						gradeComponent: []
-					}
-				)
-
-				const createdGradeStructure =
-					await this.gradeStructureService.createGradeStructure(
-						createGradeStructureRequest,
-						user
 					)
-				return createdCourse
-			})
+
+					const createdGradeStructure =
+						await this.gradeStructureService.createGradeStructure(
+							createGradeStructureRequest,
+							user
+						)
+					return createdCourse
+				},
+				{
+					maxWait: 30000, // default: 2000
+					timeout: 30000 // default: 5000
+				}
+			)
 
 			return result
 		} catch (error) {
@@ -384,6 +400,10 @@ export class CourseService {
 								}
 							})
 						return result
+					},
+					{
+						maxWait: 30000, // default: 2000
+						timeout: 30000 // default: 5000
 					}
 				)
 
@@ -464,16 +484,23 @@ export class CourseService {
 	}
 	async deleteCourse(id: string) {
 		try {
-			const result = await this.prisma.$transaction(async (prisma) => {
-				const updateCourseToDeleted = await this.courseRepository.deleteCourse({
-					id: id
-				})
-				const deletedEnrollment =
-					await this.courseRepository.deleteAllEnrollmentInCourse({
-						courseId: id
-					})
-				return updateCourseToDeleted
-			})
+			const result = await this.prisma.$transaction(
+				async (prisma) => {
+					const updateCourseToDeleted =
+						await this.courseRepository.deleteCourse({
+							id: id
+						})
+					const deletedEnrollment =
+						await this.courseRepository.deleteAllEnrollmentInCourse({
+							courseId: id
+						})
+					return updateCourseToDeleted
+				},
+				{
+					maxWait: 30000, // default: 2000
+					timeout: 30000 // default: 5000
+				}
+			)
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException('Delete course failed')
@@ -482,12 +509,18 @@ export class CourseService {
 
 	async realDeleteCourse(id: string) {
 		try {
-			const result = await this.prisma.$transaction(async (prisma) => {
-				const deletedCourse = await this.courseRepository.realDeleteCourse({
-					id: id
-				})
-				return deletedCourse
-			})
+			const result = await this.prisma.$transaction(
+				async (prisma) => {
+					const deletedCourse = await this.courseRepository.realDeleteCourse({
+						id: id
+					})
+					return deletedCourse
+				},
+				{
+					maxWait: 30000, // default: 2000
+					timeout: 30000 // default: 5000
+				}
+			)
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException('Real delete course failed')

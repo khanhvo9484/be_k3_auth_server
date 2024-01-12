@@ -46,6 +46,7 @@ export class MyGatewayService implements OnModuleInit {
 	}
 
 	broadcastNotification(userList: { userId: string }[], notification: any) {
+		console.log('noti', notification)
 		userList.forEach((userInList) => {
 			connectedUsers.forEach((user) => {
 				if (user.userId === userInList.userId) {
@@ -63,6 +64,12 @@ export class MyGatewayService implements OnModuleInit {
 		payload: any,
 		@MessageBody() messageBody: { postId: string }
 	) {
+		if (!messageBody.postId) {
+			return
+		}
+		if (!client || !client.id) {
+			return
+		}
 		// Join the specified room
 		client.join(messageBody.postId)
 
@@ -73,7 +80,7 @@ export class MyGatewayService implements OnModuleInit {
 	}
 
 	broadcastInPost(postId: string, data: any) {
-		this.server.to(postId).emit('onReceiveNewComment', data)
+		this.server.to(postId).emit('onReceiveNewComment', JSON.stringify(data))
 	}
 
 	onModuleInit() {
@@ -87,20 +94,12 @@ export class MyGatewayService implements OnModuleInit {
 				return
 			}
 			connectedUsers.push(user)
-			console.info(
-				`A new user has connected: (${connectedUsers.length}) `,
-				user
-			)
 
 			socket.on('disconnect', () => {
 				const index = connectedUsers.findIndex(
 					(user) => user.socketId === socket.id
 				)
 				connectedUsers.splice(index, 1)
-				console.info(
-					`A user has disconnected: (${connectedUsers.length}) `,
-					user
-				)
 			})
 
 			socket.on('joinPost', (payload: { postId: string }) => {

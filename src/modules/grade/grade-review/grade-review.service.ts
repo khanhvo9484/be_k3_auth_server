@@ -80,43 +80,50 @@ export class GradeReviewService {
 				studentId: undefined,
 				courseId: undefined
 			}
-			const results = await this.prismaService.$transaction(async (prisma) => {
-				const result = await this.gradeReviewRepository.createGradeReview(
-					{
-						...requestWithoutStudentId,
-						user: {
-							connect: {
-								id: studentId
+			const results = await this.prismaService.$transaction(
+				async (prisma) => {
+					const result = await this.gradeReviewRepository.createGradeReview(
+						{
+							...requestWithoutStudentId,
+							user: {
+								connect: {
+									id: studentId
+								}
+							},
+							course: {
+								connect: {
+									id: courseId
+								}
 							}
 						},
-						course: {
-							connect: {
-								id: courseId
-							}
-						}
-					},
-					prisma
-				)
+						prisma
+					)
 
-				const createNotificationDto = new CreateNotificationDto({
-					type: NotificationType.NEW_GRADE_REVIEW,
-					content: `đã tạo đơn phúc khảo cho ${result.course.name}`,
-					title: 'Tạo đơn phúc khảo',
-					targetId: result.id,
-					courseId: courseId,
-					actorId: studentId,
-					userId: result.course.teacherId
-				})
-
-				const notifications =
-					await this.notificationService.createNotificationForTeacher({
+					const createNotificationDto = new CreateNotificationDto({
+						type: NotificationType.NEW_GRADE_REVIEW,
+						content: `đã tạo đơn phúc khảo cho ${result.course.name}`,
+						title: 'Tạo đơn phúc khảo',
+						targetId: result.id,
 						courseId: courseId,
-						notification: createNotificationDto,
-						tx: prisma
+						actorId: studentId,
+						userId: result.course.teacherId,
+						actor: result.user
 					})
 
-				return result
-			})
+					const notifications =
+						await this.notificationService.createNotificationForTeacher({
+							courseId: courseId,
+							notification: createNotificationDto,
+							tx: prisma
+						})
+
+					return result
+				},
+				{
+					maxWait: 30000, // default: 2000
+					timeout: 30000 // default: 5000
+				}
+			)
 
 			return results
 		} catch (error) {
@@ -189,6 +196,10 @@ export class GradeReviewService {
 							prisma
 						)
 						return finals
+					},
+					{
+						maxWait: 30000, // default: 2000
+						timeout: 30000 // default: 5000
 					}
 				)
 			}
@@ -210,13 +221,14 @@ export class GradeReviewService {
 			}
 		})
 		try {
-			const result = await this.prismaService.$transaction(async (prisma) => {
-				const result = await this.gradeReviewRepository.setStatusForGradeReview(
-					request.gradeReviewId,
-					GradeReviewStatus.REJECTED,
-					prisma
-				)
-				const finals = await this.prismaService.$transaction(async (prisma) => {
+			const result = await this.prismaService.$transaction(
+				async (prisma) => {
+					const result =
+						await this.gradeReviewRepository.setStatusForGradeReview(
+							request.gradeReviewId,
+							GradeReviewStatus.REJECTED,
+							prisma
+						)
 					const final = await prisma.gradeReviewFinal.create({
 						data: {
 							gradeReview: {
@@ -231,6 +243,9 @@ export class GradeReviewService {
 							},
 							explaination: request?.explaination || '',
 							finalGrade: result.currentGrade
+						},
+						include: {
+							reviewer: true
 						}
 					})
 					const createNotificationDto = new CreateNotificationDto({
@@ -240,17 +255,20 @@ export class GradeReviewService {
 						courseId: gradeReview.courseId,
 						targetId: request.gradeReviewId,
 						actorId: request.reviewerId,
-						userId: student.id
+						userId: student.id,
+						actor: final.reviewer
 					})
 					const notification = await this.notificationService.create(
 						createNotificationDto,
 						prisma
 					)
 					return final
-				})
-
-				return finals
-			})
+				},
+				{
+					maxWait: 30000, // default: 2000
+					timeout: 30000 // default: 5000
+				}
+			)
 
 			if (!result) {
 				throw new Error('not found')
