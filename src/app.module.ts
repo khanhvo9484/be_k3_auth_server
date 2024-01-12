@@ -43,7 +43,7 @@ import { AdminModule } from 'admin/admin.module'
 				const store = await redisStore({
 					url: REDIS_URL,
 					store: 'memory',
-					pingInterval: 10000
+					pingInterval: 30000
 				})
 				return {
 					store: store as unknown as CacheStore
