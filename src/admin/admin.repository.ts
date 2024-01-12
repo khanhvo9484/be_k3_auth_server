@@ -53,4 +53,16 @@ export class AdminRepository {
 		})
 		return result
 	}
+
+	async mapIdUser(userEmail: string, studentOfficialId: string) {
+		const result = await this.prismaService.user.update({
+			where: {
+				email: userEmail
+			},
+			data: {
+				studentOfficialId: studentOfficialId
+			}
+		})
+		return result
+	}
 }

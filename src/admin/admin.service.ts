@@ -69,7 +69,7 @@ export class AdminService {
 					MSSV: ''
 				}
 			})
-			console.log(refinedUsers)
+
 			const sheetName = 'Sheet1'
 			const result = await this.excelService.generateExcelBufferWithData(
 				refinedUsers,
@@ -93,10 +93,34 @@ export class AdminService {
 					studentOfficialId: officialId
 				}
 			})
+			const deleteCache = await this.authService.deleteUserSession(result.email)
+
 			return result
 		} catch (err) {
 			console.log(err)
 			throw new DatabaseExecutionException(err.message)
 		}
+	}
+	async uploadXlsxMappingId(file: any) {
+		const data = await this.excelService.readExcelFile<{
+			Email: string
+			'Vai trò': string
+			'Ngày sinh': 'string'
+			MSSV: string
+		}>(file)
+		const result = Promise.all(
+			data.map(async (item) => {
+				if (!item['Email']) return
+				const user = await this.prismaService.user.update({
+					where: {
+						email: item['Email']
+					},
+					data: {
+						studentOfficialId: item['MSSV']
+					}
+				})
+			})
+		)
+		return result
 	}
 }

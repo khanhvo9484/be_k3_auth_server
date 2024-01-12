@@ -1,4 +1,14 @@
-import { Controller, Get, HttpCode, Req, Post, Body, Res } from '@nestjs/common'
+import {
+	Controller,
+	Get,
+	HttpCode,
+	Req,
+	Post,
+	Body,
+	Res,
+	UseInterceptors,
+	UploadedFile
+} from '@nestjs/common'
 import { AdminService } from './admin.service'
 import { plainToClass } from 'class-transformer'
 import { UserFullInfoReponse } from './resource/dto'
@@ -6,6 +16,8 @@ import { Roles } from '@common/decorator/roles.decorator'
 import { Role } from '@common/decorator/role.enum'
 import { Request, Response } from 'express'
 import { Public } from '@common/decorator'
+import { FileInterceptor } from '@nestjs/platform-express/multer'
+
 @Controller('admin')
 export class AdminController {
 	constructor(private adminService: AdminService) {}
@@ -72,5 +84,13 @@ export class AdminController {
 			message: 'update user official id successfully',
 			data: result
 		}
+	}
+
+	@Public()
+	@Post('upload-xlsx-mapping-id')
+	@UseInterceptors(FileInterceptor('file'))
+	async uploadXlsxMappingId(@UploadedFile() file, @Req() request: Request) {
+		const result = await this.adminService.uploadXlsxMappingId(file)
+		return { message: 'upload xlsx mapping id successfully', data: result }
 	}
 }
