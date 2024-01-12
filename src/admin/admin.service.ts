@@ -4,13 +4,15 @@ import { DatabaseExecutionException } from '@common/exceptions'
 import { AdminRepository } from './admin.repository'
 import { ExcelService } from '@utils/excel/excel.service'
 import { AuthService } from 'auth/auth.service'
+import { PrismaService } from '@my-prisma/prisma.service'
 
 @Injectable()
 export class AdminService {
 	constructor(
 		private adminRepository: AdminRepository,
 		private excelService: ExcelService,
-		private authService: AuthService
+		private authService: AuthService,
+		private prismaService: PrismaService
 	) {}
 
 	async getAllUsers() {
@@ -63,15 +65,34 @@ export class AdminService {
 				return {
 					Email: item.email,
 					'Vai trò': item.role,
-					'Ngày sinh': item.dob,
+					'Ngày sinh': item.dob.toISOString().split('T')[0] || '',
 					MSSV: ''
 				}
 			})
+			console.log(refinedUsers)
 			const sheetName = 'Sheet1'
 			const result = await this.excelService.generateExcelBufferWithData(
 				refinedUsers,
 				sheetName
 			)
+			return result
+		} catch (err) {
+			console.log(err)
+			throw new DatabaseExecutionException(err.message)
+		}
+	}
+
+	async updateUserOfficialId(params: { userId: string; officialId: string }) {
+		try {
+			const { userId, officialId } = params
+			const result = await this.prismaService.user.update({
+				where: {
+					id: userId
+				},
+				data: {
+					studentOfficialId: officialId
+				}
+			})
 			return result
 		} catch (err) {
 			console.log(err)

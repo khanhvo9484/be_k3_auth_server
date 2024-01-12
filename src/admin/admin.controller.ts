@@ -1,10 +1,11 @@
-import { Controller, Get, HttpCode, Req, Post, Body } from '@nestjs/common'
+import { Controller, Get, HttpCode, Req, Post, Body, Res } from '@nestjs/common'
 import { AdminService } from './admin.service'
 import { plainToClass } from 'class-transformer'
 import { UserFullInfoReponse } from './resource/dto'
 import { Roles } from '@common/decorator/roles.decorator'
 import { Role } from '@common/decorator/role.enum'
 import { Request, Response } from 'express'
+import { Public } from '@common/decorator'
 @Controller('admin')
 export class AdminController {
 	constructor(private adminService: AdminService) {}
@@ -27,14 +28,23 @@ export class AdminController {
 		return { message: 'get all courses successfully', data: result }
 	}
 
+	@Public()
 	@Get('xlsx-template-mapping-id')
 	@HttpCode(200)
-	async getXlsxTemplateMappingId(@Req() request: Request) {
+	async getXlsxTemplateMappingId(
+		@Req() request: Request,
+		@Res() response: Response
+	) {
 		const result = await this.adminService.getXlsxTemplateMappingId()
-		return {
-			message: 'get xlsx template mapping id successfully',
-			data: result
-		}
+		response.setHeader(
+			'Content-Type',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		)
+		response.setHeader(
+			'Content-Disposition',
+			'attachment; filename=' + 'admin_mapping.xlsx'
+		)
+		response.send(result)
 	}
 
 	@Post('block-user')
@@ -49,5 +59,18 @@ export class AdminController {
 	async unblockUser(@Req() request: Request, @Body() body: { userId: string }) {
 		const result = await this.adminService.unBlockUser(body.userId)
 		return { message: 'unblock user successfully', data: result }
+	}
+
+	@Post('update-user-official-id')
+	@HttpCode(200)
+	async updateUserOfficialId(
+		@Req() request: Request,
+		@Body() body: { userId: string; officialId: string }
+	) {
+		const result = await this.adminService.updateUserOfficialId(body)
+		return {
+			message: 'update user official id successfully',
+			data: result
+		}
 	}
 }
