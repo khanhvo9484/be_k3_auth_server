@@ -205,6 +205,7 @@ export class GradeStructureService {
 				type: NotificationType.NEW_GRADE_FINALIZE,
 				content: ` đã đăng tải điểm thành phần của khóa học ${course.name}`,
 				title: 'Điểm thành phần mới',
+				courseId: request.courseId,
 				targetId: result.id,
 				actorId: user.id
 			})

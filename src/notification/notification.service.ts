@@ -17,9 +17,9 @@ export class NotificationService {
 		private myGatewayService: MyGatewayService
 	) {}
 
-	async create(notification: CreateNotificationDto) {
+	async create(notification: CreateNotificationDto, tx?: any) {
 		try {
-			const result = await this.notificationRepository.create(notification)
+			const result = await this.notificationRepository.create(notification, tx)
 			this.myGatewayService.broadcastNotification(
 				[{ userId: result.userId }],
 				result

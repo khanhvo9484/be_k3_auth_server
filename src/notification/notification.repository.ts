@@ -6,7 +6,12 @@ import { Prisma } from '@prisma/client'
 export class NotificationRepository {
 	constructor(private prismaService: PrismaService) {}
 
-	async create(data: Prisma.NotificationCreateInput) {
+	async create(data: Prisma.NotificationCreateInput, tx?: any) {
+		if (tx)
+			return await tx.notification.create({
+				data
+			})
+
 		const result = await this.prismaService.notification.create({
 			data
 		})

@@ -55,6 +55,10 @@ export class CreateNotificationDto implements Notification {
 
 	@Expose()
 	@IsOptional()
+	courseId: string
+
+	@Expose()
+	@IsOptional()
 	isRead: boolean = false
 }
 // export class ActionDto {

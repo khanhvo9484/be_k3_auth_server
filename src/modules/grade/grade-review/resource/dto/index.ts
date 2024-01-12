@@ -129,6 +129,9 @@ export class AcceptGradeReviewRequest {
 
 	@IsNotEmpty()
 	reviewerId: string
+
+	@IsOptional()
+	explaination: string
 }
 
 export class RejectGradeReviewRequest {

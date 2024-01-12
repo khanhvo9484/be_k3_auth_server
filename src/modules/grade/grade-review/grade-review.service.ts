@@ -103,6 +103,7 @@ export class GradeReviewService {
 					content: `đã tạo đơn phúc khảo cho ${result.course.name}`,
 					title: 'Tạo đơn phúc khảo',
 					targetId: result.id,
+					courseId: courseId,
 					actorId: studentId,
 					userId: result.course.teacherId
 				})
@@ -143,10 +144,9 @@ export class GradeReviewService {
 				grade: request.finalGrade,
 				gradeId: gradeReview.gradeId
 			}
-			console.log(data)
+
 			const updateResult =
 				await this.studentGradeService.updateStudentGrade(data)
-			console.log(updateResult)
 			if (!updateResult) {
 				throw new Error('the grade component is not found')
 			} else {
@@ -171,9 +171,23 @@ export class GradeReviewService {
 										id: request.reviewerId
 									}
 								},
-								finalGrade: request.finalGrade
+								finalGrade: request.finalGrade,
+								explaination: request?.explaination || ''
 							}
 						})
+						const createNotificationDto = new CreateNotificationDto({
+							type: NotificationType.NEW_GRADE_REVIEW_FINALIZE,
+							content: `đã chấp nhận đơn phúc khảo của bạn`,
+							title: 'Chấp nhận đơn phúc khảo',
+							courseId: gradeReview.courseId,
+							targetId: request.gradeReviewId,
+							actorId: request.reviewerId,
+							userId: student.id
+						})
+						const notification = await this.notificationService.create(
+							createNotificationDto,
+							prisma
+						)
 						return finals
 					}
 				)
@@ -185,6 +199,16 @@ export class GradeReviewService {
 	}
 
 	async rejectGradeReview(request: RejectGradeReviewRequest) {
+		const gradeReview = await this.prismaService.gradeReview.findUnique({
+			where: {
+				id: request.gradeReviewId
+			}
+		})
+		const student = await this.prismaService.user.findUnique({
+			where: {
+				id: gradeReview.studentId
+			}
+		})
 		try {
 			const result = await this.prismaService.$transaction(async (prisma) => {
 				const result = await this.gradeReviewRepository.setStatusForGradeReview(
@@ -192,21 +216,40 @@ export class GradeReviewService {
 					GradeReviewStatus.REJECTED,
 					prisma
 				)
-				const final = await prisma.gradeReviewFinal.create({
-					data: {
-						gradeReview: {
-							connect: {
-								id: request.gradeReviewId
-							}
-						},
-						reviewer: {
-							connect: {
-								id: request.reviewerId
-							}
+				const finals = await this.prismaService.$transaction(async (prisma) => {
+					const final = await prisma.gradeReviewFinal.create({
+						data: {
+							gradeReview: {
+								connect: {
+									id: request.gradeReviewId
+								}
+							},
+							reviewer: {
+								connect: {
+									id: request.reviewerId
+								}
+							},
+							explaination: request?.explaination || '',
+							finalGrade: result.currentGrade
 						}
-					}
+					})
+					const createNotificationDto = new CreateNotificationDto({
+						type: NotificationType.NEW_GRADE_REVIEW_FINALIZE,
+						content: `đã từ chối đơn phúc khảo của bạn`,
+						title: 'Từ chối đơn phúc khảo',
+						courseId: gradeReview.courseId,
+						targetId: request.gradeReviewId,
+						actorId: request.reviewerId,
+						userId: student.id
+					})
+					const notification = await this.notificationService.create(
+						createNotificationDto,
+						prisma
+					)
+					return final
 				})
-				return result
+
+				return finals
 			})
 
 			if (!result) {

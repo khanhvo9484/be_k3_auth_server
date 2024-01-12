@@ -103,6 +103,7 @@ model Notification {
   title     String
   content   String
   type      String
+  courseId  String?
   targetId  String?
   isRead    Boolean   @default(false)
   createdAt DateTime  @default(now())

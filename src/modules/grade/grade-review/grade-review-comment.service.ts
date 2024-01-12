@@ -49,6 +49,7 @@ export class GradeReviewCommentService {
 					type: NotificationType.NEW_GRADE_REVIEW_COMMENT,
 					content: `đã bình luận về đơn phúc khảo của bạn`,
 					title: 'Bình luận mới',
+					courseId: request.courseId,
 					targetId: result?.gradeReview?.id,
 					actorId: userId
 				})
@@ -85,6 +86,7 @@ export class GradeReviewCommentService {
 					type: NotificationType.NEW_GRADE_REVIEW_COMMENT,
 					content: `đã bình luận về đơn phúc khảo của anh/cô ấy`,
 					title: 'Bình luận mới',
+					courseId: request.courseId,
 					targetId: result?.gradeReview?.id,
 					actorId: userId
 				})

@@ -42,7 +42,8 @@ import { AdminModule } from 'admin/admin.module'
 			useFactory: async () => {
 				const store = await redisStore({
 					url: REDIS_URL,
-					store: 'memory'
+					store: 'memory',
+					pingInterval: 10000
 				})
 				return {
 					store: store as unknown as CacheStore
