@@ -90,7 +90,7 @@ export class AdminService {
 					id: userId
 				},
 				data: {
-					studentOfficialId: officialId
+					studentOfficialId: officialId === '' ? null : officialId
 				}
 			})
 			const deleteCache = await this.authService.deleteUserSession(result.email)
@@ -111,14 +111,16 @@ export class AdminService {
 		const result = Promise.all(
 			data.map(async (item) => {
 				if (!item['Email']) return
+				if (!item['MSSV']) return
 				const user = await this.prismaService.user.update({
 					where: {
 						email: item['Email']
 					},
 					data: {
-						studentOfficialId: item['MSSV']
+						studentOfficialId: item['MSSV'].toString()
 					}
 				})
+				return user
 			})
 		)
 		return result
