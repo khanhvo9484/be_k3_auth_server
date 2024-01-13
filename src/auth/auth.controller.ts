@@ -95,6 +95,21 @@ export class AuthController {
 		response.redirect(url_redirect)
 	}
 
+	@Get('facebook')
+	@UseGuards(AuthGuardPassport('facebook'))
+	async facebookLogin() {}
+
+	@Get('facebook/callback')
+	@UseGuards(AuthGuardPassport('facebook'))
+	async facebookAuthCallback(@Req() request, @Res() response: Response) {
+		const user = request.user
+		const data = await this.oauthLoginService.authLogin(user)
+		const userId = data.user.id
+		const url_redirect =
+			SUCCESS_OAUTH_LOGIN_PAGE_URL + `?iduser=${data.user.id}`
+		response.redirect(url_redirect)
+	}
+
 	@Get('/verify-login/:idUser')
 	async verifyLoginByUserID(
 		@Res() response: Response,
