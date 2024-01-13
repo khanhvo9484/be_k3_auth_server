@@ -155,8 +155,13 @@ export class CourseService {
 						await this.courseRepository.getAllCourseMember({
 							courseId: courseId
 						})
+
 					const students = memberListResult.students.map((item) => {
-						return { id: item.id, email: item.email }
+						return {
+							id: item.id,
+							email: item.email,
+							studentOfficialId: item.studentOfficialId
+						}
 					})
 					return students
 				},

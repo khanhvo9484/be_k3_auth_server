@@ -294,33 +294,41 @@ export class StudentGradeService {
 			const studentListInCourseWithOfficialId = studentListInCourse.map(
 				(item) => {
 					const student = findInList(studentsListFromFile, item.email)
-					if (student) {
+
+					if (student && !item.studentOfficialId) {
 						return {
 							...item,
 							officialId: student.studentOfficialId
 						}
-					}
+					} else return null
 				}
 			)
 
 			const updateResult = await Promise.all(
 				studentListInCourseWithOfficialId.map(async (item) => {
-					return await this.userService.updateUserOfficialId({
-						where: {
-							id: item.id,
-							studentOfficialId: null || ''
-						},
-						data: {
-							studentOfficialId: item.officialId.toString()
-						}
-					})
+					if (item)
+						return await this.userService.updateUserOfficialId({
+							where: {
+								id: item.id,
+								studentOfficialId: {
+									equals: null
+								}
+							},
+							data: {
+								studentOfficialId: item.officialId
+							}
+						})
+					else return null
 				})
 			)
 			const deleteUserSession = await Promise.all(
 				studentListInCourseWithOfficialId.map(async (item) => {
-					return await this.authService.deleteUserSession(item.email)
+					if (item) {
+						return await this.authService.deleteUserSession(item.email)
+					}
 				})
 			)
+
 			return plainToClass(UserResponse, updateResult)
 		} catch (err) {
 			console.log(err)
