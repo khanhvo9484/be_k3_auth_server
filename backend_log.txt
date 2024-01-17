@@ -1,0 +1,374 @@
+commit ac56b508e32eb3a82e3d06ff6120bb6a7ba06d53
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 18:24:21 2023 +0700
+
+    change env production
+
+commit 114c2f77cffd22851807b050e1f328b936c695a8
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 13:39:03 2023 +0700
+
+    change registry11
+
+commit 035cdaec7ac8c7e6aef92c0f510732a6b566b351
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 13:22:42 2023 +0700
+
+    change registry10 add fly.io
+
+commit 06302581173735c5696ebf0cca074ca88d90fce5
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 13:03:28 2023 +0700
+
+    change registry9
+
+commit b07656adcb9518437bc57ba4267dcd7248155ef8
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 09:34:58 2023 +0700
+
+    change registry7
+
+commit 44566be4ebfbb27d38c12d046db9c4c45a413fcb
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 09:27:25 2023 +0700
+
+    change registry6
+
+commit 1e02783170f3f5f826b83e542be0c00a74fe4972
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 09:20:16 2023 +0700
+
+    change registry5
+
+commit 4c79c1f01430470675c4bdf75068d6d9e89c914e
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 09:02:10 2023 +0700
+
+    change registry4
+
+commit 8dc794bb707d9d3b4cb13e967b4e7538e5875c77
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 08:55:00 2023 +0700
+
+    change registry3
+
+commit 4d7f7201753f870a2d3ed10c41b450edc5f2f526
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 08:50:29 2023 +0700
+
+    change registry2
+
+commit c78e7315db5b4e1bbe66c3d006eb3c9761a79c21
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 08:43:36 2023 +0700
+
+    change registry
+
+commit ed6fc17fad8610e2bc343db36ba2f6ba7dbe51d0
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 01:46:07 2023 +0700
+
+    change registry
+
+commit eaf8c7437a7a7baaac918711f5e342a5db738e5e
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 01:24:01 2023 +0700
+
+    new flow
+
+commit 6d82b9d54e71646ca39ac47ab92e750e152cd3e7
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Tue Dec 12 01:06:18 2023 +0700
+
+    add new flow
+
+commit 157ae1a7d6a94b0bdd387e152aaf9b381309f150
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Mon Dec 11 20:35:16 2023 +0700
+
+    leavecourse
+
+commit 8135cfc55f7b9fc7d65d7b631e5cadda4a176b3a
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Mon Dec 11 20:34:19 2023 +0700
+
+    change
+
+commit 9e6d8538669b44f76fb04d09ede249693ccb97d8
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Mon Dec 11 20:07:41 2023 +0700
+
+    add new check
+
+commit 1e925f703b638760bf9e132587f5377f1dbfca60
+Merge: 1fa6c06 d5dbc38
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Mon Dec 11 19:39:14 2023 +0700
+
+    Merge branch 'main' into production_v1
+
+commit d5dbc3814ee72d1c9a128306c87e0dd813fb01f4
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Mon Dec 11 01:55:09 2023 +0700
+
+    fix response
+
+commit d7a37f007823bdf409dcfd0e1d89231ed9dd8cdd
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Mon Dec 11 01:49:40 2023 +0700
+
+    change sthing
+
+commit 1fa6c06734e7945ecbdf4ab2924a6408685c23de
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:59:00 2023 +0700
+
+    nothing
+
+commit cd6e88f764b63ef37dd39896cab77eb6ac7ab6db
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:51:09 2023 +0700
+
+    change flow 9
+
+commit d1fa94b57f242ac5b2f0bb11f740e41b890c6934
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:49:39 2023 +0700
+
+    change flow 8
+
+commit e513e63446fb1966d3f37a8eb663862fcc76445e
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:45:21 2023 +0700
+
+    change flow 7
+
+commit 57c64704a6f84b1d543ac2682c021c7629250519
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:43:50 2023 +0700
+
+    change flow 6
+
+commit d3f0daaa2cf18ea2ff26e4c7945e4c6f1546ce60
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:21:37 2023 +0700
+
+    change flow 6
+
+commit 09608c3a038048fa2eff40363c39078a8eabcb38
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:18:51 2023 +0700
+
+    change flow 5
+
+commit 1b064f144f33109f2a7d952a55bc780a45a59041
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:17:00 2023 +0700
+
+    change flow 4
+
+commit 1ebea17dbe083ebc88bb427117274c7375c30521
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:13:53 2023 +0700
+
+    change flow 3
+
+commit 59d03fa3ccaff2e1151e8c34317afe1ff153a3d1
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:04:11 2023 +0700
+
+    change script
+
+commit 32472f3a266d1b9875c9f5863356c0b3fedd67be
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 21:04:01 2023 +0700
+
+    change flow2
+
+commit b5b05afba894e5ff29a677297bbddd9d290777b3
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 20:57:30 2023 +0700
+
+    change flow
+
+commit fce039844ab6c64f7566a013086c59b945281db9
+Merge: fab1589 642b2c4
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 20:46:04 2023 +0700
+
+    Merge branch 'main' into production_v1
+
+commit fab1589f3d350cd462271b3a90a821dfbbbc8388
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 20:44:18 2023 +0700
+
+    first push
+
+commit 642b2c425b8799a220c3e5bc338c5f70916f1284
+Author: khanhvo9484 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 20:40:26 2023 +0700
+
+    Create main.yml
+
+commit 8aa6399d8992a043960d36b5e1d668fa875dfc17
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 19:47:44 2023 +0700
+
+    public route auth
+
+commit e852bd202dd61b284ca3d560fed40bd3f27bedd0
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 19:40:03 2023 +0700
+
+    join code by invite code
+
+commit c57a8654ca0f5bbf48f4a86503cdbe1d2eed48e0
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 16:46:26 2023 +0700
+
+    change respone at endpoint Delete course
+
+commit 487a6302c0b74fb6bce5bf51d3cf94d1d52c5efb
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 16:41:24 2023 +0700
+
+    change endpoint
+
+commit 1c7580373ae844c69e69893ffd8f182d179da7ea
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 16:24:17 2023 +0700
+
+    add delete course
+
+commit c258bf25273c5266606d827775edcd6905273df0
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 16:08:43 2023 +0700
+
+    add remove user
+
+commit 13c67fd16a24ac969739f41444736b221c186641
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 15:21:38 2023 +0700
+
+    update bussiness logic
+
+commit 861a6e01d2106a41deb7c0e8f421cf8aa93815b7
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 15:16:49 2023 +0700
+
+    update retur
+
+commit 9d40665209e7858f318b74144e6b8df56d1d38d0
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 15:12:24 2023 +0700
+
+    update error handling
+
+commit e355e59b0cfa12559fc23287dc6f66af294160a4
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 14:30:02 2023 +0700
+
+    add invite
+
+commit bc0b8f206b8e0e5cd6faf038334ad8d0b6ac6346
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 11:07:02 2023 +0700
+
+    add leave course
+
+commit 385a2d404851de19efaa530583c5a79caa89a681
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 10:52:29 2023 +0700
+
+    update get all member
+
+commit 4259eae9c570d02ac4cfbc305a8b04f1a33c6940
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 10:43:15 2023 +0700
+
+    get course member
+
+commit e46fe2d2e495cbace05b5b550ef793c84c5fb54c
+Merge: da66bf1 5a4a699
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sun Dec 10 00:01:06 2023 +0700
+
+    Merge branch 'main' of https://github.com/khanhvo9484/be_k3
+
+commit da66bf14bd2c0c1d8104a3483c730acc26f9661b
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 23:47:30 2023 +0700
+
+    add new api
+
+commit fe845e5317936d35f7ff16106f78026365613e57
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 23:14:41 2023 +0700
+
+    add invitation link
+
+commit 5a4a6999f749269841bc117c721741dccec2b597
+Author: Kyle Tran <kyle.t@itcgroup.io>
+Date:   Sat Dec 9 18:42:13 2023 +0700
+
+    update api get detail class
+
+commit a39910ea9fd5ac2efccddf38070d86ba041fa124
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 16:33:17 2023 +0700
+
+    add owner
+
+commit e9ac3473b3c16c5ea00082b9cd428c1ec8e9ed47
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 16:07:30 2023 +0700
+
+    get all course and create course
+
+commit e1db77ed2826035b7291b3d97b046adb00e17298
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 15:05:05 2023 +0700
+
+    create course
+
+commit 2196f5d5a8278d5c1bb6612f35bdba66d0a621f2
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 14:42:15 2023 +0700
+
+    fix bug redis
+
+commit 13c16cf1c280d6f4550e351518fe23318935da53
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 13:59:25 2023 +0700
+
+    add env
+
+commit cd160f8b698c7c97572d0e8f4fa8fc3ee898849a
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 01:36:28 2023 +0700
+
+    add new module
+
+commit 404da7b64b2df74b7201564a110ab3fa3b855843
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Sat Dec 9 01:28:40 2023 +0700
+
+    refactoring code and add course module
+
+commit b2c8af124df0fb4222d9681bde4e4a1911457b3a
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Fri Dec 8 18:56:59 2023 +0700
+
+     basic flow
+
+commit c570b71098f80b3f98649f246d0b2b0532441aba
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Thu Dec 7 23:01:33 2023 +0700
+
+    init new repo
+
+commit 1efbd51034416fd5bd51b68688b5c76e397c47f7
+Author: 20120507 <103519164+khanhvo9484@users.noreply.github.com>
+Date:   Wed Dec 6 16:54:23 2023 +0700
+
+    first commit

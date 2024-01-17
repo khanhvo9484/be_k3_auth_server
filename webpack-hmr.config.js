@@ -1,5 +1,6 @@
 const nodeExternals = require('webpack-node-externals')
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 
 module.exports = function (options, webpack) {
 	return {
@@ -19,6 +20,11 @@ module.exports = function (options, webpack) {
 			new RunScriptWebpackPlugin({
 				name: options.output.filename,
 				autoRestart: false
+			}),
+			new ForkTsCheckerWebpackPlugin({
+				typescript: {
+					memoryLimit: 4096
+				}
 			})
 		]
 	}

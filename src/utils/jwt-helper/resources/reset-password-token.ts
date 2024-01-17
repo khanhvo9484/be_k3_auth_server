@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { IToken } from './token.interface'
+import {
+	IToken,
+	InviteToCourseJwtPayload,
+	ResetJwtPasswordPayload
+} from './token.interface'
 import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
@@ -18,9 +22,9 @@ export class ResetPasswordToken implements IToken {
 	setJwtService(jwtService: any): void {
 		this.jwtService = jwtService
 	}
-	async verify(token: string): Promise<Object | CustomJwtPayload> {
+	async verify<T>(token: string): Promise<T> {
 		try {
-			const result: CustomJwtPayload = await this.jwtService.verify(token, {
+			const result = await this.jwtService.verify(token, {
 				secret: this.publicKey,
 				algorithms: ['RS256']
 			})
@@ -29,22 +33,27 @@ export class ResetPasswordToken implements IToken {
 			return null
 		}
 	}
-	sign(payload: unknown): string {
+	sign(
+		payload:
+			| CustomJwtPayload
+			| ResetJwtPasswordPayload
+			| InviteToCourseJwtPayload
+	): string {
 		if (!payload) {
 			return null
 		}
-
-		if ((payload as CustomJwtPayload).id !== undefined) {
+		try {
 			return this.jwtService.sign(payload as CustomJwtPayload, {
 				secret: this.privateKey,
 				algorithm: 'RS256',
 				expiresIn: this.expiresIn || 3600
 			})
-		} else {
-			throw new Error('Invalid payload type')
+		} catch (error) {
+			console.log(error)
+			throw new Error(error.message)
 		}
 	}
-	async decode(token: string): Promise<Object | CustomJwtPayload> {
+	async decode<T>(token: string): Promise<T> {
 		try {
 			return await this.jwtService.decode(token, {
 				json: true,

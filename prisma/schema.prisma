@@ -11,38 +11,50 @@ datasource db {
 }
 
 model User {
-  id          String        @id
-  email       String        @unique
-  name        String?
-  password    String
-  role        String        @default("user")
-  dob         DateTime?
-  avatar      String?
-  bio         String?
-  phoneNumber String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  deletedAt   DateTime?
-  isVerified  Boolean       @default(false)
-  accountType String        @default("local")
-  ownCourses  Course[]
-  joinCourses User_Course[]
-  invitions   Invitation[]
+  id                String        @id
+  email             String        @unique
+  name              String?
+  password          String
+  role              String        @default("user")
+  dob               DateTime?
+  avatar            String?
+  bio               String?
+  phoneNumber       String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  deletedAt         DateTime?
+  isVerified        Boolean       @default(false)
+  accountType       String        @default("local")
+  ownCourses        Course[]
+  joinCourses       User_Course[]
+  invitions         Invitation[]
+  isSuspended       Boolean       @default(false)
+  isBlocked         Boolean       @default(false)
+  studentOfficialId String?
+
+  gradeReviews        GradeReview[]
+  comments            GradeReviewComment[]
+  notifications       Notification[]       @relation("User")
+  actions             Notification[]       @relation("Actor")
+  gradeReviewInvolves GradeReviewInvolve[]
+  gradeReviewFinals   GradeReviewFinal[]
 }
 
 model Course {
-  id            String        @id
-  name          String
-  description   String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  deletedAt     DateTime?
-  inviteCode    String        @unique
-  courseOwnerId String
-  members       User_Course[]
-  courseOwner   User          @relation(fields: [courseOwnerId], references: [id])
-  inviations    Invitation[]
-  isDeleted     Boolean       @default(false)
+  id             String           @id
+  name           String
+  description    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+  inviteCode     String           @unique
+  courseOwnerId  String
+  members        User_Course[]
+  courseOwner    User             @relation(fields: [courseOwnerId], references: [id])
+  inviations     Invitation[]
+  gradeStructure GradeStructure[]
+  gradeReviews   GradeReview[]
+  isDeleted      Boolean          @default(false)
 }
 
 model Invitation {
@@ -72,4 +84,92 @@ model User_Course {
   invitation   Invitation? @relation(fields: [invitationId], references: [id])
 
   @@id([userId, courseId])
+}
+
+model GradeStructure {
+  id        String    @id
+  courseId  String    @unique
+  status    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  course    Course    @relation(fields: [courseId], references: [id])
+}
+
+model Notification {
+  id        String    @id
+  userId    String
+  actorId   String
+  title     String
+  content   String
+  type      String
+  courseId  String?
+  targetId  String?
+  isRead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  user      User      @relation("User", fields: [userId], references: [id])
+  actor     User      @relation("Actor", fields: [actorId], references: [id])
+}
+
+model GradeReview {
+  id            String               @id
+  studentId     String
+  courseId      String
+  gradeId       String
+  gradeName     String?              @default("Grade")
+  percentage    Int?                 @default(0)
+  currentGrade  Float
+  expectedGrade Float
+  explaination  String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  deletedAt     DateTime?
+  imgURL        String?
+  status        String               @default("pending")
+  user          User                 @relation(fields: [studentId], references: [id])
+  course        Course               @relation(fields: [courseId], references: [id])
+  comments      GradeReviewComment[]
+  involves      GradeReviewInvolve[]
+  final         GradeReviewFinal[]
+}
+
+model GradeReviewComment {
+  id            String @id
+  userId        String
+  gradeReviewId String
+  content       String
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+  user        User        @relation(fields: [userId], references: [id])
+  gradeReview GradeReview @relation(fields: [gradeReviewId], references: [id])
+}
+
+model GradeReviewInvolve {
+  userId        String
+  gradeReviewId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  user          User        @relation(fields: [userId], references: [id])
+  gradeReview   GradeReview @relation(fields: [gradeReviewId], references: [id])
+
+  @@id([userId, gradeReviewId])
+}
+
+model GradeReviewFinal {
+  reviewerId    String
+  gradeReviewId String
+  finalGrade    Float?
+  explaination  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  reviewer      User        @relation(fields: [reviewerId], references: [id])
+  gradeReview   GradeReview @relation(fields: [gradeReviewId], references: [id])
+
+  @@id([reviewerId, gradeReviewId])
 }

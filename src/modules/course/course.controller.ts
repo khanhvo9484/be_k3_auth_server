@@ -40,6 +40,20 @@ export class CourseController {
 		return { message: 'get all course successfully', data: refinedResult }
 	}
 
+	@Get('all-archived')
+	@HttpCode(200)
+	async getAllArchivedCourse(@Req() request: Request) {
+		const user = request.user
+		const result = await this.courseService.getAllArchivedCourse(user.id)
+		const refinedResult = result.map((item) => {
+			return plainToClass(CourseResponse, item)
+		})
+		return {
+			message: 'get all archived course successfully',
+			data: refinedResult
+		}
+	}
+
 	@Get('get-all-course-member')
 	@HttpCode(200)
 	async getAllCourseMember(
@@ -69,7 +83,7 @@ export class CourseController {
 	) {
 		const user = request.user
 		body.courseOwnerId = user.id
-		const result = await this.courseService.createCourse(body)
+		const result = await this.courseService.createCourse(body, user)
 		return { message: 'create course successfully', data: result }
 	}
 
@@ -131,10 +145,16 @@ export class CourseController {
 		return { message: 'send invitation successfully', data: result }
 	}
 
-	@Delete('delete-course/:id')
+	@Post('delete-course/:id')
 	async deleteCourse(@Param('id') id: string) {
 		const result = await this.courseService.deleteCourse(id)
 		return { message: 'delete course successfully', data: result }
+	}
+
+	@Post('real-delete-course/:id')
+	async realDeleteCourse(@Param('id') id: string) {
+		const result = await this.courseService.realDeleteCourse(id)
+		return { message: 'Real delete course successfully', data: result }
 	}
 
 	@Post('leave-course')
@@ -148,7 +168,7 @@ export class CourseController {
 		return { message: 'leave course successfully', data: result }
 	}
 
-	@Delete('remove-user')
+	@Post('remove-user')
 	@HttpCode(200)
 	async removeUserFromCourse(
 		@Req() request: Request,

@@ -1,7 +1,27 @@
+export interface ResetJwtPasswordPayload {
+	email: string
+}
+
+export interface VerifyEmailJwtPayload {
+	email: string
+}
+
+export interface InviteToCourseJwtPayload {
+	id: string
+	inviterId: string
+	inviteeEmail: string
+	courseId: string
+	roleInCourse: string
+}
 export interface IToken {
-	verify(token: string): Promise<Object>
-	sign(payload: unknown): string
-	decode(token: string): Promise<Object>
+	verify<T>(token: string): Promise<T>
+	sign(
+		payload:
+			| CustomJwtPayload
+			| ResetJwtPasswordPayload
+			| InviteToCourseJwtPayload
+	): string
+	decode<T>(token: string): Promise<T>
 	setKeys(privateKey: string | Buffer, publicKey: string | Buffer): void
 	setJwtService(jwtService: any): void
 	setExpiresIn(expiresIn: number): void

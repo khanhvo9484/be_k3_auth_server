@@ -73,4 +73,18 @@ export class UsersService implements IUsersService {
 			throw new DatabaseExecutionException("Couldn't delete user")
 		}
 	}
+
+	async updateUserOfficialId(params: {
+		where: Prisma.UserWhereUniqueInput
+		data: Prisma.UserUpdateInput
+	}) {
+		const { where, data } = params
+		try {
+			const result = await this.userRepository.updateUser({ where, data })
+			return result
+		} catch (e: any) {
+			console.log(e)
+			throw new DatabaseExecutionException("Couldn't update user")
+		}
+	}
 }

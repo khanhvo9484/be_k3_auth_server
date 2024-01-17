@@ -1,39 +1,38 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "sourceMap": true,
-    "outDir": "./dist",
-   
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
+	"compilerOptions": {
+		"module": "commonjs",
+		"declaration": true,
+		"removeComments": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"allowSyntheticDefaultImports": true,
+		"target": "ES2021",
+		"sourceMap": true,
+		"outDir": "./dist",
 
-    "baseUrl": "src",
-    "moduleResolution": "node",
-    "paths": {
-      "@auth": ["auth"],
-      "@config/*": ["config/*"],
-      "@my-prisma/*": ["prisma/*"],
-      "@common/*":["common/*"],
-      "@enviroment/*": ["enviroment/*"],
-      "@models": ["models"],
-      "@shared/*": ["shared/*"],
-      "@utils/*": ["utils/*"],
-      "@validations/": ["validations/"],
-      "@user/*": ["modules/user/*"],
-    }
+		"incremental": true,
+		"skipLibCheck": true,
+		"strictNullChecks": false,
+		"noImplicitAny": false,
+		"strictBindCallApply": false,
+		"forceConsistentCasingInFileNames": false,
+		"noFallthroughCasesInSwitch": false,
 
-
-  },
-  "exclude": ["node_modules", "dist"]
+		"baseUrl": "src",
+		"moduleResolution": "node",
+		"paths": {
+			"@auth": ["auth"],
+			"@config/*": ["config/*"],
+			"@my-prisma/*": ["prisma/*"],
+			"@common/*": ["common/*"],
+			"@enviroment/*": ["enviroment/*"],
+			"@models": ["models"],
+			"@shared/*": ["shared/*"],
+			"@utils/*": ["utils/*"],
+			"@validations/*": ["validations/"],
+			"@user/*": ["modules/user/*"],
+			"@my-socket-io/*": ["socket/*"]
+		}
+	},
+	"exclude": ["node_modules", "dist"]
 }

@@ -5,7 +5,12 @@ import {
 import { UsersService } from './../user/user.service'
 import { TokenFactoryService } from './../../utils/jwt-helper/token-factory.service'
 import { generateCode } from '@utils/id-helper'
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+	BadRequestException,
+	Inject,
+	Injectable,
+	forwardRef
+} from '@nestjs/common'
 import { ICourseService } from './course.interface'
 import { Prisma, Course, User_Course } from '@prisma/client'
 import { CourseRepository } from './course.repository'
@@ -13,14 +18,14 @@ import { DatabaseExecutionException } from '@common/exceptions'
 import {
 	CreateCourseRequest,
 	CreateInvitationRequest,
-	InviteToCoursePayload,
 	JoinCourseRequest,
-	UpdateCourseRequest
+	UpdateCourseRequest,
+	InviteToCoursePayload
 } from './dto/course.dto'
+import { InviteToCourseEmailSenderPayload } from '@utils/email-sender/resources/email.interface'
 import { TokenType } from '@utils/jwt-helper/resources/token-type.enum'
 import { InviteToCourseToken } from '@utils/jwt-helper/resources/invite-to-course-token'
 import { PrismaService } from '@my-prisma/prisma.service'
-import { SparkPostSender } from '@utils/email-sender/sparkpost'
 import { EmailSenderService } from '@utils/email-sender/email-sender.service'
 import {
 	FE_INVITE_TO_COURSE_URL,
@@ -29,6 +34,9 @@ import {
 } from '@enviroment/index'
 import { plainToClass } from 'class-transformer'
 import { UserResponse } from '@user/dto/user.dto'
+import { GradeStructureService } from '../grade/grade-structure/grade-structure.service'
+import { CreateGradeStructureRequest } from 'modules/grade/resource/dto'
+import { InviteToCourseJwtPayload } from '@utils/jwt-helper/resources/token.interface'
 
 @Injectable()
 export class CourseService {
@@ -37,7 +45,9 @@ export class CourseService {
 		private tokenFactoryService: TokenFactoryService,
 		private usersService: UsersService,
 		private prisma: PrismaService,
-		private emailSenderService: EmailSenderService
+		private emailSenderService: EmailSenderService,
+
+		private gradeStructureService: GradeStructureService
 	) {}
 
 	async getAllCourse(
@@ -56,6 +66,31 @@ export class CourseService {
 			throw new DatabaseExecutionException('Get all course failed')
 		}
 	}
+	async getAllCourseByAdmin() {
+		try {
+			return await this.courseRepository.getAllCourseByAdmin()
+		} catch (error) {
+			throw new DatabaseExecutionException('Get all course failed')
+		}
+	}
+
+	async getAllArchivedCourse(
+		userId: string,
+		params?: {
+			skip?: number
+			take?: number
+			cursor?: Prisma.UserWhereUniqueInput
+			where?: Prisma.UserWhereInput
+			orderBy?: Prisma.UserOrderByWithRelationInput
+		}
+	) {
+		try {
+			return await this.courseRepository.getAllArchivedCourse(userId, params)
+		} catch (error) {
+			throw new DatabaseExecutionException('Get all archived course failed')
+		}
+	}
+
 	async getAllCourseMember(user: CustomJwtPayload, courseId: string) {
 		try {
 			const userInCourse = await this.courseRepository.getEnrollmentById({
@@ -102,7 +137,28 @@ export class CourseService {
 
 			return result
 		} catch (error) {
-			console.log(error)
+			console.error(error)
+			throw new DatabaseExecutionException('Get all course member failed')
+		}
+	}
+
+	async getAllCourseStudentIds(courseId: string) {
+		try {
+			const result = await this.prisma.$transaction(async (prisma) => {
+				const memberListResult = await this.courseRepository.getAllCourseMember(
+					{
+						courseId: courseId
+					}
+				)
+				const students = memberListResult.students.map((item) => {
+					return { id: item.id, email: item.email }
+				})
+				return students
+			})
+
+			return result
+		} catch (error) {
+			console.error(error)
 			throw new DatabaseExecutionException('Get all course member failed')
 		}
 	}
@@ -124,7 +180,8 @@ export class CourseService {
 		}
 	}
 	async createCourse(
-		createCourseRequest: CreateCourseRequest
+		createCourseRequest: CreateCourseRequest,
+		user: CustomJwtPayload
 	): Promise<Course> {
 		try {
 			const result = await this.prisma.$transaction(async (prisma) => {
@@ -153,55 +210,89 @@ export class CourseService {
 						}
 					}
 				})
+
+				const createGradeStructureRequest = plainToClass(
+					CreateGradeStructureRequest,
+					{
+						courseId: createdCourse.id,
+						gradeComponent: []
+					}
+				)
+
+				const createdGradeStructure =
+					await this.gradeStructureService.createGradeStructure(
+						createGradeStructureRequest,
+						user
+					)
 				return createdCourse
 			})
 
 			return result
 		} catch (error) {
+			console.log(error)
 			throw new DatabaseExecutionException('Create course failed')
 		}
 	}
 
 	async sendInvitation(createInvitationRequest: CreateInvitationRequest) {
-		const tokenPayload = createInvitationRequest
-		const token = this.tokenFactoryService.sign(
-			tokenPayload,
-			TokenType.INVITE_TO_COURSE
-		)
-		const substitutionData: InviteToCourseSubstitution = {
-			invitation_link: FE_INVITE_TO_COURSE_URL + '?token=' + token,
-			protocol: PROTOCOL,
-			inviter_email: createInvitationRequest.inviterId,
-			inviter_name: createInvitationRequest.inviterId,
-			course_name: createInvitationRequest.courseId,
-			role_in_course:
-				createInvitationRequest.roleInCourse === 'teacher'
-					? 'giáo viên'
-					: 'học sinh'
-		}
-		const result = await this.courseRepository.createInvitation({
-			id: createInvitationRequest.id,
-			inviteeEmail: createInvitationRequest.inviteeEmail,
-			inviter: {
-				connect: {
-					id: createInvitationRequest.inviterId
-				}
-			},
-			status: 'pending',
-			course: {
-				connect: {
-					id: createInvitationRequest.courseId
-				}
-			},
-			roleInCourse: createInvitationRequest.roleInCourse
-		})
-		const sendEmailResult = await this.emailSenderService.sendWithTemplate({
-			to: createInvitationRequest.inviteeEmail,
-			templateId: EmailTempateId.INVITE_TO_COURSE,
-			substitutionData: substitutionData
-		})
+		try {
+			const tokenPayload = createInvitationRequest
+			const token = this.tokenFactoryService.sign(
+				tokenPayload as InviteToCourseJwtPayload,
+				TokenType.INVITE_TO_COURSE
+			)
+			const inviterUser = await this.prisma.user.findUnique({
+				where: { id: createInvitationRequest.inviterId }
+			})
+			const course = await this.prisma.course.findUnique({
+				where: { id: createInvitationRequest.courseId }
+			})
 
-		return result
+			if (!inviterUser || !course) {
+				throw new BadRequestException('User or course not found')
+			}
+
+			const substitutionData: InviteToCourseSubstitution = {
+				invitation_link: FE_INVITE_TO_COURSE_URL + '?token=' + token,
+				protocol: PROTOCOL,
+				inviter_email: inviterUser?.email || 'no email',
+				inviter_name: inviterUser?.name || 'no name',
+				course_name: course?.name || 'no name',
+				role_in_course:
+					createInvitationRequest.roleInCourse === 'teacher'
+						? 'giáo viên'
+						: 'học sinh'
+			}
+			const result = await this.courseRepository.createInvitation({
+				id: createInvitationRequest.id,
+				inviteeEmail: createInvitationRequest.inviteeEmail,
+				inviter: {
+					connect: {
+						id: createInvitationRequest.inviterId
+					}
+				},
+				status: 'pending',
+				course: {
+					connect: {
+						id: createInvitationRequest.courseId
+					}
+				},
+				roleInCourse: createInvitationRequest.roleInCourse
+			})
+			const sendEmailResult =
+				await this.emailSenderService.sendWithTemplate<InviteToCourseEmailSenderPayload>(
+					{
+						to: createInvitationRequest.inviteeEmail,
+						templateId: EmailTempateId.INVITE_TO_COURSE,
+						substitutionData: substitutionData
+					}
+				)
+
+			return result
+		} catch (error) {
+			console.error(error)
+			throw new DatabaseExecutionException(error.message)
+		}
 	}
 
 	async joinCourseByToken(inviteToken: string) {
@@ -389,6 +480,20 @@ export class CourseService {
 		}
 	}
 
+	async realDeleteCourse(id: string) {
+		try {
+			const result = await this.prisma.$transaction(async (prisma) => {
+				const deletedCourse = await this.courseRepository.realDeleteCourse({
+					id: id
+				})
+				return deletedCourse
+			})
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException('Real delete course failed')
+		}
+	}
+
 	async leaveCourse(leaveCourseRquest: { userId: string; courseId: string }) {
 		try {
 			const { userId, courseId } = leaveCourseRquest
@@ -426,6 +531,18 @@ export class CourseService {
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException('Remove user from course failed')
+		}
+	}
+
+	async getMemberInCourseByRole(courseId: string, role: string) {
+		try {
+			const result = await this.courseRepository.getMemberInCourseByRole(
+				courseId,
+				role
+			)
+			return result
+		} catch (error) {
+			throw new DatabaseExecutionException('Get teacher list failed')
 		}
 	}
 }

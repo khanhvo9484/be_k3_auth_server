@@ -20,10 +20,10 @@ export class EmailSenderService {
 		const result = await this.emailProvider.send(email)
 		return result
 	}
-	async sendWithTemplate(params: {
+	async sendWithTemplate<T>(params: {
 		to: string
 		templateId: string
-		substitutionData: any
+		substitutionData: T
 	}) {
 		const { to, templateId, substitutionData } = params
 		const result = await this.emailProvider.sendWithTemplate({

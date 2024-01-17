@@ -27,6 +27,13 @@ import { AuthGuard } from '@common/guard/auth.guard'
 import { CustomJWTModule } from '@utils/jwt-helper/custom-jwt.module'
 import { CourseModule } from 'modules/course/course.module'
 import { EmailSenderModule } from '@utils/email-sender/email-sender.module'
+import { GradeModule } from 'modules/grade/grade.module'
+import { GatewayModule } from 'socket/gateway.module'
+import { NotificationModule } from 'notification/notification.module'
+import { ExcelModule } from '@utils/excel/excel.module'
+import { StudentGradeModule } from 'modules/grade/student-grade-upload/student-grade.module'
+import { FileUploaderModule } from '@utils/file-uploader/file-uploader.module'
+import { AdminModule } from 'admin/admin.module'
 
 @Module({
 	imports: [
@@ -35,7 +42,8 @@ import { EmailSenderModule } from '@utils/email-sender/email-sender.module'
 			useFactory: async () => {
 				const store = await redisStore({
 					url: REDIS_URL,
-					store: 'memory'
+					store: 'memory',
+					pingInterval: 10000
 				})
 				return {
 					store: store as unknown as CacheStore
@@ -62,7 +70,13 @@ import { EmailSenderModule } from '@utils/email-sender/email-sender.module'
 		AuthModule,
 		UsersModule,
 		CourseModule,
-		PrismaModule
+		PrismaModule,
+		GradeModule,
+		GatewayModule,
+		NotificationModule,
+		ExcelModule,
+		FileUploaderModule,
+		AdminModule
 	],
 	controllers: [AppController],
 	providers: [

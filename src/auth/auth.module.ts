@@ -7,6 +7,7 @@ import { AuthService } from './auth.service'
 import { AuthGuard } from '@common/guard/auth.guard'
 import { OauthLoginService } from './oauth-login.service'
 import { ManageTokenInCacheService } from './resources/utils/manage-token-in-cache'
+import { GoogleStrategy } from './strategy/google.strategy'
 
 @Module({
 	imports: [JwtModule.register({}), UsersModule],
@@ -14,9 +15,10 @@ import { ManageTokenInCacheService } from './resources/utils/manage-token-in-cac
 		AuthService,
 		AuthGuard,
 		OauthLoginService,
-		ManageTokenInCacheService
+		ManageTokenInCacheService,
+		GoogleStrategy
 	],
 	controllers: [AuthController],
-	exports: []
+	exports: [AuthService]
 })
 export class AuthModule {}

@@ -73,6 +73,38 @@ export class CourseRepository {
 		})
 		return result.map((item) => item.course)
 	}
+
+	async getAllCourseByAdmin() {
+		const result = await this.prisma.course.findMany({
+			include: {
+				courseOwner: true
+			}
+		})
+		return result
+	}
+
+	async getAllArchivedCourse(
+		userId: string,
+		params?: {
+			skip?: number
+			take?: number
+			cursor?: Prisma.UserWhereUniqueInput
+			where?: Prisma.UserWhereInput
+			orderBy?: Prisma.UserOrderByWithRelationInput
+		}
+	) {
+		const result = await this.prisma.course.findMany({
+			where: {
+				courseOwnerId: userId,
+				isDeleted: true
+			},
+			include: {
+				courseOwner: true
+			}
+		})
+		return result.map((item) => item)
+	}
+
 	async getAllCourseMember(where: Prisma.User_CourseWhereInput) {
 		const result = await this.prisma.user_Course.findMany({
 			where,
@@ -177,10 +209,31 @@ export class CourseRepository {
 		})
 		return result
 	}
+
+	async realDeleteCourse(where: Prisma.CourseWhereUniqueInput) {
+		const result = await this.prisma.course.delete({
+			where: where
+		})
+		return result
+	}
+
 	async deleteAllEnrollmentInCourse(where: Prisma.User_CourseWhereInput) {
 		const result = await this.prisma.user_Course.deleteMany({
 			where
 		})
 		return result
+	}
+
+	async getMemberInCourseByRole(courseId: string, role: string) {
+		const result = await this.prisma.user_Course.findMany({
+			where: {
+				courseId: courseId,
+				roleInCourse: role
+			},
+			select: {
+				user: true
+			}
+		})
+		return result.map((item) => item.user)
 	}
 }

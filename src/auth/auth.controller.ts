@@ -114,19 +114,59 @@ export class AuthController {
 			data: {}
 		}
 	}
-}
-//   @Post('/verify-email')
-//   async verifyEmail(
-//     @Body() request: { token: string; email: string },
-//     @Res() res: Response,
-//   ) {
-//     const { token, email } = request;
-//     const result = await this.authService.activateAccount(email, token);
 
-//     return res
-//       .status(200)
-//       .json({ message: 'Verify email successfully', data: result });
-//   }
+	@Post('/forgot-password')
+	async forgotPassword(
+		@Body() request: { email: string },
+		@Res() res: Response
+	) {
+		const { email } = request
+		const result = await this.authService.sendEmailForgotPassword(email)
+
+		return res
+			.status(200)
+			.json({ message: 'Reset password successfully', data: result })
+	}
+
+	@Post('/verify-reset-password')
+	async verifyResetPassword(
+		@Body() request: { token: string; email: string },
+		@Res() res: Response
+	) {
+		const { token, email } = request
+		const result = await this.authService.verifyResetPassword(email, token)
+
+		return res
+			.status(200)
+			.json({ message: 'Verify reset password successfully', data: result })
+	}
+
+	@Post('/reset-password')
+	async resetPassword(
+		@Body() request: { email: string; password: string },
+		@Res() res: Response
+	) {
+		const { email, password } = request
+		const result = await this.authService.resetPassword(email, password)
+
+		return res
+			.status(200)
+			.json({ message: 'Reset password successfully', data: result })
+	}
+
+	@Post('/send-verify-email')
+	async sendVerifyEmail(
+		@Body() request: { email: string },
+		@Res() res: Response
+	) {
+		const { email } = request
+		const result = await this.authService.sendVerifyEmail(email)
+
+		return res
+			.status(200)
+			.json({ message: 'Send verify email successfully', data: result })
+	}
+}
 
 //   @Post('/forgot-password')
 //   async forgotPassword(

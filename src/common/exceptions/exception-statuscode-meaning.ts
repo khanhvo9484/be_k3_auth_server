@@ -1,2 +1,4 @@
 export const INFO_NOT_MATCH_CODE = 422
 export const DATABASE_EXECUTION_ERROR_CODE = 578
+
+export const EXCEL_PARSER_ERROR_CODE = 579
