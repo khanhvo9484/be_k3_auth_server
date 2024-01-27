@@ -9,6 +9,9 @@ import { OauthLoginService } from './oauth-login.service'
 import { ManageTokenInCacheService } from './resources/utils/manage-token-in-cache'
 import { GoogleStrategy } from './strategy/google.strategy'
 import { FacebookStrategy } from './strategy/facebook.strategy'
+
+import { BullModule } from '@nestjs/bull'
+import { REDIS_URL } from '@enviroment/index'
 @Module({
 	imports: [JwtModule.register({}), UsersModule],
 	providers: [

@@ -34,6 +34,7 @@ import { ExcelModule } from '@utils/excel/excel.module'
 import { StudentGradeModule } from 'modules/grade/student-grade-upload/student-grade.module'
 import { FileUploaderModule } from '@utils/file-uploader/file-uploader.module'
 import { AdminModule } from 'admin/admin.module'
+import { QueueModule } from 'queue/queue.module'
 
 @Module({
 	imports: [
@@ -67,6 +68,7 @@ import { AdminModule } from 'admin/admin.module'
 		EmailSenderModule.register({
 			isGlobal: true
 		}),
+
 		AuthModule,
 		UsersModule,
 		CourseModule,
@@ -76,7 +78,8 @@ import { AdminModule } from 'admin/admin.module'
 		NotificationModule,
 		ExcelModule,
 		FileUploaderModule,
-		AdminModule
+		AdminModule,
+		QueueModule
 	],
 	controllers: [AppController],
 	providers: [
