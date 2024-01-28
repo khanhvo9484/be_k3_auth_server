@@ -3,32 +3,40 @@ import { Global, Module } from '@nestjs/common'
 import { NotificationQueueService, CommentQueueService } from './producer'
 
 import { SendNotificationConsumer } from './consumer/notification.consumer'
+import { BroadcastCommentConsumer } from './consumer'
+import {
+	REDIS_HOST,
+	REDIS_PASSWORD,
+	REDIS_PORT,
+	REDIS_USERNAME
+} from '@enviroment/index'
 @Global()
 @Module({
 	imports: [
 		BullModule.registerQueue({
 			name: 'SEND_NOTIFICATION',
 			redis: {
-				port: 14427,
-				host: 'redis-14427.c52.us-east-1-4.ec2.cloud.redislabs.com',
-				username: 'default',
-				password: 'zx9xachrpRa4dHDNKbnMsaFeUXAQFvyH'
+				port: parseInt(REDIS_PORT),
+				host: REDIS_HOST,
+				username: REDIS_USERNAME,
+				password: REDIS_PASSWORD
 			}
 		}),
 		BullModule.registerQueue({
 			name: 'BROADCAST_COMMENT',
 			redis: {
-				port: 14427,
-				host: 'redis-14427.c52.us-east-1-4.ec2.cloud.redislabs.com',
-				username: 'default',
-				password: 'zx9xachrpRa4dHDNKbnMsaFeUXAQFvyH'
+				port: parseInt(REDIS_PORT),
+				host: REDIS_HOST,
+				username: REDIS_USERNAME,
+				password: REDIS_PASSWORD
 			}
 		})
 	],
 	providers: [
 		NotificationQueueService,
 		CommentQueueService,
-		SendNotificationConsumer
+		SendNotificationConsumer,
+		BroadcastCommentConsumer
 	],
 	exports: [NotificationQueueService, CommentQueueService]
 })

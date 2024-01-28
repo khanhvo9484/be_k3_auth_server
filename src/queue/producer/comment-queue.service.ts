@@ -8,7 +8,7 @@ export class CommentQueueService {
 		@InjectQueue('BROADCAST_COMMENT') private sendNotificationQueue: Queue
 	) {}
 
-	async broadcastComment(payload: any) {
+	async broadcastComment(payload: { postId: string; data: any }) {
 		try {
 			const result = await this.sendNotificationQueue.add(
 				'BROADCAST_COMMENT_JOB',

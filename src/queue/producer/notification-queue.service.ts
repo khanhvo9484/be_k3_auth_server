@@ -8,7 +8,12 @@ export class NotificationQueueService {
 		@InjectQueue('SEND_NOTIFICATION') private sendNotificationQueue: Queue
 	) {}
 
-	async sendNotification(payload: any) {
+	async sendNotification(payload: {
+		userList: {
+			userId: string
+		}[]
+		notification: any
+	}) {
 		try {
 			const result = await this.sendNotificationQueue.add(
 				'SEND_NOTIFICATION_JOB',

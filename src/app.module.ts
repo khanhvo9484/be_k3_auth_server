@@ -35,9 +35,19 @@ import { StudentGradeModule } from 'modules/grade/student-grade-upload/student-g
 import { FileUploaderModule } from '@utils/file-uploader/file-uploader.module'
 import { AdminModule } from 'admin/admin.module'
 import { QueueModule } from 'queue/queue.module'
+import { HttpModule } from '@nestjs/axios'
 
 @Module({
 	imports: [
+		{
+			...HttpModule.registerAsync({
+				useFactory: () => ({
+					timeout: 15000,
+					maxRedirects: 5
+				})
+			}),
+			global: true
+		},
 		CacheModule.registerAsync({
 			isGlobal: true,
 			useFactory: async () => {

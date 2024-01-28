@@ -8,6 +8,7 @@ import { CreateNotificationDto } from 'notification/resource/dto'
 import { NotificationType } from 'notification/resource/enum'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { MyGatewayService } from '@my-socket-io/gateway'
+import { CommentQueueService } from 'queue/producer'
 @Injectable()
 export class GradeReviewCommentService {
 	constructor(
@@ -15,7 +16,8 @@ export class GradeReviewCommentService {
 		private notificationService: NotificationService,
 		private courseUtilService: CourseUtilService,
 		private gradeReviewRepository: GradeReviewRepository,
-		private gatewayService: MyGatewayService
+		private gatewayService: MyGatewayService,
+		private commentQueueService: CommentQueueService
 	) {}
 	async commentOnGradeReview(request: CreateCommentOnGradeReviewRequest) {
 		try {
@@ -82,7 +84,11 @@ export class GradeReviewCommentService {
 					actor: { connect: { id: userId } },
 					actorId: undefined
 				})
-				this.gatewayService.broadcastInPost(request.gradeReviewId, result)
+				// this.gatewayService.broadcastInPost(request.gradeReviewId, result)
+				this.commentQueueService.broadcastComment({
+					postId: request.gradeReviewId,
+					data: result
+				})
 			} else {
 				const createNotificationDto = new CreateNotificationDto({
 					type: NotificationType.NEW_GRADE_REVIEW_COMMENT,
@@ -105,7 +111,11 @@ export class GradeReviewCommentService {
 						involvers: involverIds,
 						notification: createNotificationDto
 					})
-				this.gatewayService.broadcastInPost(request.gradeReviewId, result)
+				// this.gatewayService.broadcastInPost(request.gradeReviewId, result)
+				this.commentQueueService.broadcastComment({
+					postId: request.gradeReviewId,
+					data: result
+				})
 			}
 
 			return result

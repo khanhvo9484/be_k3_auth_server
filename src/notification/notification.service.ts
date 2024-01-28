@@ -5,6 +5,7 @@ import { CreateNotificationDto } from './resource/dto'
 import { DatabaseExecutionException } from '@common/exceptions'
 import { CourseService } from 'modules/course/course.service'
 import { generateId } from '@utils/id-helper'
+import { NotificationQueueService } from 'queue/producer'
 @Injectable()
 export class NotificationService {
 	constructor(
@@ -14,16 +15,21 @@ export class NotificationService {
 		private courseService: CourseService,
 
 		@Inject(forwardRef(() => MyGatewayService))
-		private myGatewayService: MyGatewayService
+		private myGatewayService: MyGatewayService,
+		private notificationQueueService: NotificationQueueService
 	) {}
 
 	async create(notification: CreateNotificationDto, tx?: any) {
 		try {
 			const result = await this.notificationRepository.create(notification, tx)
-			this.myGatewayService.broadcastNotification(
-				[{ userId: result.userId }],
-				result
-			)
+			// this.myGatewayService.broadcastNotification(
+			// 	[{ userId: result.userId }],
+			// 	result
+			// )
+			this.notificationQueueService.sendNotification({
+				userList: [{ userId: result.userId }],
+				notification: result
+			})
 			return result
 		} catch (error) {
 			throw new DatabaseExecutionException(error.message)
@@ -93,7 +99,11 @@ export class NotificationService {
 				return { userId: member.id }
 			})
 
-			this.myGatewayService.broadcastNotification(listUserIds, notification)
+			// this.myGatewayService.broadcastNotification(listUserIds, notification)
+			this.notificationQueueService.sendNotification({
+				userList: listUserIds,
+				notification: { ...notification, createdAt: Date.now() }
+			})
 
 			return returnData
 		} catch (error) {
@@ -164,7 +174,11 @@ export class NotificationService {
 				return { userId: memberId }
 			})
 
-			this.myGatewayService.broadcastNotification(listUserIds, notification)
+			// this.myGatewayService.broadcastNotification(listUserIds, notification)
+			this.notificationQueueService.sendNotification({
+				userList: listUserIds,
+				notification: { ...notification, createdAt: Date.now() }
+			})
 
 			return returnData
 		} catch (error) {
